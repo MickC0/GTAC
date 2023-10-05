@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h2>Liste missions</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th> <th>Nom</th> <th>Description</th> <th>Commentaire</th> <th>Type</th> <th>Statut</th> <th>Nombre de volontaires requis</th>
+        </tr>
+        <tr th:each="m:${listMissions}">
+            <td th:text="${m.id}"></td>
+            <td th:text="${m.name}"></td>
+            <td th:text="${m.description}"></td>
+            <td th:text="${m.comment}"></td>
+            <td th:text="${m.missionType}"></td>
+            <td th:text="${m.status}"></td>
+            <td th:text="${m.requiredVolunteerNumber}"></td>
+        </tr>
+    </thead>
+</table>
+</body>
+</html>
