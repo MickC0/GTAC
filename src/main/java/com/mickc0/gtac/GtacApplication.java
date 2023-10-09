@@ -1,6 +1,7 @@
 package com.mickc0.gtac;
 
 import com.mickc0.gtac.model.Mission;
+import com.mickc0.gtac.model.MissionStatus;
 import com.mickc0.gtac.repository.MissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -23,7 +24,7 @@ public class GtacApplication implements CommandLineRunner {
                 .name("Nom")
                 .description("description")
                 .comment("commentaire")
-                .status("Statut")
+                .status(MissionStatus.NEW)
                 .requiredVolunteerNumber(1)
                 .missionType("Type mission")
                 .build();
@@ -31,7 +32,7 @@ public class GtacApplication implements CommandLineRunner {
                 .name("Nom2")
                 .description("description2")
                 .comment("commentaire2")
-                .status("Statut2")
+                .status(MissionStatus.COMPLETED)
                 .requiredVolunteerNumber(2)
                 .missionType("Type mission2")
                 .build();

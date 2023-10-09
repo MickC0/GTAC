@@ -3,25 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
+
+    <link th:href="@{/css/styles.css}" th:rel="stylesheet">
 </head>
 <body>
-<h2>Liste missions</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th> <th>Nom</th> <th>Description</th> <th>Commentaire</th> <th>Type</th> <th>Statut</th> <th>Nombre de volontaires requis</th>
-        </tr>
-        <tr th:each="m:${listMissions}">
-            <td th:text="${m.id}"></td>
-            <td th:text="${m.name}"></td>
-            <td th:text="${m.description}"></td>
-            <td th:text="${m.comment}"></td>
-            <td th:text="${m.missionType}"></td>
-            <td th:text="${m.status}"></td>
-            <td th:text="${m.requiredVolunteerNumber}"></td>
-        </tr>
-    </thead>
-</table>
+<div th:class="p-3">
+    <div th:class="card">
+        <div th:class="card-header">
+            Liste missions
+        </div>
+        <div th:class="card-body">
+            <table th:class="table">
+                <thead>
+                <tr>
+                    <th>ID</th> <th>Nom</th> <th>Description</th> <th>Commentaire</th> <th>Type</th> <th>Statut</th> <th>Nombre de volontaires requis</th>
+                </tr>
+                <tr th:each="m:${listMissions}">
+                    <td th:text="${m.id}"></td>
+                    <td th:text="${m.name}"></td>
+                    <td th:text="${m.description}"></td>
+                    <td th:text="${m.comment}"></td>
+                    <td th:text="${m.missionType}"></td>
+                    <td th:text="${m.status}"></td>
+                    <td th:text="${m.requiredVolunteerNumber}"></td>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+    <script src="/webjars/popper.js/2.11.7/umd/popper.min.js"></script>
+    <script src="/webjars/bootstrap/5.3.2/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -28,7 +28,7 @@ public class Mission {
     private String missionType;
 
     @Column(name = "status")
-    private String status;
+    private MissionStatus status;
 
     @Column(name = "required_volunteer_number")
     private int requiredVolunteerNumber;
