@@ -7,4 +7,5 @@ import java.util.List;
 public interface MissionService {
 
     List<Mission> findAll();
+    void save(Mission mission);
 }

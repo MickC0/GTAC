@@ -12,12 +12,14 @@ import java.util.List;
 @AllArgsConstructor
 public class MissionServiceImpl implements MissionService {
     private final MissionRepository missionRepository;
-
-
-
     @Override
     public List<Mission> findAll() {
         return missionRepository.findAll();
+    }
+
+    @Override
+    public void save(Mission mission) {
+        missionRepository.save(mission);
     }
 
 }

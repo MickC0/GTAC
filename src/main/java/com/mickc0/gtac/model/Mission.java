@@ -6,9 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "missions")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Mission {
 
     @Id
@@ -32,5 +37,8 @@ public class Mission {
 
     @Column(name = "required_volunteer_number")
     private int requiredVolunteerNumber;
+
+    @OneToMany(mappedBy = "missions")
+    private List<CompletionDate> completionDates;
 
 }
