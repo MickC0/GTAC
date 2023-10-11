@@ -22,7 +22,7 @@
             <table th:class="table">
                 <thead>
                 <tr>
-                    <th>ID</th> <th>Nom</th> <th>Description</th> <th>Commentaire</th> <th>Type</th> <th>Statut</th> <th>Nombre de volontaires requis</th>
+                    <th>ID</th> <th>Nom</th> <th>Description</th> <th>Commentaire</th> <th>Type</th> <th>Statut</th> <th>Nombre de volontaires requis</th> <th>Date de début</th> <th>Date de fin</th>
                 </tr>
                 <tr th:each="m:${listMissions}">
                     <td th:text="${m.id}"></td>
@@ -32,6 +32,8 @@
                     <td th:text="${m.missionType}"></td>
                     <td th:text="${m.status}"></td>
                     <td th:text="${m.requiredVolunteerNumber}"></td>
+                    <td th:text="${m.completionDates.get(0).startingDate}"></td>
+                    <td th:text="${m.completionDates.get(0).endingDate}"></td>
                 </tr>
                 </thead>
             </table>

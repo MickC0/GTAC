@@ -23,4 +23,8 @@ public class CompletionDate {
 
     @Column(name = "ending_date")
     private LocalDateTime endingDate;
+
+    @ManyToOne
+    @JoinColumn(name = "mission_id")
+    private Mission mission;
 }

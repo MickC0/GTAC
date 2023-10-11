@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @Entity
@@ -38,5 +37,6 @@ public class Mission {
     @Column(name = "required_volunteer_number")
     private int requiredVolunteerNumber;
 
-
+    @OneToMany(mappedBy = "mission")
+    private List<CompletionDate> completionDates;
 }
