@@ -38,7 +38,5 @@ public class Mission {
     @Column(name = "required_volunteer_number")
     private int requiredVolunteerNumber;
 
-    @OneToMany(mappedBy = "missions")
-    private List<CompletionDate> completionDates;
 
 }

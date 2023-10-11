@@ -27,10 +27,16 @@ public class GtacApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        CompletionDate completionDate = CompletionDate.builder()
+        CompletionDate completionDate1 = CompletionDate.builder()
                 .startingDate(LocalDateTime.of(2023,10,10,22,00))
                 .endingDate(LocalDateTime.of(2023, 10,10,23,00))
                 .build();
+        CompletionDate completionDate2 = CompletionDate.builder()
+                .startingDate(LocalDateTime.of(2023,10,10,22,00))
+                .endingDate(LocalDateTime.of(2023, 10,10,23,00))
+                .build();
+        completionDateService.save(completionDate1);
+        completionDateService.save(completionDate2);
         Mission mission = Mission.builder()
                 .name("Nom")
                 .description("description")
@@ -38,7 +44,6 @@ public class GtacApplication implements CommandLineRunner {
                 .status(MissionStatus.NEW)
                 .requiredVolunteerNumber(1)
                 .missionType("Type mission")
-                .completionDates(completionDateService.save(completionDate)
                 .build();
         Mission mission2 = Mission.builder()
                 .name("Nom2")

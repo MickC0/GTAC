@@ -39,6 +39,28 @@
     </div>
 </div>
 
+<div th:class="p-3">
+    <div th:class="card">
+        <div th:class="card-header">
+            Liste dates de réalisation
+        </div>
+        <div th:class="card-body">
+            <table th:class="table">
+                <thead>
+                <tr>
+                    <th>ID</th> <th>Date de début</th> <th>Date de fin</th>
+                </tr>
+                <tr th:each="c:${listCompletionDates}">
+                    <td th:text="${c.id}"></td>
+                    <td th:text="${c.startingDate}"></td>
+                    <td th:text="${c.endingDate}"></td>
+                </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
 
 
 

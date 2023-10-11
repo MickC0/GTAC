@@ -12,8 +12,8 @@ import java.util.List;
 public class CompletionDateServiceImpl implements CompletionDateService {
     private final CompletionDateRepository completionDateRepository;
     @Override
-    public List<CompletionDate> findAllByMissionId(Long missionId) {
-        return completionDateRepository.findAllByMissionId(missionId);
+    public List<CompletionDate> findAll() {
+        return completionDateRepository.findAll();
     }
 
     @Override
