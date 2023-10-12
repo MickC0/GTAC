@@ -1,18 +1,10 @@
 package com.mickc0.gtac.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
 @Table (name = "completion_dates")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class CompletionDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +19,36 @@ public class CompletionDate {
     @ManyToOne
     @JoinColumn(name = "mission_id")
     private Mission mission;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getStartingDate() {
+        return startingDate;
+    }
+
+    public void setStartingDate(LocalDateTime startingDate) {
+        this.startingDate = startingDate;
+    }
+
+    public LocalDateTime getEndingDate() {
+        return endingDate;
+    }
+
+    public void setEndingDate(LocalDateTime endingDate) {
+        this.endingDate = endingDate;
+    }
+
+    public Mission getMission() {
+        return mission;
+    }
+
+    public void setMission(Mission mission) {
+        this.mission = mission;
+    }
 }

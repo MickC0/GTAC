@@ -32,8 +32,12 @@
                     <td th:text="${m.missionType}"></td>
                     <td th:text="${m.status}"></td>
                     <td th:text="${m.requiredVolunteerNumber}"></td>
-                    <td th:text="${m.completionDates.get(0).startingDate}"></td>
-                    <td th:text="${m.completionDates.get(0).endingDate}"></td>
+                    <td th:each="c : ${m.completionDates}">
+                        <div th:text="${#temporals.format(c.startingDate, 'dd-MM-yyyy HH:mm')}"></div>
+                    </td>
+                    <td th:each="c : ${m.completionDates}">
+                        <div th:text="${c.endingDate}"></div>
+                    </td>
                 </tr>
                 </thead>
             </table>
@@ -54,7 +58,7 @@
                 </tr>
                 <tr th:each="c:${listCompletionDates}">
                     <td th:text="${c.id}"></td>
-                    <td th:text="${c.startingDate}"></td>
+                    <td th:text="${#temporals.format(c.startingDate, 'dd-MM-yyyy HH:mm')}"></td>
                     <td th:text="${c.endingDate}"></td>
                 </tr>
                 </thead>
