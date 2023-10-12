@@ -1,7 +1,8 @@
 package com.mickc0.gtac.model;
 
 import jakarta.persistence.*;
-import java.util.List;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "missions")
@@ -29,8 +30,25 @@ public class Mission {
     @Column(name = "required_volunteer_number")
     private int requiredVolunteerNumber;
 
-    @OneToMany(mappedBy = "mission")
-    private List<CompletionDate> completionDates;
+    @Column(name = "starting_date")
+    private LocalDateTime startingDate;
+    @Column(name = "ending_date")
+    private LocalDateTime endingDate;
+    public LocalDateTime getStartingDate() {
+        return startingDate;
+    }
+
+    public void setStartingDate(LocalDateTime startingDate) {
+        this.startingDate = startingDate;
+    }
+
+    public LocalDateTime getEndingDate() {
+        return endingDate;
+    }
+
+    public void setEndingDate(LocalDateTime endingDate) {
+        this.endingDate = endingDate;
+    }
 
     public Long getId() {
         return id;
@@ -88,11 +106,4 @@ public class Mission {
         this.requiredVolunteerNumber = requiredVolunteerNumber;
     }
 
-    public List<CompletionDate> getCompletionDates() {
-        return completionDates;
-    }
-
-    public void setCompletionDates(List<CompletionDate> completionDates) {
-        this.completionDates = completionDates;
-    }
 }
