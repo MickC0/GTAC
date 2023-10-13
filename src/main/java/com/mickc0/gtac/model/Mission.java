@@ -38,18 +38,6 @@ public class Mission {
         return startingDate;
     }
 
-    public void setStartingDate(LocalDateTime startingDate) {
-        this.startingDate = startingDate;
-    }
-
-    public LocalDateTime getEndingDate() {
-        return endingDate;
-    }
-
-    public void setEndingDate(LocalDateTime endingDate) {
-        this.endingDate = endingDate;
-    }
-
     public Long getId() {
         return id;
     }
@@ -106,4 +94,15 @@ public class Mission {
         this.requiredVolunteerNumber = requiredVolunteerNumber;
     }
 
+    public void setStartingDate(LocalDateTime startingDate) {
+        this.startingDate = startingDate;
+    }
+
+    public LocalDateTime getEndingDate() {
+        return endingDate;
+    }
+
+    public void setEndingDate(LocalDateTime endingDate) {
+        this.endingDate = endingDate;
+    }
 }

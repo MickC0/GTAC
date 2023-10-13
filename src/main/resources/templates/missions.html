@@ -9,11 +9,12 @@
     <link href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
 
+
     <link th:href="@{/css/styles.css}" th:rel="stylesheet">
 </head>
 <body>
 
-<div th:class="p-3">
+<!--<div th:class="p-3">
     <div th:class="card">
         <div th:class="card-header">
             Liste missions
@@ -34,15 +35,88 @@
                     <td th:text="${m.requiredVolunteerNumber}"></td>
                     <td th:text="${#temporals.format(m.startingDate, 'dd.MM.yyyy HH:mm')}"></td>
                     <td th:text="${#temporals.format(m.endingDate, 'dd.MM.yyyy HH:mm')}"></td>
-
                 </tr>
                 </thead>
             </table>
         </div>
     </div>
+</div>-->
+<div class="p-4">
+
+
 </div>
+<div class="container">
+    <h1 class="mt-4">Créer une Mission</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createMissionModal">
+        Créer une Mission
+    </button>
+</div>
+<!-- Modal pour créer une mission -->
+<div class="modal fade" id="createMissionModal" tabindex="-1" aria-labelledby="createMissionModalLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createMissionModalLabel">Créer une Mission</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/createMission}" method="post" id="missionForm">
+                    <div class="form-group">
+                        <label for="name" class="col-form-label">Nom de la Mission:</label>
+                        <input type="text" id="name" class="form-control" required="required">
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="col-form-label">Description:</label>
+                        <textarea id="description" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comment" class="col-form-label">Commentaire:</label>
+                        <textarea id="comment" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="missionType" class="col-form-label">Type de Mission:</label>
+                        <input type="text" id="missionType" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status" class="col-form-label">Statut:</label>
+                        <select id="status" class="form-control">
+                            <option value="PLANNED">Planifiée</option>
+                            <option value="IN_PROGRESS">En cours</option>
+                            <option value="COMPLETED">Terminée</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requiredVolunteerNumber" class="col-form-label">Nombre de Bénévoles Requis:</label>
+                        <input type="number" id="requiredVolunteerNumber" class="form-control" required="required">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startingDate" class="col-form-label">Date de Début:</label>
+                        <input type="datetime-local" id="startingDate" class="form-control" required="required">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endingDate" class="col-form-label">Date de Fin:</label>
+                        <input type="datetime-local" id="endingDate" class="form-control" required="required">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="missionForm" class="btn btn-primary">Créer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
     <script src="/webjars/popper.js/2.11.7/umd/popper.min.js"></script>
     <script src="/webjars/bootstrap/5.3.2/js/bootstrap.min.js"></script>
+
 </body>
 </html>
