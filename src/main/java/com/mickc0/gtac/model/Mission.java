@@ -2,7 +2,11 @@ package com.mickc0.gtac.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "missions")
@@ -34,8 +38,15 @@ public class Mission {
     private LocalDateTime startingDate;
     @Column(name = "ending_date")
     private LocalDateTime endingDate;
-    public LocalDateTime getStartingDate() {
-        return startingDate;
+
+    @OneToMany(mappedBy = "mission")
+    private Set<MissionVolunteer> missionVolunteers;
+
+    public Mission() {
+    }
+
+    public Mission(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
@@ -94,6 +105,10 @@ public class Mission {
         this.requiredVolunteerNumber = requiredVolunteerNumber;
     }
 
+    public LocalDateTime getStartingDate() {
+        return startingDate;
+    }
+
     public void setStartingDate(LocalDateTime startingDate) {
         this.startingDate = startingDate;
     }
@@ -104,5 +119,42 @@ public class Mission {
 
     public void setEndingDate(LocalDateTime endingDate) {
         this.endingDate = endingDate;
+    }
+
+    public Set<MissionVolunteer> getMissionVolunteers() {
+        return missionVolunteers;
+    }
+
+    public void setMissionVolunteers(Set<MissionVolunteer> missionVolunteers) {
+        this.missionVolunteers = missionVolunteers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Mission mission = (Mission) o;
+        return requiredVolunteerNumber == mission.requiredVolunteerNumber && Objects.equals(id, mission.id) && Objects.equals(name, mission.name) && Objects.equals(description, mission.description) && Objects.equals(comment, mission.comment) && Objects.equals(missionType, mission.missionType) && status == mission.status && Objects.equals(startingDate, mission.startingDate) && Objects.equals(endingDate, mission.endingDate) && Objects.equals(missionVolunteers, mission.missionVolunteers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, comment, missionType, status, requiredVolunteerNumber, startingDate, endingDate, missionVolunteers);
+    }
+
+    @Override
+    public String toString() {
+        return "Mission{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", comment='" + comment + '\'' +
+                ", missionType='" + missionType + '\'' +
+                ", status=" + status +
+                ", requiredVolunteerNumber=" + requiredVolunteerNumber +
+                ", startingDate=" + startingDate +
+                ", endingDate=" + endingDate +
+                ", missionVolunteers=" + missionVolunteers +
+                '}';
     }
 }
