@@ -29,6 +29,7 @@ public class Mission {
     private String missionType;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private MissionStatus status;
 
     @Column(name = "required_volunteer_number")
@@ -40,7 +41,7 @@ public class Mission {
     private LocalDateTime endingDate;
 
     @OneToMany(mappedBy = "mission")
-    private Set<MissionVolunteer> missionVolunteers;
+    private Set<MissionVolunteer> missionVolunteers = new HashSet<>();
 
     public Mission() {
     }
