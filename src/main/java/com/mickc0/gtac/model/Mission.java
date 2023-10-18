@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "missions")
@@ -15,6 +16,9 @@ public class Mission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "uuid")
+    private UUID uuid;
 
     @Column(name = "name")
     private String name;
@@ -56,6 +60,14 @@ public class Mission {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -135,18 +147,19 @@ public class Mission {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Mission mission = (Mission) o;
-        return requiredVolunteerNumber == mission.requiredVolunteerNumber && Objects.equals(id, mission.id) && Objects.equals(name, mission.name) && Objects.equals(description, mission.description) && Objects.equals(comment, mission.comment) && Objects.equals(missionType, mission.missionType) && status == mission.status && Objects.equals(startingDate, mission.startingDate) && Objects.equals(endingDate, mission.endingDate) && Objects.equals(missionVolunteers, mission.missionVolunteers);
+        return requiredVolunteerNumber == mission.requiredVolunteerNumber && Objects.equals(id, mission.id) && Objects.equals(uuid, mission.uuid) && Objects.equals(name, mission.name) && Objects.equals(description, mission.description) && Objects.equals(comment, mission.comment) && Objects.equals(missionType, mission.missionType) && status == mission.status && Objects.equals(startingDate, mission.startingDate) && Objects.equals(endingDate, mission.endingDate) && Objects.equals(missionVolunteers, mission.missionVolunteers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, comment, missionType, status, requiredVolunteerNumber, startingDate, endingDate, missionVolunteers);
+        return Objects.hash(id, uuid, name, description, comment, missionType, status, requiredVolunteerNumber, startingDate, endingDate, missionVolunteers);
     }
 
     @Override
     public String toString() {
         return "Mission{" +
                 "id=" + id +
+                ", uuid=" + uuid +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", comment='" + comment + '\'' +
