@@ -13,14 +13,16 @@ public class Disponibility {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(name = "uuid")
     private UUID uuid;
-
     @Column(name = "starting_hour")
     private LocalTime startingHour;
     @Column(name = "ending_hour")
     private LocalTime endingHour;
+    @Column(name="day")
+    @Enumerated(EnumType.STRING)
+    private Day day;
+
     public void setId(Long id) {
         this.id = id;
     }
