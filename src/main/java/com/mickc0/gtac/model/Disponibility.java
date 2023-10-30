@@ -30,4 +30,36 @@ public class Disponibility {
     public Long getId() {
         return id;
     }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public LocalTime getStartingHour() {
+        return startingHour;
+    }
+
+    public void setStartingHour(LocalTime startingHour) {
+        this.startingHour = startingHour;
+    }
+
+    public LocalTime getEndingHour() {
+        return endingHour;
+    }
+
+    public void setEndingHour(LocalTime endingHour) {
+        this.endingHour = endingHour;
+    }
+
+    public Day getDay() {
+        return day;
+    }
+
+    public void setDay(Day day) {
+        this.day = day;
+    }
 }

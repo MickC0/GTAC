@@ -41,10 +41,6 @@ public class MissionVolunteer {
     public MissionVolunteer() {
     }
 
-    public MissionVolunteer(MissionVolunteerKey id) {
-        this.id = id;
-    }
-
     public MissionVolunteerKey getId() {
         return id;
     }
