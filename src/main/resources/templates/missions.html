@@ -26,7 +26,7 @@
                     <th>ID</th> <th>Nom</th> <th>Description</th> <th>Commentaire</th> <th>Type</th> <th>Statut</th> <th>Nombre de volontaires requis</th> <th>Date de début</th> <th>Date de fin</th>
                 </tr>
                 <tr th:each="m:${listMissions}">
-                    <td th:text="${m.id}"></td>
+                    <td th:text="${m.uuid}"></td>
                     <td th:text="${m.name}"></td>
                     <td th:text="${m.description}"></td>
                     <td th:text="${m.comment}"></td>

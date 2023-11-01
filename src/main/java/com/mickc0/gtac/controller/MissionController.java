@@ -1,5 +1,6 @@
 package com.mickc0.gtac.controller;
 
+import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.service.MissionService;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ public class MissionController {
 
     @GetMapping("/index")
     public String index(Model model){
-        List<Mission> missionList=missionService.findAll();
+        List<MissionDTO> missionList=missionService.findAll();
         model.addAttribute("listMissions",missionList);
         return "missions";
     }
