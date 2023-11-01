@@ -1,5 +1,6 @@
 package com.mickc0.gtac;
 
+import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
 import com.mickc0.gtac.model.MissionType;
@@ -12,6 +13,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @SpringBootApplication
 public class GtacApplication implements CommandLineRunner {
@@ -32,9 +34,11 @@ public class GtacApplication implements CommandLineRunner {
 
         MissionType missionType = new MissionType();
         missionType.setName("Type1");
+        missionType.setUuid(UUID.randomUUID());
         missionTypeService.save(missionType);
 
-        Mission mission = new Mission();
+        MissionDTO mission = new MissionDTO();
+        mission.setUuid(UUID.randomUUID());
         mission.setName("mission1");
         mission.setComment("comment");
         mission.setMissionType(missionType.getName());
@@ -44,6 +48,18 @@ public class GtacApplication implements CommandLineRunner {
         mission.setStartingDate(LocalDateTime.of(2023,10,10,22,00));
         mission.setEndingDate(LocalDateTime.of(2023,10,10,22,00));
         missionService.save(mission);
+
+        MissionDTO mission2 = new MissionDTO();
+        mission2.setName("mission2");
+        mission2.setUuid(UUID.randomUUID());
+        mission2.setComment("comment");
+        mission2.setMissionType(missionType.getName());
+        mission2.setDescription("description");
+        mission2.setRequiredVolunteerNumber(1);
+        mission2.setStatus(MissionStatus.NEW);
+        mission2.setStartingDate(LocalDateTime.of(2023,11,10,22,00));
+        mission2.setEndingDate(LocalDateTime.of(2023,11,10,22,00));
+        missionService.save(mission2);
 
 
 

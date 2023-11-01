@@ -2,7 +2,9 @@ package com.mickc0.gtac.dto;
 
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
+import com.mickc0.gtac.model.MissionType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.UUID;
@@ -13,13 +15,10 @@ public class MissionDTO {
     private String description;
     private String comment;
     private String missionType;
-    private String status;
+    private MissionStatus status;
     private int requiredVolunteerNumber;
-    private String startingDate;
-    private String endingDate;
-
-    public MissionDTO() {
-    }
+    private LocalDateTime startingDate;
+    private LocalDateTime endingDate;
 
     public UUID getUuid() {
         return uuid;
@@ -61,11 +60,11 @@ public class MissionDTO {
         this.missionType = missionType;
     }
 
-    public String getStatus() {
+    public MissionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(MissionStatus status) {
         this.status = status;
     }
 
@@ -77,19 +76,19 @@ public class MissionDTO {
         this.requiredVolunteerNumber = requiredVolunteerNumber;
     }
 
-    public String getStartingDate() {
+    public LocalDateTime getStartingDate() {
         return startingDate;
     }
 
-    public void setStartingDate(String startingDate) {
+    public void setStartingDate(LocalDateTime startingDate) {
         this.startingDate = startingDate;
     }
 
-    public String getEndingDate() {
+    public LocalDateTime getEndingDate() {
         return endingDate;
     }
 
-    public void setEndingDate(String endingDate) {
+    public void setEndingDate(LocalDateTime endingDate) {
         this.endingDate = endingDate;
     }
 
@@ -124,17 +123,17 @@ public class MissionDTO {
         entity.setComment(this.comment);
         entity.setMissionType(this.missionType);
         try {
-            entity.setStartingDate(LocalDateTime.parse(this.startingDate));
+            entity.setStartingDate(this.startingDate);
         } catch (DateTimeParseException ex) {
             throw new IllegalArgumentException("Erreur de conversion pour missionStartingDate : " + ex.getMessage());
         }
         try {
-            entity.setEndingDate(LocalDateTime.parse(this.endingDate));
+            entity.setEndingDate(this.endingDate);
         } catch (DateTimeParseException ex) {
             throw new IllegalArgumentException("Erreur de conversion pour missionEndingDate : " + ex.getMessage());
         }
         entity.setRequiredVolunteerNumber(this.requiredVolunteerNumber);
-        entity.setStatus(MissionStatus.valueOf(this.status));
+        entity.setStatus(MissionStatus.valueOf(String.valueOf(this.status)));
 
         return entity;
     }

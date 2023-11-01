@@ -1,5 +1,6 @@
 package com.mickc0.gtac.service;
 
+import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.repository.MissionRepository;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,8 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public void save(Mission mission) {
-        missionRepository.save(mission);
+    public void save(MissionDTO missionDTO) {
+        missionRepository.save(missionDTO.toEntity());
     }
 
 }
