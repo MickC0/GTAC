@@ -9,10 +9,19 @@ import java.util.UUID;
 
 public class DisponibilityDTO {
 
+    private Long id;
     private UUID uuid;
     private String startingHour;
     private String endingHour;
     private String day;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public UUID getUuid() {
         return uuid;

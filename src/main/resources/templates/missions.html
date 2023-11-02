@@ -9,110 +9,139 @@
     <link href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
 
-
-    <link th:href="@{/css/styles.css}" th:rel="stylesheet">
 </head>
 <body>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar">
+            <div class="position-sticky">
+                <!-- Contenu de la barre de menu -->
+                <!-- Vous pouvez ajouter des liens, des icônes, etc. ici -->
+            </div>
+        </nav>
 
-<<div th:class="p-3">
-    <div th:class="card">
-        <div th:class="card-header">
-            Liste missions
-        </div>
-        <div th:class="card-body">
-            <table th:class="table">
-                <thead>
-                <tr>
-                    <th>ID</th> <th>Nom</th> <th>Description</th> <th>Commentaire</th> <th>Type</th> <th>Statut</th> <th>Nombre de volontaires requis</th> <th>Date de début</th> <th>Date de fin</th>
-                </tr>
-                <tr th:each="m:${listMissions}">
-                    <td th:text="${m.uuid}"></td>
-                    <td th:text="${m.name}"></td>
-                    <td th:text="${m.description}"></td>
-                    <td th:text="${m.comment}"></td>
-                    <td th:text="${m.missionType}"></td>
-                    <td th:text="${m.status}"></td>
-                    <td th:text="${m.requiredVolunteerNumber}"></td>
-                    <td th:text="${#temporals.format(m.startingDate, 'dd.MM.yyyy HH:mm')}"></td>
-                    <td th:text="${#temporals.format(m.endingDate, 'dd.MM.yyyy HH:mm')}"></td>
-                </tr>
-                </thead>
-            </table>
-        </div>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="col-12 bg-light">
+
+                <h1>Missions</h1>
+                <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal" data-bs-target="#createMissionModal">
+                    Créer une Mission
+                </button>
+                <!-- Modal pour créer une mission -->
+                <div class="modal fade" id="createMissionModal" tabindex="-1" aria-labelledby="createMissionModalLabel" style="display: none;" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createMissionModalLabel">Créer une Mission</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/createMission}" th:method="post" id="missionForm" th:object="${missionDTO}">
+                                    <div class="form-group">
+                                        <label for="name" class="col-form-label">Nom de la Mission :</label>
+                                        <input th:field="*{name}" type="text" id="name" class="form-control" required="required">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="description" class="col-form-label">Description :</label>
+                                        <textarea th:field="*{description}" id="description" class="form-control" rows="4"></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="comment" class="col-form-label">Commentaire :</label>
+                                        <textarea th:field="*{comment}" id="comment" class="form-control" rows="4"></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="missionType" class="col-form-label">Type de Mission :</label>
+                                        <input th:field="*{missionType}" type="text" id="missionType" class="form-control">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="requiredVolunteerNumber" class="col-form-label">Nombre de Bénévoles Requis:</label>
+                                        <input th:field="*{requiredVolunteerNumber}" type="number" id="requiredVolunteerNumber" class="form-control" required="required">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="startingDate" class="col-form-label">Date de Début:</label>
+                                        <input th:field="*{startingDate}" type="datetime-local" id="startingDate" class="form-control">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="endingDate" class="col-form-label">Date de Fin:</label>
+                                        <input th:field="*{endingDate}" type="datetime-local" id="endingDate" class="form-control">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <button type="submit" form="missionForm" class="btn btn-primary">Créer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Zone principale -->
+            </div>
+            <div class="col-md-6 offset-3">
+                <div class="card">
+                    <div class="card-header">
+                        <form class="d-flex" role="search" th:action="@{missions}">
+                            <input class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card-body">
+                        <table th:class="table">
+                            <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Statut</th>
+                                <th>Date de début</th>
+                                <th>Date de fin</th>
+                                <th>Actions</th>
+                            </tr>
+                            <tr th:each="m:${listMissions}">
+                                <td th:text="${m.name}"></td>
+                                <td th:text="${m.missionType}"></td>
+                                <td th:text="${m.status}"></td>
+                                <td th:text="${#temporals.format(m.startingDate, 'dd.MM.yyyy HH:mm')}"></td>
+                                <td th:text="${#temporals.format(m.endingDate, 'dd.MM.yyyy HH:mm')}"></td>
+                                <td>
+                                    <button class="btn btn-success btn-sm"><i class="bi bi-eye"></i></button>
+                                    <button class="btn btn-primary btn-sm"><i class="bi bi-pencil-square"></i></button>
+                                    <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                </td>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        Pagination
+                        <!--<nav aria-label="Page navigation volunteer">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item">
+                                    <a class="page-link" th:href="@{/index(page=${previousPage})}">Previous</a>
+                                </li>
+                                <li class="page-item" th:class="${currentPage==status.index?'active':''}" th:each="page, status:${pages}">
+                                    <a class="page-link"  th:text="${status.index}" th:href="@{/index(page=${status.index},keyword=${keyword})}"></a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" th:href="@{/index(page=${nextPage})}">Next</a>
+                                </li>
+                            </ul>
+                        </nav>-->
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 </div>
-<div class="p-4">
 
 
-</div>
 
-<!--<div class="container-fluid">
-    <h1 class="mt-4">Créer une Mission</h1>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createMissionModal">
-        Créer une Mission
-    </button>
-</div>-->
-<!-- Modal pour créer une mission -->
-<!--<div class="modal fade" id="createMissionModal" tabindex="-1" aria-labelledby="createMissionModalLabel" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createMissionModalLabel">Créer une Mission</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body">
-                <form th:action="@{/createMission}" method="post" id="missionForm">
-                    <div class="form-group">
-                        <label for="name" class="col-form-label">Nom de la Mission:</label>
-                        <input type="text" id="name" class="form-control" required="required">
-                    </div>
-                    <div class="form-group">
-                        <label for="description" class="col-form-label">Description:</label>
-                        <textarea id="description" class="form-control" rows="4"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="comment" class="col-form-label">Commentaire:</label>
-                        <textarea id="comment" class="form-control" rows="4"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="missionType" class="col-form-label">Type de Mission:</label>
-                        <input type="text" id="missionType" class="form-control">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="status" class="col-form-label">Statut:</label>
-                        <select id="status" class="form-control">
-                            <option value="PLANNED">Planifiée</option>
-                            <option value="IN_PROGRESS">En cours</option>
-                            <option value="COMPLETED">Terminée</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="requiredVolunteerNumber" class="col-form-label">Nombre de Bénévoles Requis:</label>
-                        <input type="number" id="requiredVolunteerNumber" class="form-control" required="required">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="startingDate" class="col-form-label">Date de Début:</label>
-                        <input type="datetime-local" id="startingDate" class="form-control" required="required">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="endingDate" class="col-form-label">Date de Fin:</label>
-                        <input type="datetime-local" id="endingDate" class="form-control" required="required">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" form="missionForm" class="btn btn-primary">Créer</button>
-            </div>
-        </div>
-    </div>
-</div>-->
 
 
 

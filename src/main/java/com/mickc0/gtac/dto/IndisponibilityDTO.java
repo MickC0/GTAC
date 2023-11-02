@@ -11,10 +11,18 @@ import java.util.UUID;
 
 public class IndisponibilityDTO {
 
+    private Long id;
     private UUID uuid;
     private String startingDate;
     private String endingDate;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public UUID getUuid() {
         return uuid;

@@ -5,7 +5,8 @@ import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.service.MissionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,10 +18,17 @@ public class MissionController {
         this.missionService = missionService;
     }
 
-    @GetMapping("/index")
+    @GetMapping("/missions")
     public String index(Model model){
-        List<MissionDTO> missionList=missionService.findAll();
-        model.addAttribute("listMissions",missionList);
+        model.addAttribute("listMissions",missionService.findAll());
+        MissionDTO missionDTO = new MissionDTO();
+        model.addAttribute("missionDTO", missionDTO);
         return "missions";
+    }
+
+    @PostMapping("/createMission")
+    public String createMission(@ModelAttribute ("missionDTO") MissionDTO missionDTO){
+        missionService.save(missionDTO);
+        return "redirect:/missions";
     }
 }

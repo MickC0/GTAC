@@ -7,11 +7,20 @@ import java.time.format.DateTimeParseException;
 
 public class MissionVolunteerDTO {
 
+    private Long id;
     private boolean isAvailable;
     private String contactDate;
     private boolean isAffected;
     private boolean isChief;
     private boolean hasAttended;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public boolean isAvailable() {
         return isAvailable;
