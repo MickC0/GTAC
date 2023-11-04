@@ -4,6 +4,7 @@ import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
 import com.mickc0.gtac.repository.MissionRepository;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,6 +37,22 @@ public class MissionServiceImpl implements MissionService {
     public void save(MissionDTO missionDTO) {
         missionRepository.save(toEntity(missionDTO));
     }
+
+    @Override
+    public MissionDTO findByUUID(UUID uuid) {
+        return toDTO(missionRepository.findMissionByUuid(uuid));
+    }
+
+    @Override
+    public MissionDTO findById(Long id) {
+        Optional<Mission> mission = missionRepository.findById(id);
+        if (mission.isPresent()){
+            return toDTO(mission.get());
+        } else {
+            throw new RuntimeException("Pas de mission correspondante pour cette id : " + id);
+        }
+    }
+
 
     private MissionDTO toDTO(Mission mission) {
         MissionDTO dto = new MissionDTO();
@@ -83,15 +101,5 @@ public class MissionServiceImpl implements MissionService {
         return entity;
     }
 
-
-
-
-    private List<String> getMissionStatuses() {
-        MissionStatus[] missionStatuses = MissionStatus.values();
-        List<String> missionStatusesDTO = Arrays.stream(missionStatuses)
-                .map(Enum::name)
-                .toList();
-        return missionStatusesDTO;
-    }
 
 }

@@ -37,6 +37,12 @@ public class GtacApplication implements CommandLineRunner {
         missionType.setUuid(UUID.randomUUID());
         missionTypeService.save(missionType);
 
+        MissionType missionType2 = new MissionType();
+        missionType2.setName("Type2");
+        missionType2.setUuid(UUID.randomUUID());
+        missionTypeService.save(missionType2);
+
+
         MissionDTO mission = new MissionDTO();
         mission.setUuid(UUID.randomUUID());
         mission.setName("mission1");
@@ -53,9 +59,9 @@ public class GtacApplication implements CommandLineRunner {
         mission2.setName("mission2");
         mission2.setUuid(UUID.randomUUID());
         mission2.setComment("comment");
-        mission2.setMissionType(missionType.getName());
+        mission2.setMissionType(missionType2.getName());
         mission2.setDescription("description");
-        mission2.setRequiredVolunteerNumber(1);
+        mission2.setRequiredVolunteerNumber(10);
         mission2.setStatus(MissionStatus.NEW);
         mission2.setStartingDate(LocalDateTime.of(2023,11,10,22,00));
         mission2.setEndingDate(LocalDateTime.of(2023,11,10,22,00));

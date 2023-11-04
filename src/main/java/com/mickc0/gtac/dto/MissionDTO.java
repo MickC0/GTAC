@@ -112,6 +112,19 @@ public class MissionDTO {
         this.endingDate = endingDate;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "MissionDTO{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", comment='" + comment + '\'' +
+                ", missionType='" + missionType + '\'' +
+                ", status=" + status +
+                ", requiredVolunteerNumber=" + requiredVolunteerNumber +
+                ", startingDate=" + startingDate +
+                ", endingDate=" + endingDate +
+                '}';
+    }
 }
