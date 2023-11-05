@@ -1,12 +1,10 @@
 package com.mickc0.gtac;
 
 import com.mickc0.gtac.dto.MissionDTO;
-import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
 import com.mickc0.gtac.model.MissionType;
 import com.mickc0.gtac.service.MissionService;
 import com.mickc0.gtac.service.MissionTypeService;
-import com.mickc0.gtac.service.MissionTypeServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -53,7 +51,7 @@ public class GtacApplication implements CommandLineRunner {
         mission.setStatus(MissionStatus.NEW);
         mission.setStartingDate(LocalDateTime.of(2023,10,10,22,00));
         mission.setEndingDate(LocalDateTime.of(2023,10,10,22,00));
-        missionService.save(mission);
+        missionService.saveMission(mission);
 
         MissionDTO mission2 = new MissionDTO();
         mission2.setName("mission2");
@@ -65,7 +63,7 @@ public class GtacApplication implements CommandLineRunner {
         mission2.setStatus(MissionStatus.NEW);
         mission2.setStartingDate(LocalDateTime.of(2023,11,10,22,00));
         mission2.setEndingDate(LocalDateTime.of(2023,11,10,22,00));
-        missionService.save(mission2);
+        missionService.saveMission(mission2);
 
 
 

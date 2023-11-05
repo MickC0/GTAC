@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -31,20 +32,39 @@ public class MissionController {
 
     @PostMapping("/missions")
     public String saveMission(@ModelAttribute ("newMissionDTO") MissionDTO newMissionDTO){
-        missionService.save(newMissionDTO);
+        missionService.saveMission(newMissionDTO);
         return "redirect:/missions";
     }
 
     @GetMapping("/missions/edit/{id}")
     public String editMissionForm(@PathVariable(value = "id")UUID uuid, Model model){
-        model.addAttribute("mission", missionService.findByUUID(uuid));
+        model.addAttribute("mission", missionService.findMissionByUUID(uuid));
         return "/missions/edit_mission";
     }
 
     @PostMapping("/missions/update")
     public String updateMission(@ModelAttribute ("mission") MissionDTO missionDTO){
-        missionService.update(missionDTO);
+        missionService.updateMission(missionDTO);
         return "redirect:/missions";
+    }
+
+    @GetMapping("/missions/delete/{id}")
+    public String deleteMission(@PathVariable (value = "id") UUID uuid){
+        missionService.deleteMission(uuid);
+        return "redirect:/missions";
+    }
+
+    @GetMapping("/missions/view/{id}")
+    public String viewMission(@PathVariable(value = "id") UUID uuid, Model model){
+        model.addAttribute("mission", missionService.findMissionByUUID(uuid));
+        return "missions/view_mission";
+    }
+
+    @GetMapping("/missions/search")
+    public String searchMissions(@RequestParam(value = "query") String query, Model model){
+        List<MissionDTO> missions = missionService.searchMissions(query);
+        model.addAttribute("listMissions", missions);
+        return "missions/missions";
     }
 
 

@@ -6,12 +6,14 @@ import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
 import com.mickc0.gtac.repository.MissionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class MissionServiceImpl implements MissionService {
     private final MissionRepository missionRepository;
     private final MissionMapper missionMapper;
@@ -31,7 +33,7 @@ public class MissionServiceImpl implements MissionService {
 
 
     @Override
-    public void save(MissionDTO missionDTO) {
+    public void saveMission(MissionDTO missionDTO) {
         Mission mission = missionMapper.mapToEntity(missionDTO);
         mission.setUuid(UUID.randomUUID());
         mission.setStatus(MissionStatus.NEW);
@@ -39,7 +41,7 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public void update(MissionDTO missionDTO) {
+    public void updateMission(MissionDTO missionDTO) {
         Mission existingMission = missionRepository.findMissionByUuid(missionDTO.getUuid());
         Mission mission = missionMapper.mapToEntity(missionDTO);
         mission.setId(existingMission.getId());
@@ -47,10 +49,27 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public MissionDTO findByUUID(UUID uuid) {
+    public MissionDTO findMissionByUUID(UUID uuid) {
         return missionMapper.mapToDto(missionRepository.findMissionByUuid(uuid));
     }
 
+    @Override
+    public void deleteMission(UUID uuid) {
+        if (isUUIDPresent(uuid)){
+            missionRepository.deleteByUuid(uuid);
+        } else {
+            throw new RuntimeException("La mission ne peut être supprimée id : " + uuid + " non conforme");
+        }
+    }
+
+    @Override
+    public List<MissionDTO> searchMissions(String query) {
+        List<Mission> missions = missionRepository.searchAllByNameContainingIgnoreCase(query);
+
+        return missions.stream()
+                .map(missionMapper::mapToDto)
+                .collect(Collectors.toList());
+    }
 
 
     private boolean isUUIDPresent(UUID uuid) {

@@ -17,16 +17,16 @@
 
                         <div class="card">
                             <div class="card-header">
-                                <form class="d-flex" role="search" action="">
-                                    <input class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
-                                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                <form class="d-flex" role="search" id="search" th:action="@{/missions/search}">
+                                    <input name="query" class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
+                                    <button type="submit" form="search" class="btn btn-outline-secondary btn-sm">
                                         <i class="bi bi-search"></i>
                                     </button>
                                 </form>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table">
+                                    <table class="table table-striped">
                                         <thead>
                                         <tr>
                                             <th>uuid</th>
@@ -45,21 +45,12 @@
                                             <td th:text="${#temporals.format(m.startingDate, 'dd.MM.yyyy HH:mm')}"></td>
                                             <td th:text="${#temporals.format(m.endingDate, 'dd.MM.yyyy HH:mm')}"></td>
                                             <td>
-
-
-
-
-                                                <!-- Editer une mission -->
-                                                <a class="btn btn-info btn-sm" th:href="@{/missions/edit/{id}(id=${m.uuid})}"><i class="bi bi-pencil-square"></i></a>
-
-
-
-                                                <!-- Supprimer une mission -->
-                                                <a class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
-
-
-                                                <!-- Voir une mission -->
-                                                <a class="btn btn-success btn-sm"><i class="bi bi-eye"></i></a>
+                                                <!-- Editer -->
+                                                <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/{id}(id=${m.uuid})}"><i class="bi bi-pencil-square"></i></a>
+                                                <!-- Supprimer -->
+                                                <a class="btn btn-danger btn-sm" th:href="@{/missions/delete/{id}(id=${m.uuid})}"><i class="bi bi-trash"></i></a>
+                                                <!-- Voir -->
+                                                <a class="btn btn-info btn-sm" th:href="@{/missions/view/{id}(id=${m.uuid})}"><i class="bi bi-eye"></i></a>
                                             </td>
 
 
@@ -106,8 +97,7 @@
     </div>
 
 
-    <script src="/webjars/popper.js/2.11.7/umd/popper.min.js"></script>
-    <script src="/webjars/bootstrap/5.3.2/js/bootstrap.min.js"></script>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 </body>
 </html>
