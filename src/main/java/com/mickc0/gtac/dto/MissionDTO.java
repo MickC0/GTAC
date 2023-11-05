@@ -5,10 +5,10 @@ import com.mickc0.gtac.model.MissionStatus;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Objects;
 import java.util.UUID;
 
 public class MissionDTO {
-    private Long id;
     private UUID uuid;
     private String name;
     private String description;
@@ -19,26 +19,6 @@ public class MissionDTO {
     private LocalDateTime startingDate;
     private LocalDateTime endingDate;
 
-    public MissionDTO() {
-    }
-
-    public MissionDTO(String name, String description, String comment, String missionType, int requiredVolunteerNumber, LocalDateTime startingDate, LocalDateTime endingDate) {
-        this.name = name;
-        this.description = description;
-        this.comment = comment;
-        this.missionType = missionType;
-        this.requiredVolunteerNumber = requiredVolunteerNumber;
-        this.startingDate = startingDate;
-        this.endingDate = endingDate;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public UUID getUuid() {
         return uuid;
@@ -112,19 +92,5 @@ public class MissionDTO {
         this.endingDate = endingDate;
     }
 
-    @Override
-    public String toString() {
-        return "MissionDTO{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", comment='" + comment + '\'' +
-                ", missionType='" + missionType + '\'' +
-                ", status=" + status +
-                ", requiredVolunteerNumber=" + requiredVolunteerNumber +
-                ", startingDate=" + startingDate +
-                ", endingDate=" + endingDate +
-                '}';
-    }
+
 }

@@ -1,14 +1,11 @@
 package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.MissionDTO;
-import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.service.MissionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -22,28 +19,37 @@ public class MissionController {
     @GetMapping("/missions")
     public String missions(Model model){
         model.addAttribute("listMissions",missionService.findAll());
+        return "missions/missions";
+    }
+
+    @GetMapping("/missions/new")
+    public String createMissionForm(Model model){
         MissionDTO missionDTO = new MissionDTO();
-        model.addAttribute("missionDTO", missionDTO);
-        return "missions";
+        model.addAttribute("newMissionDTO", missionDTO);
+        return "missions/create_mission";
     }
 
-    @GetMapping("/view/{id}")
-    public String viewMission(@PathVariable (value = "id") Long id, Model model){
-        model.addAttribute(missionService.findById(id));
+    @PostMapping("/missions")
+    public String saveMission(@ModelAttribute ("newMissionDTO") MissionDTO newMissionDTO){
+        missionService.save(newMissionDTO);
+        return "redirect:/missions";
+    }
+
+    @GetMapping("/missions/edit/{id}")
+    public String editMissionForm(@PathVariable(value = "id")UUID uuid, Model model){
+        model.addAttribute("mission", missionService.findByUUID(uuid));
+        return "/missions/edit_mission";
+    }
+
+    @PostMapping("/missions/update")
+    public String updateMission(@ModelAttribute ("mission") MissionDTO missionDTO){
+        missionService.update(missionDTO);
         return "redirect:/missions";
     }
 
 
 
-    @PostMapping("/createMission")
-    public String createMission(@ModelAttribute ("missionDTO") MissionDTO missionDTO){
-        missionService.save(missionDTO);
-        return "redirect:/missions";
-    }
 
-    @PutMapping("/updateMission")
-    public String updateMission(MissionDTO missionDTO){
-        missionService.save(missionDTO);
-        return "redirect:/missions";
-    }
+
+
 }

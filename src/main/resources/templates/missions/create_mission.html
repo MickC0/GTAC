@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="card col-lg-6 col-md-6 justify-content-center container py-4">
+                <div class="card-header">
+                    <h1>Nouvelle mission</h1>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/missions}" method="post" id="newMissionForm" th:object="${newMissionDTO}">
+                        <div class="form-group">
+                            <label for="name" class="col-form-label">Nom de la Mission :</label>
+                            <input th:field="*{name}" type="text" id="name" class="form-control" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="col-form-label">Description :</label>
+                            <textarea th:field="*{description}" id="description" class="form-control" rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="comment" class="col-form-label">Commentaire :</label>
+                            <textarea th:field="*{comment}" id="comment" class="form-control" rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="missionType" class="col-form-label">Type de Mission :</label>
+                            <input th:field="*{missionType}" type="text" id="missionType" class="form-control" required="required">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="requiredVolunteerNumber" class="col-form-label">Nombre de Bénévoles Requis:</label>
+                            <input th:field="*{requiredVolunteerNumber}" type="number" id="requiredVolunteerNumber" class="form-control" required="required">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="startingDate" class="col-form-label">Date de Début:</label>
+                            <input th:field="*{startingDate}" type="datetime-local" id="startingDate" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endingDate" class="col-form-label">Date de Fin:</label>
+                            <input th:field="*{endingDate}" type="datetime-local" id="endingDate" class="form-control">
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" form="newMissionForm" class="btn btn-primary">Créer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<script src="/webjars/popper.js/2.11.7/umd/popper.min.js"></script>
+<script src="/webjars/bootstrap/5.3.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

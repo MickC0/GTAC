@@ -53,6 +53,31 @@ public class Mission {
         this.id = id;
     }
 
+    public Mission(Long id, UUID uuid, String name, String description, String comment, String missionType, MissionStatus status, int requiredVolunteerNumber, LocalDateTime startingDate, LocalDateTime endingDate) {
+        this.id = id;
+        this.uuid = uuid;
+        this.name = name;
+        this.description = description;
+        this.comment = comment;
+        this.missionType = missionType;
+        this.status = status;
+        this.requiredVolunteerNumber = requiredVolunteerNumber;
+        this.startingDate = startingDate;
+        this.endingDate = endingDate;
+    }
+
+    public Mission(UUID uuid, String name, String description, String comment, String missionType, MissionStatus status, int requiredVolunteerNumber, LocalDateTime startingDate, LocalDateTime endingDate) {
+        this.uuid = uuid;
+        this.name = name;
+        this.description = description;
+        this.comment = comment;
+        this.missionType = missionType;
+        this.status = status;
+        this.requiredVolunteerNumber = requiredVolunteerNumber;
+        this.startingDate = startingDate;
+        this.endingDate = endingDate;
+    }
+
     public Long getId() {
         return id;
     }
@@ -170,4 +195,5 @@ public class Mission {
                 ", missionVolunteers=" + missionVolunteers +
                 '}';
     }
+
 }

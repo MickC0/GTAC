@@ -12,8 +12,10 @@ public interface MissionService {
 
     void save(MissionDTO missionDTO);
 
+    void update(MissionDTO missionDTO);
+
     MissionDTO findByUUID(UUID uuid);
-    MissionDTO findById(Long id);
+
 
 
 }
