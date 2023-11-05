@@ -12,7 +12,7 @@
                 <main class="row overflow-auto">
                     <div class="col pt-4">
                         <h1 class="py-2">Missions</h1>
-                        <a class="btn btn-primary" th:href="@{/missions/new}">Créer une mission</a>
+                        <a class="btn btn-primary" th:href="@{/missions/new}">Ajouter une mission</a>
                         <hr />
 
                         <div class="card">
@@ -26,7 +26,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-striped">
+                                    <table class="table table-striped table-hover">
                                         <thead>
                                         <tr>
                                             <th>uuid</th>
@@ -37,37 +37,39 @@
                                             <th>Date de fin</th>
                                             <th>Actions</th>
                                         </tr>
-                                        <tr th:each="m:${listMissions}">
-                                            <td th:text="${m.uuid}"></td>
-                                            <td th:text="${m.name}"></td>
-                                            <td th:text="${m.missionType}"></td>
-                                            <td th:text="${m.status}"></td>
-                                            <td th:text="${#temporals.format(m.startingDate, 'dd.MM.yyyy HH:mm')}"></td>
-                                            <td th:text="${#temporals.format(m.endingDate, 'dd.MM.yyyy HH:mm')}"></td>
-                                            <td>
-                                                <!-- Editer -->
-                                                <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/{id}(id=${m.uuid})}"><i class="bi bi-pencil-square"></i></a>
-                                                <!-- Supprimer -->
-                                                <a class="btn btn-danger btn-sm" th:href="@{/missions/delete/{id}(id=${m.uuid})}"><i class="bi bi-trash"></i></a>
-                                                <!-- Voir -->
-                                                <a class="btn btn-info btn-sm" th:href="@{/missions/view/{id}(id=${m.uuid})}"><i class="bi bi-eye"></i></a>
-                                            </td>
-
-
-
-                                            <!--<td>
-                                                <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#showMissionModal" th:attrappend="data-bs-target=${m.uuid}"><i class="bi bi-eye"></i></button>
-                                                --><!-- Modal pour voir une mission --><!--
-                                        <div th:replace="fragments/viewMissionModal :: viewMissionModal"></div>
-
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editMissionModal"><i class="bi bi-pencil-square"></i></button>
-                                        --><!-- Modal pour éditer une mission --><!--
-
-
-                                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                    </td>-->
-                                        </tr>
                                         </thead>
+                                        <tbody>
+                                            <tr th:each="m:${listMissions}">
+                                                <td th:text="${m.uuid}"></td>
+                                                <td th:text="${m.name}"></td>
+                                                <td th:text="${m.missionType}"></td>
+                                                <td th:text="${m.status}"></td>
+                                                <td th:text="${#temporals.format(m.startingDate, 'dd.MM.yyyy HH:mm')}"></td>
+                                                <td th:text="${#temporals.format(m.endingDate, 'dd.MM.yyyy HH:mm')}"></td>
+                                                <td>
+                                                    <!-- Editer -->
+                                                    <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/{id}(id=${m.uuid})}"><i class="bi bi-pencil-square"></i></a>
+                                                    <!-- Supprimer -->
+                                                    <a class="btn btn-danger btn-sm" th:href="@{/missions/delete/{id}(id=${m.uuid})}"><i class="bi bi-trash"></i></a>
+                                                    <!-- Voir -->
+                                                    <a class="btn btn-info btn-sm" th:href="@{/missions/view/{id}(id=${m.uuid})}"><i class="bi bi-eye"></i></a>
+                                                </td>
+
+
+
+                                                <!--<td>
+                                                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#showMissionModal" th:attrappend="data-bs-target=${m.uuid}"><i class="bi bi-eye"></i></button>
+                                                    --><!-- Modal pour voir une mission --><!--
+                                            <div th:replace="fragments/viewMissionModal :: viewMissionModal"></div>
+
+                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editMissionModal"><i class="bi bi-pencil-square"></i></button>
+                                            --><!-- Modal pour éditer une mission --><!--
+
+
+                                            <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                                        </td>-->
+                                            </tr>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>

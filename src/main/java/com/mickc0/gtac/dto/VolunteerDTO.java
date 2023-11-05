@@ -6,20 +6,11 @@ import java.util.UUID;
 
 public class VolunteerDTO {
 
-    private Long id;
     private UUID uuid;
     private String lastName;
     private String firstName;
     private String email;
     private String phoneNumber;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public UUID getUuid() {
         return uuid;
@@ -60,26 +51,5 @@ public class VolunteerDTO {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
-    public VolunteerDTO toDTO(){
-        VolunteerDTO dto = new VolunteerDTO();
-        dto.setUuid(this.uuid);
-        dto.setFirstName(this.firstName);
-        dto.setLastName(this.lastName);
-        dto.setEmail(this.email);
-        dto.setPhoneNumber(this.phoneNumber);
-        return dto;
-    }
-
-    public Volunteer toEntity(){
-        Volunteer entity = new Volunteer();
-        entity.setUuid(this.uuid);
-        entity.setFirstName(this.firstName);
-        entity.setLastName(this.lastName);
-        entity.setEmail(this.email);
-        entity.setPhoneNumber(this.phoneNumber);
-        return entity;
-    }
-
-
 }
+
