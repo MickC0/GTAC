@@ -1,10 +1,12 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.MissionDTO;
+import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.mapper.MissionMapper;
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
 import com.mickc0.gtac.repository.MissionRepository;
+import com.mickc0.gtac.service.internal.MissionInternalService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +20,12 @@ public class MissionServiceImpl implements MissionService {
     private final MissionRepository missionRepository;
     private final MissionMapper missionMapper;
 
-    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper) {
+    private final MissionTypeService missionTypeService;
+
+    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper, MissionTypeService missionTypeService) {
         this.missionRepository = missionRepository;
         this.missionMapper = missionMapper;
+        this.missionTypeService = missionTypeService;
     }
 
     @Override
@@ -71,6 +76,14 @@ public class MissionServiceImpl implements MissionService {
                 .collect(Collectors.toList());
     }
 
+
+    @Override
+    public List<String> getAllMissionTypes() {
+        List<MissionTypeDTO> missionTypes = missionTypeService.findAll();
+        return missionTypes.stream()
+                .map(MissionTypeDTO::getName)
+                .collect(Collectors.toList());
+    }
 
     private boolean isUUIDPresent(UUID uuid) {
         return uuid != null && !uuid.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"));

@@ -19,5 +19,7 @@ public interface MissionService {
 
     List<MissionDTO> searchMissions(String query);
 
+    List<String> getAllMissionTypes();
+
 
 }

@@ -1,6 +1,7 @@
 package com.mickc0.gtac;
 
 import com.mickc0.gtac.dto.MissionDTO;
+import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.model.MissionStatus;
 import com.mickc0.gtac.model.MissionType;
 import com.mickc0.gtac.service.MissionService;
@@ -30,12 +31,12 @@ public class GtacApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
 
-        MissionType missionType = new MissionType();
+        MissionTypeDTO missionType = new MissionTypeDTO();
         missionType.setName("Type1");
         missionType.setUuid(UUID.randomUUID());
         missionTypeService.save(missionType);
 
-        MissionType missionType2 = new MissionType();
+        MissionTypeDTO missionType2 = new MissionTypeDTO();
         missionType2.setName("Type2");
         missionType2.setUuid(UUID.randomUUID());
         missionTypeService.save(missionType2);

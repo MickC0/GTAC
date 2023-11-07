@@ -4,24 +4,32 @@
 <body>
 
 
-
 <div class="container-fluid overflow-hidden">
     <div class="row vh-100 overflow-auto">
         <div th:replace="~{fragments/sidebar :: sidebar}"></div>
         <div class="col d-flex flex-column h-sm-100 col-sm-9">
             <main class="row overflow-auto">
                 <div class="col pt-4">
-                    <h1 class="py-2">Bénévoles</h1>
-                    <a class="btn btn-primary" th:href="@{/volunteers/new}">Ajouter un bénévole</a>
+                    <a class="btn btn-secondary" th:href="@{/missions}">Retour</a>
+                    <h1 class="py-2">Types de mission</h1>
+                    <form class="d-flex col-md-6 col-lg-5 col-xl-3" th:action="@{/mission-types}" id="newMissionTypeForm" method="post" th:object="${newMissionType}">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" th:field="*{name}" placeholder="Nouveau type de mission">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" form="newMissionTypeForm" type="submit">Ajouter</button>
+                            </div>
+                        </div>
+                    </form>
                     <hr />
 
                     <div class="card">
                         <div class="card-header">
-                            <form class="d-flex" role="search" id="search" th:action="@{/volunteers/search}">
+                            <form class="d-flex" role="search" id="search" th:action="@{/mission-types/search}">
                                 <input name="query" class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
-                                <button type="submit" form="search" class="btn btn-outline-secondary btn-sm">
+                                <button type="submit" form="search" class="btn btn-secondary btn-sm mx-1">
                                     <i class="bi bi-search"></i>
                                 </button>
+                                <button type="submit" th:href="@{/mission-types}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-counterclockwise"></i></button>
                             </form>
                         </div>
                         <div class="card-body">
@@ -31,47 +39,20 @@
                                     <tr>
                                         <th>uuid</th>
                                         <th>Nom</th>
-                                        <th>Prénom</th>
-                                        <th>Email</th>
-                                        <th>Téléphone</th>
                                         <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        <tr th:each="v:${volunteers}">
-                                        <td th:text="${v.uuid}"></td>
-                                        <td th:text="${v.lastName}"></td>
-                                        <td th:text="${v.firstName}"></td>
-                                        <td th:text="${v.email}"></td>
-                                        <td th:text="${v.phoneNumber}"></td>
+                                    <tr th:each="m:${missionTypes}">
+                                        <td th:text="${m.uuid}"></td>
+                                        <td th:text="${m.name}"></td>
                                         <td>
-                                            <!-- Editer -->
-                                            <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.uuid})}"><i class="bi bi-pencil-square"></i></a>
                                             <!-- Supprimer -->
-                                            <a class="btn btn-danger btn-sm" th:href="@{/volunteers/delete/{id}(id=${v.uuid})}"><i class="bi bi-trash"></i></a>
-                                            <!-- Voir -->
-                                            <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.uuid})}"><i class="bi bi-eye"></i></a>
+                                            <a class="btn btn-danger btn-sm" th:href="@{/mission-types/delete/{id}(id=${m.uuid})}"><i class="bi bi-trash"></i></a>
                                         </td>
-
-
-
-
-                                        <!--<td>
-                                            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#showMissionModal" th:attrappend="data-bs-target=${m.uuid}"><i class="bi bi-eye"></i></button>
-                                            --><!-- Modal pour voir une mission --><!--
-                                        <div th:replace="fragments/viewMissionModal :: viewMissionModal"></div>
-
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editMissionModal"><i class="bi bi-pencil-square"></i></button>
-                                        --><!-- Modal pour éditer une mission --><!--
-
-
-                                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                    </td>-->
                                     </tr>
                                     </tbody>
-
                                 </table>
-
                             </div>
                         </div>
                         <div class="card-footer">
@@ -91,6 +72,7 @@
                             </nav>-->
                         </div>
                     </div>
+
 
                 </div>
             </main>

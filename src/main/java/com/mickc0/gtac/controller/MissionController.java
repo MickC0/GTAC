@@ -27,6 +27,7 @@ public class MissionController {
     public String createMissionForm(Model model){
         MissionDTO missionDTO = new MissionDTO();
         model.addAttribute("newMissionDTO", missionDTO);
+        model.addAttribute("missionTypes", missionService.getAllMissionTypes());
         return "missions/create_mission";
     }
 
@@ -39,6 +40,7 @@ public class MissionController {
     @GetMapping("/missions/edit/{id}")
     public String editMissionForm(@PathVariable(value = "id")UUID uuid, Model model){
         model.addAttribute("mission", missionService.findMissionByUUID(uuid));
+        model.addAttribute("missionTypes", missionService.getAllMissionTypes());
         return "/missions/edit_mission";
     }
 
