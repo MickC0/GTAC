@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @Service
 public class MissionInternalServiceImpl implements MissionInternalService{
 
+    //TODO On ne met que des services
     private final MissionService missionService;
     private final MissionVolunteerService missionVolunteerService;
     private final VolunteerService volunteerService;
@@ -26,7 +27,8 @@ public class MissionInternalServiceImpl implements MissionInternalService{
         this.missionTypeService = missionTypeService;
     }
 
-
+    //TODO implémenter la méthode getMissionTypes
+    // on ne travail qu'avec les DTO !!!
 
     //ici on organise la "persistence" des données (orchestration)
 }

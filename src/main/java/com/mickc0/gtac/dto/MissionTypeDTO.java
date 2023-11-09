@@ -4,6 +4,18 @@ import java.util.UUID;
 
 public class MissionTypeDTO {
 
+    private Long id;
+    private UUID uuid;
+    private String name;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -19,8 +31,4 @@ public class MissionTypeDTO {
     public void setName(String name) {
         this.name = name;
     }
-
-    private UUID uuid;
-
-    private String name;
 }

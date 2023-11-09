@@ -6,7 +6,6 @@ import com.mickc0.gtac.mapper.MissionMapper;
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
 import com.mickc0.gtac.repository.MissionRepository;
-import com.mickc0.gtac.service.internal.MissionInternalService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +16,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class MissionServiceImpl implements MissionService {
+
+    //TODO on ne met que un repo et mapper
     private final MissionRepository missionRepository;
     private final MissionMapper missionMapper;
 
@@ -32,14 +33,14 @@ public class MissionServiceImpl implements MissionService {
     public List<MissionDTO> findAll() {
         List<Mission> missions = missionRepository.findAll();
         return missions.stream()
-                .map(missionMapper::mapToDto)
+                .map(missionMapper::mapToDtoWithoutId)
                 .collect(Collectors.toList());
     }
 
 
     @Override
     public void saveMission(MissionDTO missionDTO) {
-        Mission mission = missionMapper.mapToEntity(missionDTO);
+        Mission mission = missionMapper.mapToEntityWithoutId(missionDTO);
         mission.setUuid(UUID.randomUUID());
         mission.setStatus(MissionStatus.NEW);
         missionRepository.save(mission);
@@ -48,14 +49,14 @@ public class MissionServiceImpl implements MissionService {
     @Override
     public void updateMission(MissionDTO missionDTO) {
         Mission existingMission = missionRepository.findMissionByUuid(missionDTO.getUuid());
-        Mission mission = missionMapper.mapToEntity(missionDTO);
+        Mission mission = missionMapper.mapToEntityWithoutId(missionDTO);
         mission.setId(existingMission.getId());
         missionRepository.save(mission);
     }
 
     @Override
     public MissionDTO findMissionByUUID(UUID uuid) {
-        return missionMapper.mapToDto(missionRepository.findMissionByUuid(uuid));
+        return missionMapper.mapToDtoWithoutId(missionRepository.findMissionByUuid(uuid));
     }
 
     @Override
@@ -72,7 +73,7 @@ public class MissionServiceImpl implements MissionService {
         List<Mission> missions = missionRepository.searchAllByNameContainingIgnoreCase(query);
 
         return missions.stream()
-                .map(missionMapper::mapToDto)
+                .map(missionMapper::mapToDtoWithoutId)
                 .collect(Collectors.toList());
     }
 

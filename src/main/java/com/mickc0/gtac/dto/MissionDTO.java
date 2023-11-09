@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class MissionDTO {
+
+    private Long id;
     private UUID uuid;
     private String name;
     private String description;
@@ -19,6 +21,13 @@ public class MissionDTO {
     private LocalDateTime startingDate;
     private LocalDateTime endingDate;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public UUID getUuid() {
         return uuid;
@@ -91,6 +100,4 @@ public class MissionDTO {
     public void setEndingDate(LocalDateTime endingDate) {
         this.endingDate = endingDate;
     }
-
-
 }

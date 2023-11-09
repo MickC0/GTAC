@@ -54,37 +54,4 @@ public class DisponibilityDTO {
     public void setDay(String day) {
         this.day = day;
     }
-
-    public DisponibilityDTO toDTO() {
-        DisponibilityDTO dto = new DisponibilityDTO();
-        dto.setUuid(this.uuid);
-        dto.setStartingHour(this.startingHour);
-        dto.setEndingHour(this.endingHour);
-        dto.setDay(this.day);
-        return dto;
-    }
-
-    public Disponibility toEntity() {
-        Disponibility entity = new Disponibility();
-        entity.setUuid(this.uuid);
-
-        try {
-            //TODO parser avec LocalTime.parse + formatter ?
-            entity.setStartingHour(LocalTime.parse(this.startingHour));
-        } catch (DateTimeParseException ex) {
-            throw new IllegalArgumentException("Erreur de conversion pour startingHour : " + ex.getMessage());
-        }
-
-        try {
-            //TODO parser avec LocalTime.parse + formatter ?
-            entity.setEndingHour(LocalTime.parse(this.endingHour));
-        } catch (DateTimeParseException ex) {
-            throw new IllegalArgumentException("Erreur de conversion pour endingHour : " + ex.getMessage());
-        }
-
-        entity.setDay(Day.valueOf(this.day));
-
-        return entity;
-    }
-
 }

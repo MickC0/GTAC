@@ -28,6 +28,7 @@ public class Mission {
     @Column(name = "comment")
     private String comment;
 
+    //TODO manyToOne à implémenter
     @Column(name = "mission_type")
     private String missionType;
 
