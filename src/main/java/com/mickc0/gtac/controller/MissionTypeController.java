@@ -47,4 +47,5 @@ public class MissionTypeController {
         return "mission_types/mission_types";
     }
 
+
 }

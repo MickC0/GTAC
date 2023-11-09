@@ -11,6 +11,7 @@ import java.util.UUID;
 @Table(name = "disponibilities")
 public class Disponibility {
     @Id
+    @Column(name = "disponibility_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "uuid")

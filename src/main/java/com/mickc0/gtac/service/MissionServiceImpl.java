@@ -21,12 +21,11 @@ public class MissionServiceImpl implements MissionService {
     private final MissionRepository missionRepository;
     private final MissionMapper missionMapper;
 
-    private final MissionTypeService missionTypeService;
 
-    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper, MissionTypeService missionTypeService) {
+
+    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper) {
         this.missionRepository = missionRepository;
         this.missionMapper = missionMapper;
-        this.missionTypeService = missionTypeService;
     }
 
     @Override
@@ -48,7 +47,9 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     public void updateMission(MissionDTO missionDTO) {
-        Mission existingMission = missionRepository.findMissionByUuid(missionDTO.getUuid());
+        Mission existingMission = missionRepository.findMissionByUuid(missionDTO.getUuid()).orElseThrow(
+                () -> new RuntimeException("Le type de mission avec uuid : " + missionDTO.getUuid() + " n'existe pas.")
+        );
         Mission mission = missionMapper.mapToEntityWithoutId(missionDTO);
         mission.setId(existingMission.getId());
         missionRepository.save(mission);
@@ -56,7 +57,9 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     public MissionDTO findMissionByUUID(UUID uuid) {
-        return missionMapper.mapToDtoWithoutId(missionRepository.findMissionByUuid(uuid));
+        return missionMapper.mapToDtoWithoutId(missionRepository.findMissionByUuid(uuid).orElseThrow(
+                () -> new RuntimeException("Le type de mission avec uuid : " + uuid + " n'existe pas."))
+        );
     }
 
     @Override
@@ -78,13 +81,7 @@ public class MissionServiceImpl implements MissionService {
     }
 
 
-    @Override
-    public List<String> getAllMissionTypes() {
-        List<MissionTypeDTO> missionTypes = missionTypeService.findAll();
-        return missionTypes.stream()
-                .map(MissionTypeDTO::getName)
-                .collect(Collectors.toList());
-    }
+
 
     private boolean isUUIDPresent(UUID uuid) {
         return uuid != null && !uuid.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"));

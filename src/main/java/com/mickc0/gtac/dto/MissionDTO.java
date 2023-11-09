@@ -2,6 +2,7 @@ package com.mickc0.gtac.dto;
 
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
+import com.mickc0.gtac.model.MissionType;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -15,7 +16,7 @@ public class MissionDTO {
     private String name;
     private String description;
     private String comment;
-    private String missionType;
+    private MissionType missionType;
     private MissionStatus status;
     private int requiredVolunteerNumber;
     private LocalDateTime startingDate;
@@ -61,11 +62,11 @@ public class MissionDTO {
         this.comment = comment;
     }
 
-    public String getMissionType() {
+    public MissionType getMissionType() {
         return missionType;
     }
 
-    public void setMissionType(String missionType) {
+    public void setMissionType(MissionType missionType) {
         this.missionType = missionType;
     }
 

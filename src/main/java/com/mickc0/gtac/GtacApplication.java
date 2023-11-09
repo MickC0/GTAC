@@ -31,7 +31,7 @@ public class GtacApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
 
-        MissionTypeDTO missionType = new MissionTypeDTO();
+       /* MissionTypeDTO missionType = new MissionTypeDTO();
         missionType.setName("Type1");
         missionType.setUuid(UUID.randomUUID());
         missionTypeService.save(missionType);
@@ -64,7 +64,7 @@ public class GtacApplication implements CommandLineRunner {
         mission2.setStatus(MissionStatus.NEW);
         mission2.setStartingDate(LocalDateTime.of(2023,11,10,22,00));
         mission2.setEndingDate(LocalDateTime.of(2023,11,10,22,00));
-        missionService.saveMission(mission2);
+        missionService.saveMission(mission2);*/
 
 
 

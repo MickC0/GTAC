@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,28 +30,34 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     public List<MissionTypeDTO> findAll() {
         List<MissionType> missionTypes = missionTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         return missionTypes.stream()
-                .map(missionTypeMapper::mapToDto)
+                .map(missionTypeMapper::mapToFullDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void save(MissionTypeDTO missionTypeDTO) {
-        MissionType missionType = missionTypeMapper.mapToEntity(missionTypeDTO);
+        MissionType missionType = missionTypeMapper.mapToEntityWithoutId(missionTypeDTO);
         missionType.setUuid(UUID.randomUUID());
         missionTypeRepository.save(missionType);
     }
 
     @Override
     public void update(MissionTypeDTO missionTypeDTO) {
-        MissionType existingMissionType = missionTypeRepository.findMissionTypeByUuid(missionTypeDTO.getUuid());
-        MissionType missionType = missionTypeMapper.mapToEntity(missionTypeDTO);
+        //On récupère l'objet complet en base
+        MissionType existingMissionType = missionTypeRepository.findMissionTypeByUuid(missionTypeDTO.getUuid()).orElseThrow(
+                () -> new RuntimeException("Le type de mission avec uuid : " + missionTypeDTO.getUuid() + " n'existe pas.")
+        );
+        //On transforme le DTO qui vient du front en entity sans id
+        MissionType missionType = missionTypeMapper.mapToEntityWithoutId(missionTypeDTO);
+        //On set l'id dans l'objet à enregistrer.
         missionType.setId(existingMissionType.getId());
         missionTypeRepository.save(missionType);
     }
 
     @Override
-    public MissionTypeDTO findMissionTypeByUuid(UUID uuid) {
-        return missionTypeMapper.mapToDto(missionTypeRepository.findMissionTypeByUuid(uuid));
+    public Optional<MissionTypeDTO> findMissionTypeByUuid(UUID uuid) {
+        return Optional.ofNullable(missionTypeMapper.mapToDtoWithoutId(missionTypeRepository.findMissionTypeByUuid(uuid).orElseThrow(
+                () -> new RuntimeException("Le type de mission avec uuid : " + uuid + " n'existe pas."))));
     }
 
     @Override
@@ -62,7 +69,7 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     public List<MissionTypeDTO> searchMissionTypes(String query) {
         List<MissionType> missionTypes = missionTypeRepository.findAllByNameContainsIgnoreCase(query);
         return missionTypes.stream()
-                .map(missionTypeMapper::mapToDto)
+                .map(missionTypeMapper::mapToDtoWithoutId)
                 .collect(Collectors.toList());
     }
 }

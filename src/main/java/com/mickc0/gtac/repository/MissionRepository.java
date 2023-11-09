@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface MissionRepository extends JpaRepository<Mission, Long> {
 
-    Mission findMissionByUuid(UUID uuid);
+    Optional<Mission> findMissionByUuid(UUID uuid);
 
     void deleteByUuid(UUID uuid);
 

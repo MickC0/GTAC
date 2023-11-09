@@ -13,6 +13,7 @@ import java.util.UUID;
 public class Mission {
 
     @Id
+    @Column(name = "mission_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -28,9 +29,9 @@ public class Mission {
     @Column(name = "comment")
     private String comment;
 
-    //TODO manyToOne à implémenter
-    @Column(name = "mission_type")
-    private String missionType;
+    @ManyToOne
+    @JoinColumn(name = "mission_type_id", nullable = false)
+    private MissionType missionType;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -46,38 +47,6 @@ public class Mission {
 
     @OneToMany(mappedBy = "mission")
     private Set<MissionVolunteer> missionVolunteers = new HashSet<>();
-
-    public Mission() {
-    }
-
-    public Mission(Long id) {
-        this.id = id;
-    }
-
-    public Mission(Long id, UUID uuid, String name, String description, String comment, String missionType, MissionStatus status, int requiredVolunteerNumber, LocalDateTime startingDate, LocalDateTime endingDate) {
-        this.id = id;
-        this.uuid = uuid;
-        this.name = name;
-        this.description = description;
-        this.comment = comment;
-        this.missionType = missionType;
-        this.status = status;
-        this.requiredVolunteerNumber = requiredVolunteerNumber;
-        this.startingDate = startingDate;
-        this.endingDate = endingDate;
-    }
-
-    public Mission(UUID uuid, String name, String description, String comment, String missionType, MissionStatus status, int requiredVolunteerNumber, LocalDateTime startingDate, LocalDateTime endingDate) {
-        this.uuid = uuid;
-        this.name = name;
-        this.description = description;
-        this.comment = comment;
-        this.missionType = missionType;
-        this.status = status;
-        this.requiredVolunteerNumber = requiredVolunteerNumber;
-        this.startingDate = startingDate;
-        this.endingDate = endingDate;
-    }
 
     public Long getId() {
         return id;
@@ -119,11 +88,11 @@ public class Mission {
         this.comment = comment;
     }
 
-    public String getMissionType() {
+    public MissionType getMissionType() {
         return missionType;
     }
 
-    public void setMissionType(String missionType) {
+    public void setMissionType(MissionType missionType) {
         this.missionType = missionType;
     }
 
@@ -166,35 +135,4 @@ public class Mission {
     public void setMissionVolunteers(Set<MissionVolunteer> missionVolunteers) {
         this.missionVolunteers = missionVolunteers;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Mission mission = (Mission) o;
-        return requiredVolunteerNumber == mission.requiredVolunteerNumber && Objects.equals(id, mission.id) && Objects.equals(uuid, mission.uuid) && Objects.equals(name, mission.name) && Objects.equals(description, mission.description) && Objects.equals(comment, mission.comment) && Objects.equals(missionType, mission.missionType) && status == mission.status && Objects.equals(startingDate, mission.startingDate) && Objects.equals(endingDate, mission.endingDate) && Objects.equals(missionVolunteers, mission.missionVolunteers);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, uuid, name, description, comment, missionType, status, requiredVolunteerNumber, startingDate, endingDate, missionVolunteers);
-    }
-
-    @Override
-    public String toString() {
-        return "Mission{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", comment='" + comment + '\'' +
-                ", missionType='" + missionType + '\'' +
-                ", status=" + status +
-                ", requiredVolunteerNumber=" + requiredVolunteerNumber +
-                ", startingDate=" + startingDate +
-                ", endingDate=" + endingDate +
-                ", missionVolunteers=" + missionVolunteers +
-                '}';
-    }
-
 }

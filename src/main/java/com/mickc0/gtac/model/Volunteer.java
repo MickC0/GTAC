@@ -9,6 +9,7 @@ import java.util.*;
 public class Volunteer {
 
     @Id
+    @Column(name = "volunteer_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

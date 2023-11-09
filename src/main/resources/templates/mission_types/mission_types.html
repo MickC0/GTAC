@@ -14,7 +14,7 @@
                     <h1 class="py-2">Types de mission</h1>
                     <form class="d-flex col-md-6 col-lg-5 col-xl-3" th:action="@{/mission-types}" id="newMissionTypeForm" method="post" th:object="${newMissionType}">
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" th:field="*{name}" placeholder="Nouveau type de mission">
+                            <input type="text" class="form-control" th:field="*{name}" placeholder="Nouveau type de mission" required="required">
                             <div class="input-group-append">
                                 <button class="btn btn-primary" form="newMissionTypeForm" type="submit">Ajouter</button>
                             </div>

@@ -12,6 +12,7 @@ import java.util.UUID;
 public class Indisponibility {
 
     @Id
+    @Column(name = "indisponibility_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
