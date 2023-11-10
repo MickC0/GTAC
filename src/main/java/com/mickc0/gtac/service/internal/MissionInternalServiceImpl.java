@@ -1,15 +1,12 @@
 package com.mickc0.gtac.service.internal;
 
+import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.dto.MissionTypeDTO;
-import com.mickc0.gtac.model.MissionType;
 import com.mickc0.gtac.service.MissionService;
 import com.mickc0.gtac.service.MissionTypeService;
 import com.mickc0.gtac.service.MissionVolunteerService;
 import com.mickc0.gtac.service.VolunteerService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MissionInternalServiceImpl implements MissionInternalService{
@@ -27,10 +24,20 @@ public class MissionInternalServiceImpl implements MissionInternalService{
         this.missionTypeService = missionTypeService;
     }
 
+
+    @Override
+    public void saveMissionWithType(MissionDTO missionDTO) {
+        System.out.println(missionDTO.getMissionType().getName());
+        MissionTypeDTO existingMissionTypeDTO = missionTypeService.findByName(missionDTO.getMissionType().getName());
+        missionDTO.setMissionType(existingMissionTypeDTO);
+        missionService.saveMission(missionDTO);
+    }
+
     //TODO implémenter la méthode getMissionTypes
     // on ne travail qu'avec les DTO !!!
 
     //ici on organise la "persistence" des données (orchestration)
+
 
 
 }

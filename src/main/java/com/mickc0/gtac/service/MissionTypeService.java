@@ -9,11 +9,13 @@ import java.util.UUID;
 public interface MissionTypeService {
 
     List<MissionTypeDTO> findAll();
+    List<MissionTypeDTO> findAllOnlyName();
     void save(MissionTypeDTO missionTypeDTO);
 
     void update(MissionTypeDTO missionTypeDTO);
 
-    Optional<MissionTypeDTO> findMissionTypeByUuid(UUID uuid);
+    MissionTypeDTO findMByUuid(UUID uuid);
+   MissionTypeDTO findByName(String name);
 
     void deleteMissionType(UUID uuid);
 

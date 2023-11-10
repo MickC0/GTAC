@@ -37,7 +37,7 @@
 
                     <div class="form-group">
                         <label for="missionType" class="col-form-label">Type de mission :</label>
-                        <select th:field="*{missionType}" id="missionType" name="missionType" required="required">
+                        <select class="form-select" th:field="*{missionType}" id="missionType" name="missionType" required="required">
                             <option th:each="type : ${missionTypes}" th:value="${type}" th:text="${type}"></option>
                         </select>
                     </div>

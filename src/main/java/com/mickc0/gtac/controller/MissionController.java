@@ -2,6 +2,8 @@ package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.service.MissionService;
+import com.mickc0.gtac.service.MissionTypeService;
+import com.mickc0.gtac.service.internal.MissionInternalService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +14,14 @@ import java.util.UUID;
 @Controller
 public class MissionController {
     private final MissionService missionService;
+    private final MissionTypeService missionTypeService;
 
-    public MissionController(MissionService missionService) {
+    private final MissionInternalService missionInternalService;
+
+    public MissionController(MissionService missionService, MissionTypeService missionTypeService, MissionInternalService missionInternalService) {
         this.missionService = missionService;
+        this.missionTypeService = missionTypeService;
+        this.missionInternalService = missionInternalService;
     }
 
     @GetMapping("/missions")
@@ -26,19 +33,21 @@ public class MissionController {
     @GetMapping("/missions/new")
     public String createMissionForm(Model model){
         MissionDTO missionDTO = new MissionDTO();
-        model.addAttribute("newMissionDTO", missionDTO);
+        model.addAttribute("mission", missionDTO);
+        model.addAttribute("missionTypes", missionTypeService.findAllOnlyName());
         return "missions/create_mission";
     }
 
     @PostMapping("/missions")
-    public String saveMission(@ModelAttribute ("newMissionDTO") MissionDTO newMissionDTO){
-        missionService.saveMission(newMissionDTO);
+    public String saveMission(@ModelAttribute ("mission") MissionDTO newMissionDTO){
+        missionInternalService.saveMissionWithType(newMissionDTO);
         return "redirect:/missions";
     }
 
     @GetMapping("/missions/edit/{id}")
     public String editMissionForm(@PathVariable(value = "id")UUID uuid, Model model){
         model.addAttribute("mission", missionService.findMissionByUUID(uuid));
+        model.addAttribute("missionTypes", missionTypeService.findAllOnlyName());
         return "/missions/edit_mission";
     }
 

@@ -48,5 +48,12 @@ public class MissionType {
         this.name = name;
     }
 
-
+    @Override
+    public String toString() {
+        return "MissionType{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

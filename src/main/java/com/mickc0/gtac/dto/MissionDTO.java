@@ -1,12 +1,8 @@
 package com.mickc0.gtac.dto;
 
-import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
-import com.mickc0.gtac.model.MissionType;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.Objects;
 import java.util.UUID;
 
 public class MissionDTO {
@@ -16,7 +12,7 @@ public class MissionDTO {
     private String name;
     private String description;
     private String comment;
-    private MissionType missionType;
+    private MissionTypeDTO missionType;
     private MissionStatus status;
     private int requiredVolunteerNumber;
     private LocalDateTime startingDate;
@@ -62,14 +58,6 @@ public class MissionDTO {
         this.comment = comment;
     }
 
-    public MissionType getMissionType() {
-        return missionType;
-    }
-
-    public void setMissionType(MissionType missionType) {
-        this.missionType = missionType;
-    }
-
     public MissionStatus getStatus() {
         return status;
     }
@@ -101,4 +89,14 @@ public class MissionDTO {
     public void setEndingDate(LocalDateTime endingDate) {
         this.endingDate = endingDate;
     }
+
+    public MissionTypeDTO getMissionType() {
+        return missionType;
+    }
+
+    public void setMissionType(MissionTypeDTO missionType) {
+        this.missionType = missionType;
+    }
+
+
 }

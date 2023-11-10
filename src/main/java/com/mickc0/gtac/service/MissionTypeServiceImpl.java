@@ -1,5 +1,6 @@
 package com.mickc0.gtac.service;
 
+import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.mapper.MissionTypeMapper;
 import com.mickc0.gtac.model.MissionType;
@@ -35,6 +36,14 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     }
 
     @Override
+    public List<MissionTypeDTO> findAllOnlyName() {
+        List<MissionType> missionTypes = missionTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+        return missionTypes.stream()
+                .map(missionTypeMapper::mapToDtoOnlyName)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void save(MissionTypeDTO missionTypeDTO) {
         MissionType missionType = missionTypeMapper.mapToEntityWithoutId(missionTypeDTO);
         missionType.setUuid(UUID.randomUUID());
@@ -44,7 +53,7 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     @Override
     public void update(MissionTypeDTO missionTypeDTO) {
         //On récupère l'objet complet en base
-        MissionType existingMissionType = missionTypeRepository.findMissionTypeByUuid(missionTypeDTO.getUuid()).orElseThrow(
+        MissionType existingMissionType = missionTypeRepository.findByUuid(missionTypeDTO.getUuid()).orElseThrow(
                 () -> new RuntimeException("Le type de mission avec uuid : " + missionTypeDTO.getUuid() + " n'existe pas.")
         );
         //On transforme le DTO qui vient du front en entity sans id
@@ -55,9 +64,18 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     }
 
     @Override
-    public Optional<MissionTypeDTO> findMissionTypeByUuid(UUID uuid) {
-        return Optional.ofNullable(missionTypeMapper.mapToDtoWithoutId(missionTypeRepository.findMissionTypeByUuid(uuid).orElseThrow(
-                () -> new RuntimeException("Le type de mission avec uuid : " + uuid + " n'existe pas."))));
+    public MissionTypeDTO findMByUuid(UUID uuid) {
+        return missionTypeMapper.mapToDtoWithoutId(missionTypeRepository.findByUuid(uuid).orElseThrow(
+                () -> new RuntimeException("Le type de mission avec uuid : " + uuid + " n'existe pas."))
+        );
+    }
+
+    @Override
+    public MissionTypeDTO findByName(String name) {
+        System.out.println(name);
+        return missionTypeMapper.mapToFullDto(missionTypeRepository.findByName(name).orElseThrow(
+                ()-> new RuntimeException("Ce type de mission n'existe pas"))
+        );
     }
 
     @Override

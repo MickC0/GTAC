@@ -34,4 +34,10 @@ public class MissionTypeMapper {
         missionType.setName(missionTypeDTO.getName());
         return missionType;
     }
+
+    public MissionTypeDTO mapToDtoOnlyName(MissionType missionType) {
+        MissionTypeDTO missionTypeDTO = new MissionTypeDTO();
+        missionTypeDTO.setName(missionType.getName());
+        return missionTypeDTO;
+    }
 }

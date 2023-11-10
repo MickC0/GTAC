@@ -12,6 +12,17 @@ public class MissionTypeDTO {
     private UUID uuid;
     private String name;
 
+    @Override
+    public String toString() {
+        return "MissionTypeDTO{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
+    public MissionTypeDTO() {
+    }
 
     public Long getId() {
         return id;

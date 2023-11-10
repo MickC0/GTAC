@@ -7,7 +7,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class MissionMapper {
 
-    //TODO faire les méthodes pour récupérer le DTO complet et le DTO dans le front
+    private final MissionTypeMapper missionTypeMapper;
+
+    public MissionMapper(MissionTypeMapper missionTypeMapper) {
+        this.missionTypeMapper = missionTypeMapper;
+    }
+
     public MissionDTO mapToFullDto(Mission mission) {
         MissionDTO missionDTO = new MissionDTO();
         missionDTO.setId(mission.getId());
@@ -15,7 +20,7 @@ public class MissionMapper {
         missionDTO.setName(mission.getName());
         missionDTO.setDescription(mission.getDescription());
         missionDTO.setComment(mission.getComment());
-        missionDTO.setMissionType(mission.getMissionType());
+        missionDTO.setMissionType(missionTypeMapper.mapToFullDto(mission.getMissionType()));
         missionDTO.setStatus(mission.getStatus());
         missionDTO.setRequiredVolunteerNumber(mission.getRequiredVolunteerNumber());
         missionDTO.setStartingDate(mission.getStartingDate());
@@ -28,7 +33,7 @@ public class MissionMapper {
         missionDTO.setName(mission.getName());
         missionDTO.setDescription(mission.getDescription());
         missionDTO.setComment(mission.getComment());
-        missionDTO.setMissionType(mission.getMissionType());
+        missionDTO.setMissionType(missionTypeMapper.mapToDtoWithoutId(mission.getMissionType()));
         missionDTO.setStatus(mission.getStatus());
         missionDTO.setRequiredVolunteerNumber(mission.getRequiredVolunteerNumber());
         missionDTO.setStartingDate(mission.getStartingDate());
@@ -44,7 +49,7 @@ public class MissionMapper {
         mission.setName(missionDTO.getName());
         mission.setDescription(missionDTO.getDescription());
         mission.setComment(missionDTO.getComment());
-        mission.setMissionType(missionDTO.getMissionType());
+        mission.setMissionType(missionTypeMapper.mapToFullEntity(missionDTO.getMissionType()));
         mission.setStatus(missionDTO.getStatus());
         mission.setRequiredVolunteerNumber(missionDTO.getRequiredVolunteerNumber());
         mission.setStartingDate(missionDTO.getStartingDate());
@@ -57,7 +62,7 @@ public class MissionMapper {
         mission.setName(missionDTO.getName());
         mission.setDescription(missionDTO.getDescription());
         mission.setComment(missionDTO.getComment());
-        mission.setMissionType(missionDTO.getMissionType());
+        mission.setMissionType(missionTypeMapper.mapToEntityWithoutId(missionDTO.getMissionType()));
         mission.setStatus(missionDTO.getStatus());
         mission.setRequiredVolunteerNumber(missionDTO.getRequiredVolunteerNumber());
         mission.setStartingDate(missionDTO.getStartingDate());
