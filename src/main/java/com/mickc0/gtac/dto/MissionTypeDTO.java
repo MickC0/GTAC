@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class MissionTypeDTO {
-
+    //TODO découper les DTO en fonction des besoins des écrans
     private Long id;
     private UUID uuid;
     private String name;

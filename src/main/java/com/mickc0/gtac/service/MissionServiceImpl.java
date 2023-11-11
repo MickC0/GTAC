@@ -41,7 +41,11 @@ public class MissionServiceImpl implements MissionService {
     public void saveMission(MissionDTO missionDTO) {
         Mission mission = missionMapper.mapToEntityWithoutId(missionDTO);
         mission.setUuid(UUID.randomUUID());
-        mission.setStatus(MissionStatus.NEW);
+        if (missionDTO.getStartingDate() == null && mission.getEndingDate() == null){
+            mission.setStatus(MissionStatus.NEW);
+        } else {
+            mission.setStatus(MissionStatus.PLANNED);
+        }
         missionRepository.save(mission);
     }
 

@@ -9,4 +9,5 @@ import java.util.List;
 public interface MissionInternalService {
 
     void saveMissionWithType(MissionDTO missionDTO);
+    void updateMissionWithType(MissionDTO missionDTO);
 }

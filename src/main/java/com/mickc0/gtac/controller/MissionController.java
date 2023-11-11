@@ -53,7 +53,7 @@ public class MissionController {
 
     @PostMapping("/missions/update")
     public String updateMission(@ModelAttribute ("mission") MissionDTO missionDTO){
-        missionService.updateMission(missionDTO);
+        missionInternalService.updateMissionWithType(missionDTO);
         return "redirect:/missions";
     }
 

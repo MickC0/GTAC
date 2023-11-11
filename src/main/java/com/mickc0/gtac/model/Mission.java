@@ -1,6 +1,7 @@
 package com.mickc0.gtac.model;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -41,8 +42,10 @@ public class Mission {
     private int requiredVolunteerNumber;
 
     @Column(name = "starting_date")
+    @DateTimeFormat
     private LocalDateTime startingDate;
     @Column(name = "ending_date")
+    @DateTimeFormat
     private LocalDateTime endingDate;
 
     @OneToMany(mappedBy = "mission")
