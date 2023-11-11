@@ -43,7 +43,7 @@
                                             <tr th:each="m:${listMissions}">
                                                 <td th:text="${m.uuid}"></td>
                                                 <td th:text="${m.name}"></td>
-                                                <td th:text="${m.missionType}"></td>
+                                                <td th:text="${m.missionType.name}"></td>
                                                 <td th:text="${m.status}"></td>
                                                 <td th:text="${#temporals.format(m.startingDate, 'dd.MM.yyyy HH:mm')}"></td>
                                                 <td th:text="${#temporals.format(m.endingDate, 'dd.MM.yyyy HH:mm')}"></td>

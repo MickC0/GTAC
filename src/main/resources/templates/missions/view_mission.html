@@ -22,7 +22,7 @@
                             <p>Description : <span th:text="${mission.description}"></span></p>
                             <p th:text="${mission.comment}"></p>
                             <p th:text="${mission.status}"></p>
-                            <p th:text="${mission.missionType}"></p>
+                            <p th:text="${mission.missionType.name}"></p>
                             <p th:text="${#temporals.format(mission.startingDate, 'dd.MM.yyyy HH:mm')}"></p>
                             <p th:text="${#temporals.format(mission.endingDate, 'dd.MM.yyyy HH:mm')}"></p>
                         </div>

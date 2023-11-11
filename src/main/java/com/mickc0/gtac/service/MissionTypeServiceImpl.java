@@ -1,6 +1,5 @@
 package com.mickc0.gtac.service;
 
-import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.mapper.MissionTypeMapper;
 import com.mickc0.gtac.model.MissionType;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,10 +34,10 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     }
 
     @Override
-    public List<MissionTypeDTO> findAllOnlyName() {
+    public List<MissionTypeDTO> findAllOnlyUuidName() {
         List<MissionType> missionTypes = missionTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         return missionTypes.stream()
-                .map(missionTypeMapper::mapToDtoOnlyName)
+                .map(missionTypeMapper::mapToDtoWithoutId)
                 .collect(Collectors.toList());
     }
 
@@ -64,15 +62,21 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     }
 
     @Override
-    public MissionTypeDTO findMByUuid(UUID uuid) {
+    public MissionTypeDTO findByUuid(UUID uuid) {
         return missionTypeMapper.mapToDtoWithoutId(missionTypeRepository.findByUuid(uuid).orElseThrow(
                 () -> new RuntimeException("Le type de mission avec uuid : " + uuid + " n'existe pas."))
         );
     }
 
     @Override
+    public MissionTypeDTO findByUuidFullDto(UUID uuid) {
+        return missionTypeMapper.mapToFullDto(missionTypeRepository.findByUuid(uuid).orElseThrow(
+                () -> new RuntimeException("Le type de mission avec uuid : " + uuid + " n'existe pas."))
+        );
+    }
+
+    @Override
     public MissionTypeDTO findByName(String name) {
-        System.out.println(name);
         return missionTypeMapper.mapToFullDto(missionTypeRepository.findByName(name).orElseThrow(
                 ()-> new RuntimeException("Ce type de mission n'existe pas"))
         );

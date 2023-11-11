@@ -98,5 +98,19 @@ public class MissionDTO {
         this.missionType = missionType;
     }
 
-
+    @Override
+    public String toString() {
+        return "MissionDTO{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", comment='" + comment + '\'' +
+                ", missionType=" + missionType +
+                ", status=" + status +
+                ", requiredVolunteerNumber=" + requiredVolunteerNumber +
+                ", startingDate=" + startingDate +
+                ", endingDate=" + endingDate +
+                '}';
+    }
 }

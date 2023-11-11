@@ -62,7 +62,7 @@ public class MissionMapper {
         mission.setName(missionDTO.getName());
         mission.setDescription(missionDTO.getDescription());
         mission.setComment(missionDTO.getComment());
-        mission.setMissionType(missionTypeMapper.mapToEntityWithoutId(missionDTO.getMissionType()));
+        mission.setMissionType(missionTypeMapper.mapToFullEntity(missionDTO.getMissionType()));
         mission.setStatus(missionDTO.getStatus());
         mission.setRequiredVolunteerNumber(missionDTO.getRequiredVolunteerNumber());
         mission.setStartingDate(missionDTO.getStartingDate());
