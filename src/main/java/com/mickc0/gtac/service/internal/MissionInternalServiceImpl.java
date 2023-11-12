@@ -36,7 +36,6 @@ public class MissionInternalServiceImpl implements MissionInternalService{
     public void updateMissionWithType(MissionDTO missionDTO) {
         MissionTypeDTO existingMissionTypeDTO = missionTypeService.findByUuidFullDto(missionDTO.getMissionType().getUuid());
         missionDTO.setMissionType(existingMissionTypeDTO);
-        System.out.println(missionDTO.getStatus());
         missionService.updateMission(missionDTO);
     }
 

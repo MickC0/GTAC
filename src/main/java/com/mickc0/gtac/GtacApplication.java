@@ -1,18 +1,11 @@
 package com.mickc0.gtac;
 
-import com.mickc0.gtac.dto.MissionDTO;
-import com.mickc0.gtac.dto.MissionTypeDTO;
-import com.mickc0.gtac.model.MissionStatus;
-import com.mickc0.gtac.model.MissionType;
 import com.mickc0.gtac.service.MissionService;
 import com.mickc0.gtac.service.MissionTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @SpringBootApplication
 public class GtacApplication implements CommandLineRunner {

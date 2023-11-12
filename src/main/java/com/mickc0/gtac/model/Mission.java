@@ -1,6 +1,7 @@
 package com.mickc0.gtac.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.AssertTrue;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;

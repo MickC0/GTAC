@@ -1,7 +1,6 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.MissionDTO;
-import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.mapper.MissionMapper;
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
@@ -58,6 +57,8 @@ public class MissionServiceImpl implements MissionService {
         mission.setId(existingMission.getId());
         missionRepository.save(mission);
     }
+
+
 
     @Override
     public MissionDTO findMissionByUUID(UUID uuid) {

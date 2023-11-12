@@ -9,9 +9,9 @@ public interface MissionTypeService {
 
     List<MissionTypeDTO> findAll();
     List<MissionTypeDTO> findAllOnlyUuidName();
-    void save(MissionTypeDTO missionTypeDTO);
+    void save(MissionTypeDTO missionTypeWithoutIdDTO);
 
-    void update(MissionTypeDTO missionTypeDTO);
+    void update(MissionTypeDTO missionTypeWithoutIdDTO);
 
     MissionTypeDTO findByUuid(UUID uuid);
     MissionTypeDTO findByName(String name);

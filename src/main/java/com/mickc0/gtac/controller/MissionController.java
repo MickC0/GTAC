@@ -4,6 +4,7 @@ import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.service.MissionService;
 import com.mickc0.gtac.service.MissionTypeService;
 import com.mickc0.gtac.service.internal.MissionInternalService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class MissionController {
     }
 
     @PostMapping("/missions")
-    public String saveMission(@ModelAttribute ("mission") MissionDTO newMissionDTO){
+    public String saveMission(@Valid @ModelAttribute ("mission") MissionDTO newMissionDTO){
         missionInternalService.saveMissionWithType(newMissionDTO);
         return "redirect:/missions";
     }
@@ -52,7 +53,7 @@ public class MissionController {
     }
 
     @PostMapping("/missions/update")
-    public String updateMission(@ModelAttribute ("mission") MissionDTO missionDTO){
+    public String updateMission(@Valid @ModelAttribute ("mission") MissionDTO missionDTO){
         missionInternalService.updateMissionWithType(missionDTO);
         return "redirect:/missions";
     }

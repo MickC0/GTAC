@@ -6,20 +6,11 @@ import java.util.UUID;
 
 public class VolunteerDTO {
 
-    private Long id;
     private UUID uuid;
     private String lastName;
     private String firstName;
     private String email;
     private String phoneNumber;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public UUID getUuid() {
         return uuid;

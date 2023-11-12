@@ -29,7 +29,7 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     public List<MissionTypeDTO> findAll() {
         List<MissionType> missionTypes = missionTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         return missionTypes.stream()
-                .map(missionTypeMapper::mapToFullDto)
+                .map(missionTypeMapper::mapToDtoWithoutId)
                 .collect(Collectors.toList());
     }
 
@@ -42,20 +42,20 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     }
 
     @Override
-    public void save(MissionTypeDTO missionTypeDTO) {
-        MissionType missionType = missionTypeMapper.mapToEntityWithoutId(missionTypeDTO);
+    public void save(MissionTypeDTO missionTypeWithoutIdDTO) {
+        MissionType missionType = missionTypeMapper.mapToEntityWithoutId(missionTypeWithoutIdDTO);
         missionType.setUuid(UUID.randomUUID());
         missionTypeRepository.save(missionType);
     }
 
     @Override
-    public void update(MissionTypeDTO missionTypeDTO) {
+    public void update(MissionTypeDTO missionTypeWithoutIdDTO) {
         //On récupère l'objet complet en base
-        MissionType existingMissionType = missionTypeRepository.findByUuid(missionTypeDTO.getUuid()).orElseThrow(
-                () -> new RuntimeException("Le type de mission avec uuid : " + missionTypeDTO.getUuid() + " n'existe pas.")
+        MissionType existingMissionType = missionTypeRepository.findByUuid(missionTypeWithoutIdDTO.getUuid()).orElseThrow(
+                () -> new RuntimeException("Le type de mission avec uuid : " + missionTypeWithoutIdDTO.getUuid() + " n'existe pas.")
         );
         //On transforme le DTO qui vient du front en entity sans id
-        MissionType missionType = missionTypeMapper.mapToEntityWithoutId(missionTypeDTO);
+        MissionType missionType = missionTypeMapper.mapToEntityWithoutId(missionTypeWithoutIdDTO);
         //On set l'id dans l'objet à enregistrer.
         missionType.setId(existingMissionType.getId());
         missionTypeRepository.save(missionType);
@@ -77,7 +77,7 @@ public class MissionTypeServiceImpl implements MissionTypeService{
 
     @Override
     public MissionTypeDTO findByName(String name) {
-        return missionTypeMapper.mapToFullDto(missionTypeRepository.findByName(name).orElseThrow(
+        return missionTypeMapper.mapToDtoWithoutId(missionTypeRepository.findByName(name).orElseThrow(
                 ()-> new RuntimeException("Ce type de mission n'existe pas"))
         );
     }

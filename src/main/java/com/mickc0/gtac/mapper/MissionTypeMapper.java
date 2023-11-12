@@ -9,17 +9,17 @@ public class MissionTypeMapper {
 
 
     public MissionTypeDTO mapToFullDto(MissionType missionType){
-        MissionTypeDTO missionTypeDTO = new MissionTypeDTO();
-        missionTypeDTO.setId(missionType.getId());
-        missionTypeDTO.setUuid(missionType.getUuid());
-        missionTypeDTO.setName(missionType.getName());
-        return missionTypeDTO;
+        MissionTypeDTO missionTypeWithoutIdDTO = new MissionTypeDTO();
+        missionTypeWithoutIdDTO.setId(missionType.getId());
+        missionTypeWithoutIdDTO.setUuid(missionType.getUuid());
+        missionTypeWithoutIdDTO.setName(missionType.getName());
+        return missionTypeWithoutIdDTO;
     }
     public MissionTypeDTO mapToDtoWithoutId(MissionType missionType){
-        MissionTypeDTO missionTypeDTO = new MissionTypeDTO();
-        missionTypeDTO.setUuid(missionType.getUuid());
-        missionTypeDTO.setName(missionType.getName());
-        return missionTypeDTO;
+        MissionTypeDTO missionTypeWithoutIdDTO = new MissionTypeDTO();
+        missionTypeWithoutIdDTO.setUuid(missionType.getUuid());
+        missionTypeWithoutIdDTO.setName(missionType.getName());
+        return missionTypeWithoutIdDTO;
     }
     public MissionType mapToFullEntity(MissionTypeDTO missionTypeDTO){
         MissionType missionType = new MissionType();
@@ -28,16 +28,11 @@ public class MissionTypeMapper {
         missionType.setName(missionTypeDTO.getName());
         return missionType;
     }
-    public MissionType mapToEntityWithoutId(MissionTypeDTO missionTypeDTO){
+    public MissionType mapToEntityWithoutId(MissionTypeDTO missionTypeWithoutIdDTO){
         MissionType missionType = new MissionType();
-        missionType.setUuid(missionTypeDTO.getUuid());
-        missionType.setName(missionTypeDTO.getName());
+        missionType.setUuid(missionTypeWithoutIdDTO.getUuid());
+        missionType.setName(missionTypeWithoutIdDTO.getName());
         return missionType;
     }
 
-    public MissionTypeDTO mapToDtoOnlyName(MissionType missionType) {
-        MissionTypeDTO missionTypeDTO = new MissionTypeDTO();
-        missionTypeDTO.setName(missionType.getName());
-        return missionTypeDTO;
-    }
 }

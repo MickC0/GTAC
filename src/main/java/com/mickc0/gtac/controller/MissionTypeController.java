@@ -1,6 +1,5 @@
 package com.mickc0.gtac.controller;
 
-import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.service.MissionTypeService;
 import org.springframework.stereotype.Controller;
@@ -53,8 +52,8 @@ public class MissionTypeController {
 
     @GetMapping("/mission-types/search")
     public String searchMissions(@RequestParam(value = "query") String query, Model model){
-        List<MissionTypeDTO> missionTypeDTOS = missionTypeService.searchMissionTypes(query);
-        model.addAttribute("missionTypes", missionTypeDTOS);
+        List<MissionTypeDTO> missionTypeWithoutIdDTOS = missionTypeService.searchMissionTypes(query);
+        model.addAttribute("missionTypes", missionTypeWithoutIdDTOS);
         model.addAttribute("newMissionType", new MissionTypeDTO());
         return "mission_types/mission_types";
     }

@@ -4,22 +4,23 @@ import com.mickc0.gtac.model.MissionVolunteer;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.UUID;
 
 public class MissionVolunteerDTO {
 
-    private Long id;
+    private UUID uuid;
     private boolean isAvailable;
     private String contactDate;
     private boolean isAffected;
     private boolean isChief;
     private boolean hasAttended;
 
-    public Long getId() {
-        return id;
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public boolean isAvailable() {
@@ -60,33 +61,5 @@ public class MissionVolunteerDTO {
 
     public void setHasAttended(boolean hasAttended) {
         this.hasAttended = hasAttended;
-    }
-
-    public MissionVolunteerDTO toDTO(){
-        MissionVolunteerDTO dto = new MissionVolunteerDTO();
-        dto.setAvailable(this.isAvailable);
-        try {
-            dto.setContactDate(this.contactDate);
-        } catch (DateTimeParseException ex) {
-            throw new IllegalArgumentException("Erreur de conversion pour startingDate : " + ex.getMessage());
-        }
-        dto.setAvailable(this.isAffected);
-        dto.setChief(this.isChief);
-        dto.setHasAttended(this.hasAttended);
-        return dto;
-    }
-
-    public MissionVolunteer toEntity() {
-        MissionVolunteer entity = new MissionVolunteer();
-        entity.setAvailable(this.isAvailable);
-        try {
-            entity.setContactDate(LocalDate.parse(this.contactDate));
-        } catch (DateTimeParseException ex) {
-            throw new IllegalArgumentException("Erreur de conversion pour startingDate : " + ex.getMessage());
-        }
-        entity.setAvailable(this.isAffected);
-        entity.setChief(this.isChief);
-        entity.setHasAttended(this.hasAttended);
-        return entity;
     }
 }
