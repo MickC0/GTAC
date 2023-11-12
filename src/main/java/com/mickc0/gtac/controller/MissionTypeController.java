@@ -33,6 +33,18 @@ public class MissionTypeController {
         return "redirect:/mission-types";
     }
 
+    @GetMapping("/mission-types/edit/{id}")
+    public String editTypeForm(@PathVariable(value = "id")UUID uuid, Model model) {
+        model.addAttribute("missionType", missionTypeService.findByUuid(uuid));
+        return "/mission_types/edit_type";
+    }
+
+    @PostMapping("/mission-types/update")
+    public String updateMissionType(@ModelAttribute("missionType") MissionTypeDTO missionTypeDTO){
+        missionTypeService.update(missionTypeDTO);
+        return "redirect:/mission-types";
+    }
+
     @GetMapping("/mission-types/delete/{id}")
     public String deleteMissionType(@PathVariable("id")UUID uuid){
         missionTypeService.deleteMissionType(uuid);

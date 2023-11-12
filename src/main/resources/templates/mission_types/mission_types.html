@@ -47,6 +47,8 @@
                                         <td th:text="${m.uuid}"></td>
                                         <td th:text="${m.name}"></td>
                                         <td>
+                                            <!-- Editer -->
+                                            <a class="btn btn-primary btn-sm" th:href="@{/mission-types/edit/{id}(id=${m.uuid})}"><i class="bi bi-pencil-square"></i></a>
                                             <!-- Supprimer -->
                                             <a class="btn btn-danger btn-sm" th:href="@{/mission-types/delete/{id}(id=${m.uuid})}"><i class="bi bi-trash"></i></a>
                                         </td>

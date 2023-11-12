@@ -55,20 +55,6 @@
                                                     <!-- Voir -->
                                                     <a class="btn btn-info btn-sm" th:href="@{/missions/view/{id}(id=${m.uuid})}"><i class="bi bi-eye"></i></a>
                                                 </td>
-
-
-
-                                                <!--<td>
-                                                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#showMissionModal" th:attrappend="data-bs-target=${m.uuid}"><i class="bi bi-eye"></i></button>
-                                                    --><!-- Modal pour voir une mission --><!--
-                                            <div th:replace="fragments/viewMissionModal :: viewMissionModal"></div>
-
-                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editMissionModal"><i class="bi bi-pencil-square"></i></button>
-                                            --><!-- Modal pour éditer une mission --><!--
-
-
-                                            <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                        </td>-->
                                             </tr>
                                         </tbody>
                                     </table>
