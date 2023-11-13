@@ -29,7 +29,7 @@ public class MissionInternalServiceImpl implements MissionInternalService{
     public void saveMissionWithType(MissionDTO missionDTO) {
         MissionTypeDTO existingMissionTypeDTO = missionTypeService.findByUuidFullDto(missionDTO.getMissionType().getUuid());
         missionDTO.setMissionType(existingMissionTypeDTO);
-        missionService.saveMission(missionDTO);
+        missionService.saveNewMission(missionDTO);
     }
 
     @Override

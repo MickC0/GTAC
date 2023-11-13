@@ -1,18 +1,16 @@
 package com.mickc0.gtac.dto;
 
 import com.mickc0.gtac.model.Day;
-import com.mickc0.gtac.model.Disponibility;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import java.util.UUID;
 
 public class DisponibilityDTO {
 
     private UUID uuid;
-    private String startingHour;
-    private String endingHour;
-    private String day;
+    private LocalTime startingHour;
+    private LocalTime endingHour;
+    private Day day;
 
     public UUID getUuid() {
         return uuid;
@@ -22,27 +20,27 @@ public class DisponibilityDTO {
         this.uuid = uuid;
     }
 
-    public String getStartingHour() {
+    public LocalTime getStartingHour() {
         return startingHour;
     }
 
-    public void setStartingHour(String startingHour) {
+    public void setStartingHour(LocalTime startingHour) {
         this.startingHour = startingHour;
     }
 
-    public String getEndingHour() {
+    public LocalTime getEndingHour() {
         return endingHour;
     }
 
-    public void setEndingHour(String endingHour) {
+    public void setEndingHour(LocalTime endingHour) {
         this.endingHour = endingHour;
     }
 
-    public String getDay() {
+    public Day getDay() {
         return day;
     }
 
-    public void setDay(String day) {
+    public void setDay(Day day) {
         this.day = day;
     }
 }

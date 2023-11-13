@@ -24,35 +24,12 @@ public class Indisponibility {
     @Column(name = "ending_date")
     private LocalDate endingDate;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public Long getId() {
         return id;
     }
 
-    @Override
-    public String toString() {
-        return "Indisponibility{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", startingDate=" + startingDate +
-                ", endingDate=" + endingDate +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Indisponibility that = (Indisponibility) o;
-        return Objects.equals(id, that.id) && Objects.equals(uuid, that.uuid) && Objects.equals(startingDate, that.startingDate) && Objects.equals(endingDate, that.endingDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, uuid, startingDate, endingDate);
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public UUID getUuid() {
@@ -77,12 +54,5 @@ public class Indisponibility {
 
     public void setEndingDate(LocalDate endingDate) {
         this.endingDate = endingDate;
-    }
-
-    public Indisponibility(Long id) {
-        this.id = id;
-    }
-
-    public Indisponibility() {
     }
 }

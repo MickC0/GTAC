@@ -23,17 +23,15 @@ public class Volunteer {
     private String email;
     @Column(name = "phone_number")
     private String phoneNumber;
-
     @OneToMany(mappedBy = "volunteer")
     private Set<MissionVolunteer> missionVolunteers = new HashSet<>();
-
+    @OneToMany(mappedBy = "volunteer")
+    private Set<Disponibility> disponibilities = new HashSet<>();
+    @OneToMany(mappedBy = "volunteer")
+    private Set<Indisponibility> indisponibilities = new HashSet<>();
     @ManyToMany
     @JoinTable(name = "volunteers_mission_types", joinColumns = @JoinColumn(name = "volunteer_id"), inverseJoinColumns = @JoinColumn(name = "mission_type_id"))
     private Set<MissionType> missionTypes = new HashSet<>();
-
-
-    public Volunteer() {
-    }
 
     public Long getId() {
         return id;
@@ -91,38 +89,27 @@ public class Volunteer {
         this.missionVolunteers = missionVolunteers;
     }
 
+    public Set<Disponibility> getDisponibilities() {
+        return disponibilities;
+    }
+
+    public void setDisponibilities(Set<Disponibility> disponibilities) {
+        this.disponibilities = disponibilities;
+    }
+
+    public Set<Indisponibility> getIndisponibilities() {
+        return indisponibilities;
+    }
+
+    public void setIndisponibilities(Set<Indisponibility> indisponibilities) {
+        this.indisponibilities = indisponibilities;
+    }
+
     public Set<MissionType> getMissionTypes() {
         return missionTypes;
     }
 
     public void setMissionTypes(Set<MissionType> missionTypes) {
         this.missionTypes = missionTypes;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Volunteer volunteer = (Volunteer) o;
-        return Objects.equals(id, volunteer.id) && Objects.equals(uuid, volunteer.uuid) && Objects.equals(lastName, volunteer.lastName) && Objects.equals(firstName, volunteer.firstName) && Objects.equals(email, volunteer.email) && Objects.equals(phoneNumber, volunteer.phoneNumber) && Objects.equals(missionVolunteers, volunteer.missionVolunteers) && Objects.equals(missionTypes, volunteer.missionTypes);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, uuid, lastName, firstName, email, phoneNumber, missionVolunteers, missionTypes);
-    }
-
-    @Override
-    public String toString() {
-        return "Volunteer{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", lastName='" + lastName + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", missionVolunteers=" + missionVolunteers +
-                ", missionTypes=" + missionTypes +
-                '}';
     }
 }

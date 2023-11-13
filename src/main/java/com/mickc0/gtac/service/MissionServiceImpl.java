@@ -5,9 +5,11 @@ import com.mickc0.gtac.mapper.MissionMapper;
 import com.mickc0.gtac.model.Mission;
 import com.mickc0.gtac.model.MissionStatus;
 import com.mickc0.gtac.repository.MissionRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,13 +39,13 @@ public class MissionServiceImpl implements MissionService {
 
 
     @Override
-    public void saveMission(MissionDTO missionDTO) {
+    public void saveNewMission(MissionDTO missionDTO) {
         Mission mission = missionMapper.mapToEntityWithoutId(missionDTO);
         mission.setUuid(UUID.randomUUID());
-        if (missionDTO.getStartingDate() == null && mission.getEndingDate() == null){
-            mission.setStatus(MissionStatus.NEW);
-        } else {
+        if (mission.getStartingDate() != null && mission.getEndingDate() != null){
             mission.setStatus(MissionStatus.PLANNED);
+        } else {
+            mission.setStatus(MissionStatus.NEW);
         }
         missionRepository.save(mission);
     }
@@ -86,7 +88,54 @@ public class MissionServiceImpl implements MissionService {
     }
 
 
+    @Scheduled(cron = "0 0 */1 * * *") // Exécute toutes les heures
+    public void updateMissionStatusScheduled() {
+        List<Mission> missions = missionRepository.findAll();
+        for (Mission mission : missions) {
+            updateMissionStatus(mission);
+        }
+    }
 
+
+    private void updateMissionStatus(Mission mission) {
+        LocalDateTime currentDate = LocalDateTime.now();
+
+        // Cas 1
+        if (mission.getStatus() == null) {
+            mission.setStatus(MissionStatus.NEW);
+        }
+
+        // Cas 2
+        if (mission.getStartingDate() != null && mission.getEndingDate() != null && mission.getMissionVolunteers().isEmpty()) {
+            mission.setStatus(MissionStatus.PLANNED);
+        }
+
+        // Cas 3
+        if ((mission.getStartingDate() == null && mission.getEndingDate() != null) || (mission.getStartingDate() != null && mission.getEndingDate() == null)) {
+            mission.setStatus(MissionStatus.NEW);
+        }
+
+        // Cas 4
+        if (mission.getStartingDate() == null && mission.getEndingDate() == null && !mission.getMissionVolunteers().isEmpty()) {
+            mission.setStatus(MissionStatus.NEW);
+        }
+
+        // Cas 5
+        if (mission.getStartingDate() != null && mission.getEndingDate() != null && !mission.getMissionVolunteers().isEmpty()) {
+            mission.setStatus(MissionStatus.VALID);
+        }
+
+        // Cas 6
+        if ((mission.getStartingDate() == null || mission.getEndingDate() == null) && !mission.getMissionVolunteers().isEmpty()) {
+            mission.setStatus(MissionStatus.NEW);
+        }
+
+        // Cas 7
+        if (mission.getStartingDate() != null && mission.getStartingDate().isEqual(currentDate) && mission.getEndingDate() != null && !mission.getMissionVolunteers().isEmpty()) {
+            mission.setStatus(MissionStatus.ONGOING);
+        }
+        missionRepository.save(mission);
+    }
 
     private boolean isUUIDPresent(UUID uuid) {
         return uuid != null && !uuid.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"));

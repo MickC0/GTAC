@@ -9,7 +9,7 @@ public interface MissionService {
 
     List<MissionDTO> findAll();
 
-    void saveMission(MissionDTO missionDTO);
+    void saveNewMission(MissionDTO missionDTO);
 
     void updateMission(MissionDTO missionDTO);
 

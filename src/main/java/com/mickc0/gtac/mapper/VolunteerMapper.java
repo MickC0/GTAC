@@ -4,8 +4,16 @@ import com.mickc0.gtac.dto.VolunteerDTO;
 import com.mickc0.gtac.model.Volunteer;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+
 @Component
 public class VolunteerMapper {
+
+    private final DisponibilityMapper disponibilityMapper;
+
+    public VolunteerMapper(DisponibilityMapper disponibilityMapper) {
+        this.disponibilityMapper = disponibilityMapper;
+    }
 
     public VolunteerDTO mapToDto(Volunteer volunteer){
         VolunteerDTO volunteerDTO = new VolunteerDTO();
@@ -24,6 +32,8 @@ public class VolunteerMapper {
         volunteer.setFirstName(volunteerDTO.getFirstName());
         volunteer.setEmail(volunteerDTO.getEmail());
         volunteer.setPhoneNumber(volunteerDTO.getPhoneNumber());
+        //TODO créer un mapper qui retourne une liste de dispo
+        volunteer.setDisponibilities(Collections.singleton(disponibilityMapper.mapToEntity(volunteerDTO.getDisponibilities())));
         return volunteer;
     }
 
