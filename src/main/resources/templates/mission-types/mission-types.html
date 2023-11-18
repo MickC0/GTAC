@@ -4,30 +4,30 @@
 <body>
 
 
-<div class="container-fluid overflow-hidden">
-    <div class="row vh-100 overflow-auto">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
-        <div class="col d-flex flex-column h-sm-100 col-sm-9">
-            <main class="row overflow-auto">
-                <div class="col pt-4">
-                    <a class="btn btn-secondary" th:href="@{/}">Retour</a>
-                    <h1 class="py-2">Types de mission</h1>
-                    <hr />
-                    <a class="btn btn-primary" th:href="@{/mission-types/create}">Ajouter un type</a>
-                    <hr />
-                    <div class="card">
-                        <div class="card-header">
-                            <form class="d-flex" role="search" id="search" th:action="@{/mission-types/search}">
-                                <input name="query" class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
-                                <button type="submit" form="search" class="btn btn-secondary btn-sm mx-1">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                                <button type="submit" th:href="@{/mission-types}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-counterclockwise"></i></button>
-                            </form>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
+    <div class="container-fluid overflow-hidden">
+        <div class="row vh-100 overflow-auto">
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div class="col d-flex flex-column h-sm-100 col-sm-9">
+                <main class="row overflow-auto">
+                    <div class="col pt-4">
+                        <!--<a class="btn btn-secondary" th:href="@{/}">Retour</a>-->
+                        <h1 class="py-2">Types de mission</h1>
+                        <hr />
+                        <a class="btn btn-primary" th:href="@{/mission-types/create}">Ajouter un type</a>
+                        <hr />
+                        <div class="card">
+                            <div class="card-header">
+                                <form class="d-flex" role="search" id="search" th:action="@{/mission-types/search}">
+                                    <input name="query" class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
+                                    <button type="submit" form="search" class="btn btn-secondary btn-sm mx-1">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                    <button type="submit" th:href="@{/mission-types}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-counterclockwise"></i></button>
+                                </form>
+                            </div>
+                            <div class="card-body">
+
+                                <table class="table table-responsive table-striped table-hover">
                                     <thead>
                                     <tr>
                                         <th>id</th>
@@ -38,44 +38,86 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:each="m:${missionTypes}">
-                                        <td th:text="${m.id}"></td>
-                                        <td th:text="${m.uuid}"></td>
-                                        <td th:text="${m.name}"></td>
-                                        <td th:text="${m.description}"></td>
+                                    <tr th:each="missionType:${missionTypes}">
+                                        <td th:text="${missionType.id}"></td>
+                                        <td th:text="${missionType.uuid}"></td>
+                                        <td th:text="${missionType.name}"></td>
+                                        <td th:text="${missionType.description}"></td>
                                         <td>
                                             <!-- Editer -->
-                                            <a class="btn btn-primary btn-sm" th:href="@{/mission-types/edit/{id}(id=${m.id})}"><i class="bi bi-pencil-square"></i></a>
+                                            <a class="btn btn-primary btn-sm" th:href="@{/mission-types/edit/{id}(id=${missionType.id})}"><i class="bi bi-pencil-square"></i></a>
                                             <!-- Supprimer -->
-                                            <a class="btn btn-danger btn-sm" th:href="@{/mission-types/delete/{id}(id=${m.id})}"><i class="bi bi-trash"></i></a>
+                                            <!--<a class="btn btn-danger btn-sm" th:href="@{/mission-types/delete/{id}(id=${m.id})}"><i class="bi bi-trash"></i></a>-->
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMissionTypeModal" th:attr="data-missionType-id=${missionType.id}"><i class="bi bi-trash"></i></button>
                                         </td>
                                     </tr>
                                     </tbody>
                                 </table>
+
+                            </div>
+                            <div class="card-footer">
+                                Pagination
+                                <!--<nav aria-label="Page navigation volunteer">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item">
+                                            <a class="page-link" th:href="@{/index(page=${previousPage})}">Previous</a>
+                                        </li>
+                                        <li class="page-item" th:class="${currentPage==status.index?'active':''}" th:each="page, status:${pages}">
+                                            <a class="page-link"  th:text="${status.index}" th:href="@{/index(page=${status.index},keyword=${keyword})}"></a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" th:href="@{/index(page=${nextPage})}">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>-->
                             </div>
                         </div>
-                        <div class="card-footer">
-                            Pagination
-                            <!--<nav aria-label="Page navigation volunteer">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item">
-                                        <a class="page-link" th:href="@{/index(page=${previousPage})}">Previous</a>
-                                    </li>
-                                    <li class="page-item" th:class="${currentPage==status.index?'active':''}" th:each="page, status:${pages}">
-                                        <a class="page-link"  th:text="${status.index}" th:href="@{/index(page=${status.index},keyword=${keyword})}"></a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" th:href="@{/index(page=${nextPage})}">Next</a>
-                                    </li>
-                                </ul>
-                            </nav>-->
-                        </div>
                     </div>
-
-
-                </div>
-            </main>
-            <div th:replace="~{fragments/footer :: footer}"></div>
+                </main>
+                <div th:replace="~{fragments/footer :: footer}"></div>
+            </div>
         </div>
     </div>
-</div>
+    <!-- Modal pour la confirmation de suppression -->
+    <div class="modal fade" id="deleteMissionTypeModal" tabindex="-1" aria-labelledby="deleteMissionTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteMissionTypeModalLabel">Supprimer Type de Mission</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <i class="bi bi-exclamation-triangle-fill">
+                            <span>
+                                Êtes-vous sûr de vouloir supprimer ce type de mission ?
+                            </span>
+                    </i>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <a class="btn btn-danger" id="confirmDelete">Confirmer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var deleteModal = document.getElementById('deleteMissionTypeModal');
+            deleteModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var itemId = button.getAttribute('data-missionType-id');
+                var deleteUrl = /*[[@{/mission-types/delete/}]]*/ 'deletePath';
+
+                var confirmDeleteBtn = document.getElementById('confirmDelete');
+                confirmDeleteBtn.onclick = function() {
+                    window.location.href = deleteUrl + itemId;
+                };
+            });
+        });
+    </script>
+
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

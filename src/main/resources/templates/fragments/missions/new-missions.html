@@ -42,7 +42,8 @@
                             <!-- Editer -->
                             <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/new/{id}(id=${newMission.id})}"><i class="bi bi-pencil-square"></i></a>
                             <!-- Supprimer -->
-                            <a class="btn btn-danger btn-sm" th:href="@{/missions/delete/{id}(id=${newMission.id})}"><i class="bi bi-trash"></i></a>
+                            <!--<a class="btn btn-danger btn-sm" th:href="@{/missions/delete/{id}(id=${newMission.id})}"><i class="bi bi-trash"></i></a>-->
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMissionModal" th:attr="data-mission-id=${newMission.id}"><i class="bi bi-trash"></i></button>
                             <!-- Voir -->
                             <a class="btn btn-info btn-sm" th:href="@{/missions/{id}(id=${newMission.id})}"><i class="bi bi-eye"></i></a>
                         </td>
@@ -56,7 +57,6 @@
             </div>
         </div>
     </div>
-
 
 
 

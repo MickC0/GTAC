@@ -153,11 +153,11 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     @Transactional
-    public Mission cancelMission(Long missionId) {
+    public void cancelMission(Long missionId) {
         Mission mission = missionRepository.findById(missionId)
                 .orElseThrow(() -> new RuntimeException("Mission not found"));
         mission.setStatus(MissionStatus.CANCELLED);
-        return missionRepository.save(mission);
+        missionRepository.save(mission);
     }
 
     @Override

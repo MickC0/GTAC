@@ -5,136 +5,110 @@
 
 
 
-<div class="container-fluid overflow-hidden">
-    <div class="row vh-100 overflow-auto">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
-        <div class="col d-flex flex-column h-sm-100 col-sm-9">
-            <main class="row overflow-auto">
-                <div class="col pt-4">
-                    <h1 class="py-2">Bénévoles</h1>
-                    <a class="btn btn-primary" th:href="@{/volunteers/create}">Ajouter un bénévole</a>
-                    <hr />
-
-                    <div class="card">
-                        <div class="card-header">
-                            <form class="d-flex" role="search" id="search" th:action="@{/volunteers/search}">
-                                <input name="query" class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
-                                <button type="submit" form="search" class="btn btn-outline-secondary btn-sm">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </form>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
+    <div class="container-fluid overflow-hidden">
+        <div class="row vh-100 overflow-auto">
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div class="col d-flex flex-column h-sm-100 col-sm-9">
+                <main class="row overflow-auto">
+                    <div class="col pt-4">
+                        <h1 class="py-2">Bénévoles</h1>
+                        <hr />
+                        <a class="btn btn-primary" th:href="@{/volunteers/create}">Ajouter un bénévole</a>
+                        <hr />
+                        <div class="card">
+                            <div class="card-header">
+                                <form class="d-flex" role="search" id="search" th:action="@{/volunteers/search}">
+                                    <input name="query" class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
+                                    <button type="submit" form="search" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-responsive table-striped table-hover">
                                     <thead>
-                                    <tr>
-                                        <th>id</th>
-                                        <th>uuid</th>
-                                        <th>Nom</th>
-                                        <th>Prénom</th>
-                                        <th>Email</th>
-                                        <th>Téléphone</th>
-                                        <th>Statut</th>
-                                        <th>Actions</th>
-                                    </tr>
+                                        <tr>
+                                            <th>id</th>
+                                            <th>uuid</th>
+                                            <th>Nom</th>
+                                            <th>Prénom</th>
+                                            <th>Email</th>
+                                            <th>Téléphone</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
                                         <tr th:each="v:${volunteers}">
-                                        <td th:text="${v.id}"></td>
-                                        <td th:text="${v.uuid}"></td>
-                                        <td th:text="${v.lastName}"></td>
-                                        <td th:text="${v.firstName}"></td>
-                                        <td th:text="${v.email}"></td>
-                                        <td th:text="${v.phoneNumber}"></td>
-                                        <td th:text="${v.status}"></td>
-                                        <td>
-                                            <!-- Editer -->
-                                            <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.id})}"><i class="bi bi-pencil-square"></i></a>
-                                            <!-- Supprimer -->
-                                            <!--<a class="btn btn-danger btn-sm" th:href="@{/volunteers/delete/{id}(id=${v.id})}"><i class="bi bi-trash"></i></a>-->
-                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteVolunteerModal" th:attr="data-volunteer-id=${v.id}"><i class="bi bi-trash"></i></button>
-                                            <!-- Modal pour la confirmation de suppression -->
-                                            <div class="modal fade" id="deleteVolunteerModal" tabindex="-1" aria-labelledby="deleteVolunteerModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="deleteVolunteerModalLabel">Supprimer Bénévole</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            Êtes-vous sûr de vouloir supprimer ce bénévole ?
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                                            <a class="btn btn-danger" id="confirmDelete" th:href="@{/volunteers/delete/{id}(id=${v.id})}">Supprimer</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Voir -->
-                                            <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.id})}"><i class="bi bi-eye"></i></a>
-                                        </td>
-
-
-
-
-                                        <!--<td>
-                                            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#showMissionModal" th:attrappend="data-bs-target=${m.uuid}"><i class="bi bi-eye"></i></button>
-                                            --><!-- Modal pour voir une mission --><!--
-                                        <div th:replace="fragments/viewMissionModal :: viewMissionModal"></div>
-
-                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editMissionModal"><i class="bi bi-pencil-square"></i></button>
-                                        --><!-- Modal pour éditer une mission --><!--
-
-
-                                        <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                                    </td>-->
-                                    </tr>
+                                            <td th:text="${v.id}"></td>
+                                            <td th:text="${v.uuid}"></td>
+                                            <td th:text="${v.lastName}"></td>
+                                            <td th:text="${v.firstName}"></td>
+                                            <td th:text="${v.email}"></td>
+                                            <td th:text="${v.phoneNumber}"></td>
+                                            <td th:text="${v.status}"></td>
+                                            <td>
+                                                <!-- Editer -->
+                                                <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.id})}"><i class="bi bi-pencil-square"></i></a>
+                                                <!-- Supprimer -->
+                                                <!--<a class="btn btn-danger btn-sm" th:href="@{/volunteers/delete/{id}(id=${v.id})}"><i class="bi bi-trash"></i></a>-->
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteVolunteerModal" th:attr="data-volunteer-id=${v.id}"><i class="bi bi-trash"></i></button>
+                                                <!-- Voir -->
+                                                <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.id})}"><i class="bi bi-eye"></i></a>
+                                            </td>
+                                        </tr>
                                     </tbody>
-
                                 </table>
-
+                            </div>
+                            <div class="card-footer">
+                                Pagination
                             </div>
                         </div>
-                        <div class="card-footer">
-                            Pagination
-                            <!--<nav aria-label="Page navigation volunteer">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item">
-                                        <a class="page-link" th:href="@{/index(page=${previousPage})}">Previous</a>
-                                    </li>
-                                    <li class="page-item" th:class="${currentPage==status.index?'active':''}" th:each="page, status:${pages}">
-                                        <a class="page-link"  th:text="${status.index}" th:href="@{/index(page=${status.index},keyword=${keyword})}"></a>
-                                    </li>
-                                    <li class="page-item">
-                                        <a class="page-link" th:href="@{/index(page=${nextPage})}">Next</a>
-                                    </li>
-                                </ul>
-                            </nav>-->
-                        </div>
                     </div>
-
-                </div>
-            </main>
-            <div th:replace="~{fragments/footer :: footer}"></div>
+                </main>
+                <div th:replace="~{fragments/footer :: footer}"></div>
+            </div>
         </div>
     </div>
-</div>
-<script th:inline="javascript">
-    $('#deleteVolunteerModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); // Bouton qui a déclenché la modal
-        var volunteerId = button.data('volunteer-id'); // Extraction de l'ID du volontaire
-        var modal = $(this);
-        modal.find('#confirmDelete').click(function() {
-            window.location.href = /*[[@{/volunteers/delete/}]]*/ 'deletePath' + volunteerId;
+    <!-- Modal pour la confirmation de suppression -->
+    <div class="modal fade" id="deleteVolunteerModal" tabindex="-1" aria-labelledby="deleteVolunteerModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteVolunteerModalLabel">Supprimer Bénévole</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <i class="bi bi-exclamation-triangle-fill">
+                            <span>
+                                Êtes-vous sûr de vouloir supprimer ce bénévole ?
+                            </span>
+                    </i>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <a class="btn btn-danger" id="confirmDelete">Confirmer</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var deleteModal = document.getElementById('deleteVolunteerModal');
+            deleteModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var itemId = button.getAttribute('data-volunteer-id');
+                var deleteUrl = /*[[@{/volunteers/delete/}]]*/ 'deletePath';
+
+                var confirmDeleteBtn = document.getElementById('confirmDelete');
+                confirmDeleteBtn.onclick = function() {
+                    window.location.href = deleteUrl + itemId;
+                };
+            });
         });
-    });
-</script>
+    </script>
 
 
-<div th:replace="~{fragments/scripts :: scripts}"></div>
-
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>

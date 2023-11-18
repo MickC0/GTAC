@@ -11,20 +11,21 @@
             <div class="col d-flex flex-column h-sm-100 col-sm-9">
                 <main class="row overflow-auto">
                     <div class="col pt-4">
-                        <h1>Création de Mission</h1>
+                        <h1 class="py-2" th:text="${volunteer.lastName}"></h1>
                         <hr />
+
                         <div class="card">
                             <div class="card-header">
-                                <i class="bi bi-exclamation-triangle-fill">
-                                </i>
-                                <h2>Alerte</h2>
+
                             </div>
                             <div class="card-body">
-                                <p th:text="${message}"></p>
+                                <p>Nom : <span th:text="${volunteer.lastName}"></span></p>
+                                <p>Nom : <span th:text="${volunteer.firstName}"></span></p>
+                                <p th:text="${volunteer.email}"></p>
+                                <p th:text="${volunteer.phoneNumber}"></p>
                             </div>
                             <div class="card-footer">
-                                <a class="btn btn-primary" th:href="@{/mission-types/create}">Créer un Type de Mission</a>
-                                <a class="btn btn-secondary" th:href="@{/missions}">Retour</a>
+                                <a class="btn btn-secondary" th:href="@{/volunteers}">Retour</a>
                             </div>
                         </div>
                     </div>

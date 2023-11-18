@@ -5,10 +5,12 @@ import com.mickc0.gtac.entity.MissionStatus;
 import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.service.MissionService;
 import com.mickc0.gtac.service.MissionTypeService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -113,7 +115,16 @@ public class MissionController {
         return "redirect:/missions";
     }
 
-
+    @GetMapping("/cancel/{id}")
+    public String cancelMission(@PathVariable(name = "id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            missionService.cancelMission(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Mission annulée avec succès.");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de l'annulation de la mission.");
+        }
+        return "redirect:/missions";
+    }
 
 
 }

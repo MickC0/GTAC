@@ -21,7 +21,7 @@ public interface MissionService {
     //Mission planMission(Long missionId, List<Long> userIds, Long chiefUserId);
     List<Volunteer> getAvailableUsersForMission(Long missionId, Long missionTypeId);
     Mission startMission(Long missionId);
-    Mission cancelMission(Long missionId);
+    void cancelMission(Long missionId);
 
     List<Mission> findMissionsToUpdateStatus(LocalDateTime now);
     void updateMissionStatus(Long missionId, LocalDateTime now);
