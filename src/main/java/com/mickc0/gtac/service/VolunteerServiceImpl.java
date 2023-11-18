@@ -1,23 +1,29 @@
 package com.mickc0.gtac.service;
 
+import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.Volunteer;
+import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.repository.VolunteerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class VolunteerServiceImpl implements VolunteerService{
 
     private final VolunteerRepository volunteerRepository;
+    private final VolunteerMapper volunteerMapper;
 
     @Autowired
-    public VolunteerServiceImpl(VolunteerRepository volunteerRepository) {
+    public VolunteerServiceImpl(VolunteerRepository volunteerRepository, VolunteerMapper volunteerMapper) {
         this.volunteerRepository = volunteerRepository;
+        this.volunteerMapper = volunteerMapper;
     }
 
     @Override
@@ -53,5 +59,13 @@ public class VolunteerServiceImpl implements VolunteerService{
         volunteerRepository.deleteById(id);
     }
 
+    @Override
+    public List<VolunteerStatusDTO> findAllVolunteersWithStatus() {
+        List<Volunteer> volunteers = volunteerRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        return volunteers.stream()
+                .map(volunteer -> volunteerMapper.mapToStatusDTO(volunteer, now))
+                .collect(Collectors.toList());
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.mickc0.gtac.service;
 
+import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.Volunteer;
 
 import java.util.List;
@@ -11,4 +12,6 @@ public interface VolunteerService {
     List<Volunteer> findAll();
     void updateVolunteer(Volunteer volunteer);
     void deleteVolunteer(Long id);
+
+    List<VolunteerStatusDTO> findAllVolunteersWithStatus();
 }

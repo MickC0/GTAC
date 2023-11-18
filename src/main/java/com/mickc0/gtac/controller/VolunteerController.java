@@ -1,10 +1,13 @@
 package com.mickc0.gtac.controller;
 
+import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.service.VolunteerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/volunteers")
@@ -19,7 +22,8 @@ public class VolunteerController {
 
     @GetMapping
     public String volunteers(Model model){
-        model.addAttribute("volunteers", volunteerService.findAll());
+        List<VolunteerStatusDTO> volunteers = volunteerService.findAllVolunteersWithStatus();
+        model.addAttribute("volunteers", volunteers);
         return "/volunteers/volunteers";
     }
 
