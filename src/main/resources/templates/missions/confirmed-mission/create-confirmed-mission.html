@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
+
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="card col-lg-6 col-md-6 justify-content-center container py-4">
+            <div class="card-header">
+                <a class="btn btn-secondary pb-2" th:href="@{/missions}">Retour</a>
+                <h1>Mise à jour</h1>
+            </div>
+            <div class="card-body">
+                <p>Description : <span th:text="${mission.title}"></span></p>
+                <p th:text="${mission.missionType.name}"></p>
+                <p>Description : <span th:text="${mission.description}"></span></p>
+                <p th:text="${mission.comment}"></p>
+                <p th:text="${mission.status}"></p>
+                <form th:action="@{/missions/plan/{id}(id=${mission.id})}" method="post" id="planMissionForm" th:object="${mission}">
+
+                    <input type="hidden" name="uuid" id="uuid" th:field="*{uuid}">
+                    <input type="hidden" name="id" id="id" th:field="*{id}">
+                    <input type="hidden" name="status" id="status" th:field="*{status}">
+                    <input type="hidden" th:field="*{title}" id="name">
+                    <input type="hidden" th:field="*{missionType}" id="missionType">
+                    <input type="hidden" th:field="*{description}" id="description" >
+                    <input type="hidden" th:field="*{comment}" id="comment">
+                    <input type="hidden" th:field="*{requiredVolunteerNumber}" id="requiredVolunteerNumber">
+
+                    <div id="dateAlert" class="alert alert-danger d-none" role="alert">
+                        La date de début doit être antérieure à la date de fin.
+                    </div>
+                    <div class="form-group">
+                        <label for="startDateTime" class="col-form-label">Date de Début:</label>
+                        <input th:value="*{startDateTime}" id="startDateTime" name="startDateTime" type="datetime-local" class="form-control" required="required">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDateTime" class="col-form-label">Date de Fin:</label>
+                        <input th:value="*{endDateTime}" type="datetime-local" id="endDateTime" name="endDateTime" class="form-control" required="required">
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <button type="submit" form="planMissionForm" class="btn btn-primary">Planifier</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('planMissionForm').addEventListener('submit', function(e) {
+        var startDateTime = document.getElementById('startDateTime').value;
+        var endDateTime = document.getElementById('endDateTime').value;
+        var dateAlert = document.getElementById('dateAlert');
+
+        if (startDateTime > endDateTime) {
+            dateAlert.classList.remove('d-none');
+            e.preventDefault();
+        } else {
+            dateAlert.classList.add('d-none');
+        }
+    });
+</script>
+
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

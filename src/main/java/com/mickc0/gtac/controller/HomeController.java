@@ -1,5 +1,6 @@
 package com.mickc0.gtac.controller;
 
+import com.mickc0.gtac.entity.MissionStatus;
 import com.mickc0.gtac.service.MissionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +17,8 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model){
-        model.addAttribute("missions", missionService.findAll());
+        model.addAttribute("ongoingMissions", missionService.findByStatus(MissionStatus.ONGOING));
+        model.addAttribute("confirmedMissions", missionService.findByStatus(MissionStatus.CONFIRMED));
         return "home";
     }
 }

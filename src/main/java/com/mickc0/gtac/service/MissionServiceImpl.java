@@ -1,144 +1,212 @@
 package com.mickc0.gtac.service;
 
-import com.mickc0.gtac.dto.MissionDTO;
-import com.mickc0.gtac.mapper.MissionMapper;
-import com.mickc0.gtac.model.Mission;
-import com.mickc0.gtac.model.MissionStatus;
-import com.mickc0.gtac.repository.MissionRepository;
-import org.springframework.scheduling.annotation.Scheduled;
+import com.mickc0.gtac.entity.*;
+import com.mickc0.gtac.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class MissionServiceImpl implements MissionService {
 
-    //TODO on ne met que un repo et mapper
     private final MissionRepository missionRepository;
-    private final MissionMapper missionMapper;
 
+    private final AvailabilityRepository availabilityRepository;
+    private final UnavailabilityRepository unavailabilityRepository;
+    private final VolunteerRepository volunteerRepository;
+    private final MissionAssignmentRepository missionAssignmentRepository;
+    private final MissionTypeRepository missionTypeRepository;
 
-
-    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper) {
+    @Autowired
+    public MissionServiceImpl(MissionRepository missionRepository, AvailabilityRepository availabilityRepository, UnavailabilityRepository unavailabilityRepository, VolunteerRepository volunteerRepository, MissionAssignmentRepository missionAssignmentRepository, MissionTypeRepository missionTypeRepository) {
         this.missionRepository = missionRepository;
-        this.missionMapper = missionMapper;
+        this.availabilityRepository = availabilityRepository;
+        this.unavailabilityRepository = unavailabilityRepository;
+        this.volunteerRepository = volunteerRepository;
+        this.missionAssignmentRepository = missionAssignmentRepository;
+        this.missionTypeRepository = missionTypeRepository;
     }
 
     @Override
-    public List<MissionDTO> findAll() {
-        List<Mission> missions = missionRepository.findAll();
-        return missions.stream()
-                .map(missionMapper::mapToDtoWithoutId)
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
-    public void saveNewMission(MissionDTO missionDTO) {
-        Mission mission = missionMapper.mapToEntityWithoutId(missionDTO);
-        mission.setUuid(UUID.randomUUID());
-        if (mission.getStartingDate() != null && mission.getEndingDate() != null){
-            mission.setStatus(MissionStatus.PLANNED);
-        } else {
-            mission.setStatus(MissionStatus.NEW);
-        }
+    @Transactional
+    public void save(Mission mission) {
+        mission.setStatus(MissionStatus.NEW);
         missionRepository.save(mission);
     }
 
     @Override
-    public void updateMission(MissionDTO missionDTO) {
-        Mission existingMission = missionRepository.findMissionByUuid(missionDTO.getUuid()).orElseThrow(
-                () -> new RuntimeException("Le type de mission avec uuid : " + missionDTO.getUuid() + " n'existe pas.")
-        );
-        Mission mission = missionMapper.mapToEntityWithoutId(missionDTO);
-        mission.setId(existingMission.getId());
-        missionRepository.save(mission);
-    }
-
-
-
-    @Override
-    public MissionDTO findMissionByUUID(UUID uuid) {
-        return missionMapper.mapToDtoWithoutId(missionRepository.findMissionByUuid(uuid).orElseThrow(
-                () -> new RuntimeException("Le type de mission avec uuid : " + uuid + " n'existe pas."))
-        );
+    public List<Mission> findAll() {
+        return missionRepository.findAll();
     }
 
     @Override
-    public void deleteMission(UUID uuid) {
-        if (isUUIDPresent(uuid)){
-            missionRepository.deleteByUuid(uuid);
-        } else {
-            throw new RuntimeException("La mission ne peut être supprimée id : " + uuid + " non conforme");
-        }
+    @Transactional
+    public void deleteById(Long id) {
+        missionRepository.deleteById(id);
     }
 
     @Override
-    public List<MissionDTO> searchMissions(String query) {
-        List<Mission> missions = missionRepository.searchAllByNameContainingIgnoreCase(query);
+    public Optional<Mission> findById(Long id) {
+        return missionRepository.findById(id);
+    }
+    public List<Mission> findByStatus(MissionStatus status) {
+        return missionRepository.findByStatus(status);
+    }
 
-        return missions.stream()
-                .map(missionMapper::mapToDtoWithoutId)
-                .collect(Collectors.toList());
+    @Override
+    public boolean isUserAvailableForMission(Long userId, LocalDateTime missionStart, LocalDateTime missionEnd) {
+        // Récupérer les disponibilités et les indisponibilités de l'utilisateur
+        List<Availability> availabilities = availabilityRepository.findByVolunteerId(userId);
+        List<Unavailability> unavailabilities = unavailabilityRepository.findByVolunteerId(userId);
+
+        // Vérifier si les indisponibilités chevauchent le créneau de la mission
+        for (Unavailability unavailability : unavailabilities) {
+            if (missionStart.toLocalDate().isBefore(unavailability.getEndDate()) &&
+                    missionEnd.toLocalDate().isAfter(unavailability.getStartDate())) {
+                return false; // L'utilisateur est indisponible
+            }
+        }
+
+        // Vérifier si une disponibilité correspond au jour et à l'heure de la mission
+        DayOfWeek missionDay = missionStart.getDayOfWeek();
+        int missionStartHour = missionStart.getHour();
+        int missionEndHour = missionEnd.getHour();
+
+        for (Availability availability : availabilities) {
+            if (availability.getDayOfWeek() == missionDay) {
+                int availabilityStartHour = availability.getStartTime().getHour();
+                int availabilityEndHour = availability.getEndTime().getHour();
+
+                if (missionStartHour >= availabilityStartHour && missionEndHour <= availabilityEndHour) {
+                    return true; // L'utilisateur est disponible
+                }
+            }
+        }
+
+        return false; // Aucune disponibilité ne correspond
+    }
+
+    @Override
+    public List<Volunteer> getAvailableUsersForMission(Long missionId, Long missionTypeId) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(() -> new RuntimeException("Mission not found"));
+        MissionType missionType = missionTypeRepository.findById(missionTypeId)
+                .orElseThrow(() -> new RuntimeException("Mission type not found"));
+
+        LocalDateTime missionStart = mission.getStartDateTime();
+        LocalDateTime missionEnd = mission.getEndDateTime();
+        DayOfWeek dayOfWeek = missionStart.getDayOfWeek();
+        LocalTime startTime = missionStart.toLocalTime();
+        LocalTime endTime = missionEnd.toLocalTime();
+
+        return volunteerRepository.findAvailableVolunteersForMission(missionStart, missionEnd, dayOfWeek, startTime, endTime, missionType);
     }
 
 
-    @Scheduled(cron = "0 0 */1 * * *") // Exécute toutes les heures
-    public void updateMissionStatusScheduled() {
-        List<Mission> missions = missionRepository.findAll();
-        for (Mission mission : missions) {
-            updateMissionStatus(mission);
+    /*@Override
+    @Transactional
+    public Mission planMission(Long missionId, List<Long> userIds, Long chiefUserId) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(() -> new RuntimeException("Mission not found"));
+
+        List<User> assignedUsers = new ArrayList<>();
+        for (Long userId : userIds) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            boolean isChief = userId.equals(chiefUserId); // Vérifier si cet utilisateur est le chef
+            // Enregistrer l'assignation de l'utilisateur à la mission
+            assignUserToMission(user, mission, isChief);
+            assignedUsers.add(user);
         }
+
+        mission.setAssignedUsers(assignedUsers);
+        mission.setStatus(MissionStatus.PLANNED);
+        return missionRepository.save(mission);
+    }*/
+
+    private void assignUserToMission(Volunteer volunteer, Mission mission, boolean isChief) {
+        MissionAssignment assignment = new MissionAssignment();
+        assignment.setVolunteer(volunteer);
+        assignment.setMission(mission);
+        assignment.setChief(isChief);
+        assignment.setAssignedFrom(mission.getStartDateTime());
+        assignment.setAssignedUntil(mission.getEndDateTime());
+        missionAssignmentRepository.save(assignment);
     }
 
+    @Override
+    @Transactional
+    public Mission startMission(Long missionId) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(() -> new RuntimeException("Mission not found"));
+        mission.setStatus(MissionStatus.ONGOING);
+        return missionRepository.save(mission);
+    }
 
-    private void updateMissionStatus(Mission mission) {
-        LocalDateTime currentDate = LocalDateTime.now();
+    @Override
+    @Transactional
+    public Mission cancelMission(Long missionId) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(() -> new RuntimeException("Mission not found"));
+        mission.setStatus(MissionStatus.CANCELLED);
+        return missionRepository.save(mission);
+    }
 
-        // Cas 1
-        if (mission.getStatus() == null) {
-            mission.setStatus(MissionStatus.NEW);
-        }
+    @Override
+    public List<Mission> findMissionsToUpdateStatus(LocalDateTime now) {
 
-        // Cas 2
-        if (mission.getStartingDate() != null && mission.getEndingDate() != null && mission.getMissionVolunteers().isEmpty()) {
-            mission.setStatus(MissionStatus.PLANNED);
-        }
+        // Trouver les missions qui doivent commencer
+        List<Mission> missionsToStart = missionRepository.findByStatusAndStartDateTimeLessThanEqual(MissionStatus.PLANNED, now);
+        List<Mission> missionsToUpdate = new ArrayList<>(missionsToStart);
 
-        // Cas 3
-        if ((mission.getStartingDate() == null && mission.getEndingDate() != null) || (mission.getStartingDate() != null && mission.getEndingDate() == null)) {
-            mission.setStatus(MissionStatus.NEW);
-        }
+        // Trouver les missions qui doivent se terminer
+        List<Mission> missionsToEnd = missionRepository.findByStatusAndEndDateTimeLessThanEqual(MissionStatus.ONGOING, now);
+        missionsToUpdate.addAll(missionsToEnd);
 
-        // Cas 4
-        if (mission.getStartingDate() == null && mission.getEndingDate() == null && !mission.getMissionVolunteers().isEmpty()) {
-            mission.setStatus(MissionStatus.NEW);
-        }
+        return missionsToUpdate;
+    }
 
-        // Cas 5
-        if (mission.getStartingDate() != null && mission.getEndingDate() != null && !mission.getMissionVolunteers().isEmpty()) {
-            mission.setStatus(MissionStatus.VALID);
-        }
+    @Override
+    @Transactional
+    public void updateMissionStatus(Long missionId, LocalDateTime now) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(() -> new RuntimeException("Mission not found"));
 
-        // Cas 6
-        if ((mission.getStartingDate() == null || mission.getEndingDate() == null) && !mission.getMissionVolunteers().isEmpty()) {
-            mission.setStatus(MissionStatus.NEW);
-        }
-
-        // Cas 7
-        if (mission.getStartingDate() != null && mission.getStartingDate().isEqual(currentDate) && mission.getEndingDate() != null && !mission.getMissionVolunteers().isEmpty()) {
+        // Déterminer le nouveau statut en fonction de l'heure actuelle
+        if (now.isEqual(mission.getStartDateTime()) || now.isAfter(mission.getStartDateTime()) && now.isBefore(mission.getEndDateTime())) {
             mission.setStatus(MissionStatus.ONGOING);
+        } else if (now.isEqual(mission.getEndDateTime()) || now.isAfter(mission.getEndDateTime())) {
+            mission.setStatus(MissionStatus.DONE);
+            releaseUsersFromMission(missionId); // Libérer les utilisateurs de la mission
         }
+
         missionRepository.save(mission);
     }
 
-    private boolean isUUIDPresent(UUID uuid) {
-        return uuid != null && !uuid.equals(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+    @Override
+    public void planMission(Mission mission) {
+        if (mission.getStartDateTime() != null && mission.getEndDateTime() != null) {
+            mission.setStatus(MissionStatus.PLANNED);
+            missionRepository.save(mission);
+        } else {
+            mission.setStartDateTime(null);
+            mission.setEndDateTime(null);
+            mission.setStatus(MissionStatus.NEW);
+            missionRepository.save(mission);
+        }
+    }
+
+    private void releaseUsersFromMission(Long missionId) {
+        List<MissionAssignment> assignments = missionAssignmentRepository.findByMissionId(missionId);
+        missionAssignmentRepository.deleteAll(assignments);
     }
 
 

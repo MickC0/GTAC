@@ -1,17 +1,14 @@
 package com.mickc0.gtac.service;
 
-import com.mickc0.gtac.model.Volunteer;
-import com.mickc0.gtac.repository.MissionVolunteerRepository;
+import com.mickc0.gtac.repository.MissionAssignmentRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class MissionVolunteerServiceImpl implements MissionVolunteerService{
-    private final MissionVolunteerRepository missionVolunteerRepository;
+    private final MissionAssignmentRepository missionAssignmentRepository;
 
-    public MissionVolunteerServiceImpl(MissionVolunteerRepository missionVolunteerRepository) {
-        this.missionVolunteerRepository = missionVolunteerRepository;
+    public MissionVolunteerServiceImpl(MissionAssignmentRepository missionAssignmentRepository) {
+        this.missionAssignmentRepository = missionAssignmentRepository;
     }
 
 }

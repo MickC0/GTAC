@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+
+
+
+<div class="container-fluid overflow-hidden">
+    <div class="row vh-100 overflow-auto">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        <div class="col d-flex flex-column h-sm-100 col-sm-9">
+            <main class="row overflow-auto">
+                <div class="col pt-4">
+                    <h1 class="py-2" th:text="${mission.title}"></h1>
+                    <hr />
+
+                    <div class="card">
+                        <div class="card-header">
+
+                        </div>
+                        <div class="card-body">
+                            <p>Description : <span th:text="${mission.description}"></span></p>
+                            <p th:text="${mission.comment}"></p>
+                            <p th:text="${mission.status}"></p>
+                            <p th:text="${mission.missionType.name}"></p>
+                            <p th:text="${#temporals.format(mission.startDateTime, 'dd.MM.yyyy HH:mm')}"></p>
+                            <p th:text="${#temporals.format(mission.endDateTime, 'dd.MM.yyyy HH:mm')}"></p>
+                        </div>
+                        <div class="card-footer">
+                            <a class="btn btn-secondary" th:href="@{/missions}">Retour</a>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+            <div th:replace="~{fragments/footer :: footer}"></div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

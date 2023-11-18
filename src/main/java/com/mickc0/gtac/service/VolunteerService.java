@@ -1,20 +1,14 @@
 package com.mickc0.gtac.service;
 
-import com.mickc0.gtac.dto.VolunteerDTO;
+import com.mickc0.gtac.entity.Volunteer;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 public interface VolunteerService {
-    List<VolunteerDTO> findAll();
-
-    void saveVolunteer(VolunteerDTO volunteerDTO);
-
-    VolunteerDTO findVolunteerByUUID(UUID uuid);
-
-    void updateVolunteer(VolunteerDTO volunteerDTO);
-
-    void deleteVolunteer(UUID uuid);
-
-    List<VolunteerDTO> searchVolunteers(String query);
+    Volunteer save(Volunteer volunteer);
+    Optional<Volunteer> findVolunteerById(Long id);
+    List<Volunteer> findAll();
+    void updateVolunteer(Volunteer volunteer);
+    void deleteVolunteer(Long id);
 }

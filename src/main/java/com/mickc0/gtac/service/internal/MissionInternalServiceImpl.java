@@ -1,7 +1,5 @@
 package com.mickc0.gtac.service.internal;
 
-import com.mickc0.gtac.dto.MissionDTO;
-import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.service.MissionService;
 import com.mickc0.gtac.service.MissionTypeService;
 import com.mickc0.gtac.service.MissionVolunteerService;
@@ -24,20 +22,6 @@ public class MissionInternalServiceImpl implements MissionInternalService{
         this.missionTypeService = missionTypeService;
     }
 
-
-    @Override
-    public void saveMissionWithType(MissionDTO missionDTO) {
-        MissionTypeDTO existingMissionTypeDTO = missionTypeService.findByUuidFullDto(missionDTO.getMissionType().getUuid());
-        missionDTO.setMissionType(existingMissionTypeDTO);
-        missionService.saveNewMission(missionDTO);
-    }
-
-    @Override
-    public void updateMissionWithType(MissionDTO missionDTO) {
-        MissionTypeDTO existingMissionTypeDTO = missionTypeService.findByUuidFullDto(missionDTO.getMissionType().getUuid());
-        missionDTO.setMissionType(existingMissionTypeDTO);
-        missionService.updateMission(missionDTO);
-    }
 
     //TODO implémenter la méthode getMissionTypes
     // on ne travail qu'avec les DTO !!!

@@ -1,62 +1,62 @@
 package com.mickc0.gtac.controller;
 
-import com.mickc0.gtac.dto.MissionTypeDTO;
+import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.service.MissionTypeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Controller
+@RequestMapping("/mission-types")
 public class MissionTypeController {
 
     private final MissionTypeService missionTypeService;
 
-
+    @Autowired
     public MissionTypeController(MissionTypeService missionTypeService) {
         this.missionTypeService = missionTypeService;
     }
 
-    @GetMapping("/mission-types")
-    public String findAll(Model model){
-        model.addAttribute("missionTypes", missionTypeService.findAll());
-        model.addAttribute("newMissionType", new MissionTypeDTO());
-        return "/mission_types/mission_types";
+    @GetMapping
+    public String listMissionTypes(Model model) {
+        List<MissionType> missionTypes = missionTypeService.findAll();
+        model.addAttribute("missionTypes", missionTypes);
+        return "mission-types/mission-types";
     }
 
-    @PostMapping("/mission-types")
-    public String saveMissionType(@ModelAttribute("newMissionType") MissionTypeDTO missionTypeDTO){
-        missionTypeService.save(missionTypeDTO);
+    @GetMapping("/create")
+    public String showCreateForm(Model model) {
+        model.addAttribute("missionType", new MissionType());
+        return "mission-types/create-mission-type";
+    }
+
+    @PostMapping
+    public String createMissionType(@ModelAttribute MissionType missionType) {
+        missionTypeService.save(missionType);
         return "redirect:/mission-types";
     }
 
-    @GetMapping("/mission-types/edit/{id}")
-    public String editTypeForm(@PathVariable(value = "id")UUID uuid, Model model) {
-        model.addAttribute("missionType", missionTypeService.findByUuid(uuid));
-        return "/mission_types/edit_type";
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable(name = "id") Long id, Model model) {
+        MissionType missionType = missionTypeService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + id));
+        model.addAttribute("missionType", missionType);
+        return "mission-types/edit-type";
     }
 
-    @PostMapping("/mission-types/update")
-    public String updateMissionType(@ModelAttribute("missionType") MissionTypeDTO missionTypeDTO){
-        missionTypeService.update(missionTypeDTO);
+    @PostMapping("/update/{id}")
+    public String updateMissionType(@PathVariable(name = "id") Long id, @ModelAttribute MissionType missionType) {
+        missionTypeService.save(missionType);
         return "redirect:/mission-types";
     }
 
-    @GetMapping("/mission-types/delete/{id}")
-    public String deleteMissionType(@PathVariable("id")UUID uuid){
-        missionTypeService.deleteMissionType(uuid);
+    @GetMapping("/delete/{id}")
+    public String deleteMissionType(@PathVariable(name = "id") Long id) {
+        missionTypeService.deleteById(id);
         return "redirect:/mission-types";
     }
-
-    @GetMapping("/mission-types/search")
-    public String searchMissions(@RequestParam(value = "query") String query, Model model){
-        List<MissionTypeDTO> missionTypeWithoutIdDTOS = missionTypeService.searchMissionTypes(query);
-        model.addAttribute("missionTypes", missionTypeWithoutIdDTOS);
-        model.addAttribute("newMissionType", new MissionTypeDTO());
-        return "mission_types/mission_types";
-    }
-
 
 }
