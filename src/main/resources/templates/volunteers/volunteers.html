@@ -52,7 +52,27 @@
                                             <!-- Editer -->
                                             <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.id})}"><i class="bi bi-pencil-square"></i></a>
                                             <!-- Supprimer -->
-                                            <a class="btn btn-danger btn-sm" th:href="@{/volunteers/delete/{id}(id=${v.id})}"><i class="bi bi-trash"></i></a>
+                                            <!--<a class="btn btn-danger btn-sm" th:href="@{/volunteers/delete/{id}(id=${v.id})}"><i class="bi bi-trash"></i></a>-->
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteVolunteerModal" th:attr="data-volunteer-id=${v.id}"><i class="bi bi-trash"></i></button>
+                                            <!-- Modal pour la confirmation de suppression -->
+                                            <div class="modal fade" id="deleteVolunteerModal" tabindex="-1" aria-labelledby="deleteVolunteerModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deleteVolunteerModalLabel">Supprimer Bénévole</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Êtes-vous sûr de vouloir supprimer ce bénévole ?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                            <a class="btn btn-danger" id="confirmDelete" th:href="@{/volunteers/delete/{id}(id=${v.id})}">Supprimer</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <!-- Voir -->
                                             <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.id})}"><i class="bi bi-eye"></i></a>
                                         </td>
@@ -102,6 +122,16 @@
         </div>
     </div>
 </div>
+<script th:inline="javascript">
+    $('#deleteVolunteerModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Bouton qui a déclenché la modal
+        var volunteerId = button.data('volunteer-id'); // Extraction de l'ID du volontaire
+        var modal = $(this);
+        modal.find('#confirmDelete').click(function() {
+            window.location.href = /*[[@{/volunteers/delete/}]]*/ 'deletePath' + volunteerId;
+        });
+    });
+</script>
 
 
 <div th:replace="~{fragments/scripts :: scripts}"></div>
