@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="card col-lg-6 col-md-6 justify-content-center container py-4">
+            <div class="card-header">
+                <h1>Nouveau bénévole</h1>
+                <h2>Choix des types de mission</h2>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/volunteers/add-mission-types}" method="post" id="missionTypesForm" th:object="${allMissionTypes}">
+                    <input type="hidden" name="volunteerId" th:value="${volunteerId}" />
+                    <div th:if="${allMissionTypes.isEmpty()}">
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill">
+                                <span>La liste des types de mission est actuellement vide. Vous pouvez ajouter des types de mission plus tard.</span>
+                            </i>
+                        </div>
+                    </div>
+                    <div th:unless="${allMissionTypes.isEmpty()}">
+                        <div class="form-group" th:each="missionType : ${allMissionTypes}">
+                            <input th:value="${missionType.id}" name="missionTypeIds" type="checkbox" class="btn-check" id="btn-check-2-outlined" checked autocomplete="off">
+                            <label class="btn btn-outline-secondary" for="btn-check-2-outlined" th:text="${missionType.name}"></label><br>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-outline-secondary pb-2" th:href="@{/volunteers}">Annuler</a>
+                <button type="submit" form="missionTypesForm" class="btn btn-primary">Terminer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

@@ -3,15 +3,20 @@ package com.mickc0.gtac.controller;
 import com.mickc0.gtac.dto.AvailabilityFormDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.Availability;
+import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.service.AvailabilityService;
+import com.mickc0.gtac.service.MissionTypeService;
 import com.mickc0.gtac.service.VolunteerService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/volunteers")
@@ -20,11 +25,13 @@ public class VolunteerController {
 
     private final VolunteerService volunteerService;
     private final AvailabilityService availabilityService;
+    private final MissionTypeService missionTypeService;
 
 
-    public VolunteerController(VolunteerService volunteerService, AvailabilityService availabilityService) {
+    public VolunteerController(VolunteerService volunteerService, AvailabilityService availabilityService, MissionTypeService missionTypeService) {
         this.volunteerService = volunteerService;
         this.availabilityService = availabilityService;
+        this.missionTypeService = missionTypeService;
     }
 
     @GetMapping
@@ -51,13 +58,28 @@ public class VolunteerController {
     public String AddAvailabilityForm(@RequestParam("volunteerId") Long volunteerId, Model model) {
         model.addAttribute("volunteerId", volunteerId);
         model.addAttribute("availabilityForm", new AvailabilityFormDTO());
-        return "volunteers/availability/add-availability";
+        return "volunteers/availabilities/add-availabilities";
     }
 
     @PostMapping("/add-availability")
-    public String addAvailability(@ModelAttribute AvailabilityFormDTO availabilityForm, @RequestParam("volunteerId") Long volunteerId) {
-        Volunteer volunteer = volunteerService.findVolunteerById(volunteerId)
+    public String addAvailability(@ModelAttribute AvailabilityFormDTO availabilityForm, @RequestParam("volunteerId") Long volunteerId,
+                                  RedirectAttributes redirectAttributes, BindingResult result) {
+        Volunteer volunteer = volunteerService.findById(volunteerId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid volunteer Id:" + volunteerId));
+        if (availabilityForm.getAvailabilities() != null) {
+            for (Availability availability : availabilityForm.getAvailabilities()) {
+                if (availability.getDayOfWeek() != null || availability.getStartTime() != null || availability.getEndTime() != null) {
+                    if (availability.getDayOfWeek() == null || availability.getStartTime() == null || availability.getEndTime() == null || availability.getStartTime().isAfter(availability.getEndTime())) {
+                        result.rejectValue("availabilities", "InvalidAvailability", "Vérifiez que tous les champs de disponibilité sont remplis correctement et que l'heure de début est antérieure à l'heure de fin.");
+                        break;
+                    }
+                }
+            }
+        }
+        if (result.hasErrors()) {
+            redirectAttributes.addAttribute("volunteerId", volunteerId);
+            return "redirect:/volunteers/add-availability";
+        }
         // Ici, traitez les disponibilités soumises
         for (Availability availability : availabilityForm.getAvailabilities()) {
             Availability newAvailability = new Availability();
@@ -67,13 +89,50 @@ public class VolunteerController {
             newAvailability.setEndTime(availability.getEndTime());
             availabilityService.createAvailability(newAvailability);
         }
-        return "redirect:/volunteers";
+        redirectAttributes.addAttribute("volunteerId", volunteerId);
+        redirectAttributes.addFlashAttribute("successMessage", "Disponibilités ajoutées avec succès.");
+        return "redirect:/volunteers/add-mission-types";
     }
+
+    @GetMapping("/add-mission-types")
+    public String showAddMissionTypesForm(Model model, @RequestParam("volunteerId") Long volunteerId) {
+        List<MissionType> allMissionTypes = missionTypeService.findAll(); // Récupérez tous les types de missions
+        model.addAttribute("allMissionTypes", allMissionTypes);
+        model.addAttribute("volunteerId", volunteerId);
+        return "volunteers/mission-types/add-mission-types";
+    }
+
+    @PostMapping("/add-mission-types")
+    public String addMissionTypes(@RequestParam("volunteerId") Long volunteerId,
+                                  @RequestParam(value = "missionTypeIds", required = false) List<Long> missionTypeIds,
+                                  RedirectAttributes redirectAttributes) {
+        Volunteer volunteer = volunteerService.findById(volunteerId)
+                .orElseThrow(() -> new EntityNotFoundException("Volontaire avec l'ID " + volunteerId + " non trouvé"));
+
+        // Nettoyez les anciens types de mission associés si nécessaire
+        volunteer.getPreferredMissionTypes().clear();
+
+        // Vérifiez si des types de mission ont été sélectionnés
+        if (missionTypeIds != null && !missionTypeIds.isEmpty()) {
+            for (Long missionTypeId : missionTypeIds) {
+                Optional<MissionType> missionTypeOptional = missionTypeService.findById(missionTypeId);
+                missionTypeOptional.ifPresent(volunteer.getPreferredMissionTypes()::add);
+            }
+        }
+
+        volunteerService.save(volunteer); // Sauvegardez les modifications du volontaire
+
+        redirectAttributes.addFlashAttribute("successMessage", "Le volontaire a été créé avec succès.");
+        return "redirect:/volunteers"; // Redirigez vers la liste des volontaires ou une autre page appropriée
+    }
+
+
+
 
 
     @GetMapping("/edit/{id}")
     public String editVolunteerForm(@PathVariable(value = "id") Long id, Model model){
-        Volunteer volunteer = volunteerService.findVolunteerById(id)
+        Volunteer volunteer = volunteerService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid volunteer Id:" + id));
         model.addAttribute("volunteer", volunteer);
         return "/volunteers/volunteer/edit-volunteer";
@@ -93,7 +152,7 @@ public class VolunteerController {
 
     @GetMapping("/view/{id}")
     public String viewVolunteer(@PathVariable (value = "id") Long id, Model model){
-        Volunteer volunteer = volunteerService.findVolunteerById(id)
+        Volunteer volunteer = volunteerService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid volunteer Id:" + id));
         model.addAttribute("volunteer", volunteer);
         return "volunteers/volunteer/view-volunteer";

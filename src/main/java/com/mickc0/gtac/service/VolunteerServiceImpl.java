@@ -33,7 +33,7 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
-    public Optional<Volunteer> findVolunteerById(Long id) {
+    public Optional<Volunteer> findById(Long id) {
         return volunteerRepository.findById(id);
     }
 

@@ -73,4 +73,16 @@ public class Availability {
     public void setVolunteer(Volunteer volunteer) {
         this.volunteer = volunteer;
     }
+
+    @Override
+    public String toString() {
+        return "Availability{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", dayOfWeek=" + dayOfWeek +
+                ", volunteer=" + volunteer +
+                '}';
+    }
 }

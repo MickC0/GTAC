@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="card col-lg-6 col-md-6 justify-content-center container py-4">
+                <div class="card-header">
+                    <h1>Nouveau bénévole</h1>
+                    <h2>Ajout des disponibilités</h2>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/volunteers/add-availability}" th:object="${availabilityForm}" id="availabilityForm" method="post">
+                        <input type="hidden" name="volunteerId" id="volunteerId" th:value="${volunteerId}">
+                        <div id="availabilityFields" class="pb-2">
+                            <!-- Bloc pour une ligne de disponibilité -->
+                            <div th:each="availability, stat : *{availabilities}" class="availabilityRow row gy-2 gx-3 align-items-center">
+                                <div class="col-auto" >
+                                    <label for="dayOfWeek" class="form-label">Choisissez un jour:</label>
+                                    <select th:field="*{availabilities[__${stat.index}__].dayOfWeek}" class="form-select" id="dayOfWeek" name="dayOfWeek" required="required">
+                                        <option selected>Jour</option>
+                                        <option value="MONDAY">Lundi</option>
+                                        <option value="TUESDAY">Mardi</option>
+                                        <option value="WEDNESDAY">Mercredi</option>
+                                        <option value="THURSDAY">Jeudi</option>
+                                        <option value="FRIDAY">Vendredi</option>
+                                        <option value="SATURDAY">Samedi</option>
+                                        <option value="SUNDAY">Dimanche</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <label for="startTime" class="form-label">Heure de début:</label>
+                                    <input th:field="*{availabilities[__${stat.index}__].startTime}" type="time" class="form-control" name="startTime" id="startTime" required="required">
+                                </div>
+                                <div class="col-auto">
+                                    <label for="endTime" class="form-label">Heure de Fin:</label>
+                                    <input th:field="*{availabilities[__${stat.index}__].endTime}" type="time" class="form-control" name="endTime" id="endTime" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="addMore" class="btn btn-sm btn-outline-secondary">Ajouter une disponibilité</button>
+                    </form>
+
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-outline-secondary pb-2" th:href="@{/volunteers}">Annuler</a>
+                    <button type="submit" form="availabilityForm" class="btn btn-primary">Suivant</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('availabilityForm').addEventListener('submit', function(event) {
+            var isValid = true;
+            var availabilityRows = document.querySelectorAll('.availabilityRow');
+
+            availabilityRows.forEach(function(row) {
+                var dayOfWeek = row.querySelector('[name^="availabilities["]').value;
+                var startTime = row.querySelector('[name$=".startTime"]').value;
+                var endTime = row.querySelector('[name$=".endTime"]').value;
+
+                if ((dayOfWeek || startTime || endTime) && (!dayOfWeek || !startTime || !endTime || startTime >= endTime)) {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault();
+                alert('Veuillez vérifier les disponibilités : tous les champs doivent être remplis et l\'heure de début doit être antérieure à l\'heure de fin.');
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var availabilityIndex = 0; // Un index pour suivre le nombre de lignes ajoutées
+
+            document.getElementById('addMore').addEventListener('click', function() {
+                var container = document.getElementById('availabilityFields');
+
+                // Construire la nouvelle ligne de disponibilité
+                var newRow = document.createElement('div');
+                newRow.className = 'availabilityRow row gy-2 gx-3 align-items-center';
+
+                newRow.innerHTML = `
+                <div class="col-auto">
+                    <label class="form-label">Choisissez un jour:</label>
+                    <select class="form-select" name="availabilities[${availabilityIndex}].dayOfWeek" required="required">
+                        <option selected>Jour</option>
+                        <option value="MONDAY">Lundi</option>
+                        <option value="TUESDAY">Mardi</option>
+                        <option value="WEDNESDAY">Mercredi</option>
+                        <option value="THURSDAY">Jeudi</option>
+                        <option value="FRIDAY">Vendredi</option>
+                        <option value="SATURDAY">Samedi</option>
+                        <option value="SUNDAY">Dimanche</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label">Heure de début:</label>
+                    <input type="time" class="form-control" name="availabilities[${availabilityIndex}].startTime">
+                </div>
+                <div class="col-auto">
+                    <label class="form-label">Heure de Fin:</label>
+                    <input type="time" class="form-control" name="availabilities[${availabilityIndex}].endTime">
+                </div>
+            `;
+
+                container.appendChild(newRow);
+                availabilityIndex++; // Incrémenter l'index pour la prochaine ligne
+            });
+        });
+    </script>
+
+
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

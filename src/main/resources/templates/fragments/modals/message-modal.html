@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+<div th:fragment="message-modal" th:if="${not #strings.isEmpty(successMessage) or not #strings.isEmpty(errorMessage)}"
+     class="modal" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div th:if="${not #strings.isEmpty(successMessage)}" class="modal-header bg-success text-white">
+        <h5 class="modal-title">Succès</h5>
+      </div>
+      <div th:if="${not #strings.isEmpty(errorMessage)}" class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Erreur</h5>
+      </div>
+      <div class="modal-body">
+        <p th:text="${successMessage ?: errorMessage}"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Script pour afficher la modal -->
+<!--<script th:inline="javascript">
+  window.addEventListener('DOMContentLoaded', (event) => {
+    let messageModal = document.getElementById('messageModal');
+    if (messageModal) {
+      let bootstrapModal = new bootstrap.Modal(messageModal);
+      bootstrapModal.show();
+    }
+  });
+</script>-->
+<script th:inline="javascript">
+  window.addEventListener('DOMContentLoaded', function() {
+    var messageModal = document.getElementById('messageModal');
+    if (messageModal) {
+      var bootstrapModal = new bootstrap.Modal(messageModal);
+      bootstrapModal.show();
+    }
+  });
+</script>
+
+</body>
+</html>
