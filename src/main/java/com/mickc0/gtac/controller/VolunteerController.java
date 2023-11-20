@@ -15,10 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping("/volunteers")
@@ -49,20 +46,40 @@ public class VolunteerController {
 
     @GetMapping("/create")
     public String showCreateForm(Model model){
-        MissionTypeSelectionDTO missionTypeSelectionDTO = new MissionTypeSelectionDTO();
+
         model.addAttribute("volunteer", new VolunteerNewDTO());
-        model.addAttribute("missionTypes", missionTypeService.getAll());
+        model.addAttribute("allMissionTypes", missionTypeService.getAll());
         return "volunteers/volunteer/create-volunteer";
     }
 
-   /* @PostMapping
-    public String createVolunteer(@ModelAttribute("volunteer") Volunteer volunteer, RedirectAttributes redirectAttributes){
-        Volunteer savedVolunteer = volunteerService.save(volunteer);
-        redirectAttributes.addAttribute("volunteerId", savedVolunteer.getId());
-        return "redirect:/volunteers/add-availability";
-    }*/
 
     @PostMapping
+    public String saveVolunteer(@ModelAttribute("volunteer") VolunteerNewDTO volunteerDTO,
+                                @RequestParam(required = false) List<Long> missionTypes) {
+        List<MissionType> selectedMissionTypes = new ArrayList<>();
+        if (missionTypes != null && !missionTypes.isEmpty()) {
+            selectedMissionTypes = missionTypeService.findAllById(missionTypes);
+        }
+
+        Volunteer newVolunteer = volunteerService.saveAndReturn(volunteerMapper.mapToEntityLowDetail(volunteerDTO));
+        Set<Availability> availabilities = new HashSet<>();
+        for (AvailabilityDTO availabilityDTO : volunteerDTO.getAvailabilities()) {
+            Availability availability = new Availability();
+            availability.setDayOfWeek(availabilityDTO.getDayOfWeek());
+            availability.setStartTime(availabilityDTO.getStartTime());
+            availability.setEndTime(availabilityDTO.getEndTime());
+            availability.setVolunteer(newVolunteer); // Lier la disponibilité au volontaire
+            availabilityService.save(availability);
+            availabilities.add(availability);
+        }
+        newVolunteer.setAvailabilities(availabilities);
+        newVolunteer.setMissionTypes(new HashSet<>(selectedMissionTypes));
+        volunteerService.save(newVolunteer);
+        return "redirect:/volunteers";
+    }
+
+
+    /*@PostMapping
     public String saveVolunteer(@ModelAttribute VolunteerNewDTO volunteerDTO,@RequestParam List<Long> missionTypes, RedirectAttributes redirectAttributes) {
         //1 On mappe volunteerDTO vers volunteer simple (nom, prénom, etc)
         //2 On save le volontaire
@@ -88,7 +105,7 @@ public class VolunteerController {
 
         redirectAttributes.addFlashAttribute("successMessage", "Volontaire enregistré avec succès.");
         return "redirect:/volunteers";
-    }
+    }*/
 
     @GetMapping("/add-availability")
     public String AddAvailabilityForm(@RequestParam("volunteerId") Long volunteerId, Model model) {
@@ -146,13 +163,13 @@ public class VolunteerController {
                 .orElseThrow(() -> new EntityNotFoundException("Volontaire avec l'ID " + volunteerId + " non trouvé"));
 
         // Nettoyez les anciens types de mission associés si nécessaire
-        volunteer.getPreferredMissionTypes().clear();
+        volunteer.getMissionTypes().clear();
 
         // Vérifiez si des types de mission ont été sélectionnés
         if (missionTypeIds != null && !missionTypeIds.isEmpty()) {
             for (Long missionTypeId : missionTypeIds) {
                 Optional<MissionType> missionTypeOptional = missionTypeService.findById(missionTypeId);
-                missionTypeOptional.ifPresent(volunteer.getPreferredMissionTypes()::add);
+                missionTypeOptional.ifPresent(volunteer.getMissionTypes()::add);
             }
         }
 

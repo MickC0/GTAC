@@ -39,7 +39,7 @@ public class Volunteer {
             joinColumns = @JoinColumn(name = "volunteer_id"),
             inverseJoinColumns = @JoinColumn(name = "mission_type_id")
     )
-    private Set<MissionType> preferredMissionTypes;
+    private Set<MissionType> missionTypes;
 
     public Long getId() {
         return id;
@@ -121,11 +121,11 @@ public class Volunteer {
         this.missions = missions;
     }
 
-    public Set<MissionType> getPreferredMissionTypes() {
-        return preferredMissionTypes;
+    public Set<MissionType> getMissionTypes() {
+        return missionTypes;
     }
 
-    public void setPreferredMissionTypes(Set<MissionType> preferredMissionTypes) {
-        this.preferredMissionTypes = preferredMissionTypes;
+    public void setMissionTypes(Set<MissionType> preferredMissionTypes) {
+        this.missionTypes = preferredMissionTypes;
     }
 }

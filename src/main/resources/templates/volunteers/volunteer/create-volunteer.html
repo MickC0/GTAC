@@ -3,51 +3,52 @@
 <body>
 <div class="container">
     <div class="row">
-        <div class="card col-lg-6 col-md-6 justify-content-center container py-4">
+        <div class="card col-lg-9 col-md-9 justify-content-center container py-4">
             <div class="card-header">
                 <h1>Nouveau bénévole</h1>
             </div>
             <div class="card-body">
+
                 <form th:action="@{/volunteers}" method="post" id="newVolunteerForm" th:object="${volunteer}">
-                    <div class="form-group">
-                        <label for="lastName" class="col-form-label">Nom :</label>
-                        <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required">
-                    </div>
-                    <div class="form-group">
-                        <label for="firstName" class="col-form-label">Prénom :</label>
-                        <input th:field="*{firstName}" type="text" id="firstName" class="form-control" required="required">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email" class="col-form-label">Email :</label>
-                        <input th:field="*{email}" type="email" id="email" class="form-control">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phoneNumber" class="col-form-label">Téléphone :</label>
-                        <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control">
-                    </div>
-                    <hr>
-
-                    <div th:if="${missionTypes.isEmpty()}">
-                        <div class="alert alert-warning my-2" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill">
-                                <span>La liste des types de mission est actuellement vide. Vous pouvez ajouter des types de mission plus tard.</span>
-                            </i>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lastName" class="col-form-label">Nom :</label>
+                                <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required">
+                            </div>
+                            <div class="form-group">
+                                <label for="firstName" class="col-form-label">Prénom :</label>
+                                <input th:field="*{firstName}" type="text" id="firstName" class="form-control" required="required">
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-form-label">Email :</label>
+                                <input th:field="*{email}" type="email" id="email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="phoneNumber" class="col-form-label">Téléphone :</label>
+                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div th:if="${allMissionTypes.isEmpty()}">
+                                <div class="alert alert-warning my-2" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill">
+                                        <span>La liste des types de mission est actuellement vide. Vous pouvez ajouter des types de mission plus tard.</span>
+                                    </i>
+                                </div>
+                            </div>
+                            <div class="row" role="group" th:unless="${allMissionTypes.isEmpty()}">
+                                <div class="col-6 col-md-4 my-1" th:each="missionType:${allMissionTypes}">
+                                    <input th:id="${'btn-check-outlined' + missionType.id}" th:value="${missionType.id}" th:name="missionTypes" type="checkbox" class="btn-check" autocomplete="off">
+                                    <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.id}" th:text="${missionType.name}"></label><br>
+                                </div>
+                            </div>
+                            <hr>
+                            <div id="availabilitySection">
+                            </div>
+                            <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
                         </div>
                     </div>
-                    <div class="btn-group me-2" role="group" th:unless="${missionTypes.isEmpty()}">
-                        <div class="form-group" th:each="missionType:${missionTypes}">
-                            <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.id}" th:text="${missionType.name}"></label><br>
-                            <input th:id="${'btn-check-outlined' + missionType.id}" th:value="${missionType.id}" th:name="missionTypes" type="checkbox" class="btn-check" autocomplete="off">
-                        </div>
-                    </div>
-                    <hr>
-
-                    <div id="availabilitySection">
-
-                    </div>
-                    <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
                 </form>
             </div>
             <div class="card-footer">
@@ -57,14 +58,31 @@
         </div>
     </div>
 </div>
+<!-- Modal Bootstrap pour l'alerte -->
+<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white" id="alertModalLabel">Alerte</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Veuillez vérifier les disponibilités : tous les champs doivent être remplis, un jour de la semaine doit être sélectionné, et l'heure de début doit être antérieure à l'heure de fin.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     document.getElementById('addAvailability').addEventListener('click', function() {
-        var availabilitySection = document.getElementById('availabilitySection');
-        var index = availabilitySection.children.length;
+        let availabilitySection = document.getElementById('availabilitySection');
+        let index = availabilitySection.children.length;
 
-        var availabilityDiv = document.createElement('div');
-        availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center';
+        let availabilityDiv = document.createElement('div');
+        availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
         availabilityDiv.innerHTML = `
             <div class="col-auto">
                 <label class="form-label" for="availabilities${index}.dayOfWeek">Jour :</label>
@@ -92,24 +110,31 @@
     });
     // Validation lors de la soumission du formulaire
     document.getElementById('newVolunteerForm').addEventListener('submit', function(event) {
-        var isValid = true;
-        var availabilityRows = document.querySelectorAll('#availabilitySection > div');
+        let isValid = true;
+        const availabilityRows = document.querySelectorAll('#availabilitySection > div');
 
         availabilityRows.forEach(function(row) {
-            var dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
-            var startTime = row.querySelector('input[name$=".startTime"]').value;
-            var endTime = row.querySelector('input[name$=".endTime"]').value;
+            const dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
+            const startTime = row.querySelector('input[name$=".startTime"]').value;
+            const endTime = row.querySelector('input[name$=".endTime"]').value;
+
+            // Vérifiez si 'dayOfWeek' est égal à l'option non valide (ex. "Jour")
+            if (dayOfWeek === "Jour") {
+                isValid = false;
+            }
 
             if ((dayOfWeek || startTime || endTime) && (!dayOfWeek || !startTime || !endTime || startTime >= endTime)) {
                 isValid = false;
             }
         });
-
         if (!isValid) {
             event.preventDefault();
-            alert('Veuillez vérifier les disponibilités : tous les champs doivent être remplis et l\'heure de début doit être antérieure à l\'heure de fin.');
+            const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            alertModal.show();
         }
+
     });
+
 </script>
 
 <div th:replace="~{fragments/scripts :: scripts}"></div>
