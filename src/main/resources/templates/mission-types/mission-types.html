@@ -78,43 +78,8 @@
             </div>
         </div>
     </div>
-    <!-- Modal pour la confirmation de suppression -->
-    <div class="modal fade" id="deleteMissionTypeModal" tabindex="-1" aria-labelledby="deleteMissionTypeModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteMissionTypeModalLabel">Supprimer Type de Mission</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <i class="bi bi-exclamation-triangle-fill">
-                            <span>
-                                Êtes-vous sûr de vouloir supprimer ce type de mission ?
-                            </span>
-                    </i>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <a class="btn btn-danger" id="confirmDelete">Confirmer</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            var deleteModal = document.getElementById('deleteMissionTypeModal');
-            deleteModal.addEventListener('show.bs.modal', function(event) {
-                var button = event.relatedTarget;
-                var itemId = button.getAttribute('data-missionType-id');
-                var deleteUrl = /*[[@{/mission-types/delete/}]]*/ 'deletePath';
-
-                var confirmDeleteBtn = document.getElementById('confirmDelete');
-                confirmDeleteBtn.onclick = function() {
-                    window.location.href = deleteUrl + itemId;
-                };
-            });
-        });
-    </script>
+    <div th:replace="~{fragments/modals/message-modal :: message-modal}"></div>
+    <div th:replace="~{fragments/modals/delete-mission-type-modal :: delete-mission-type-modal}"></div>
 
 
     <div th:replace="~{fragments/scripts :: scripts}"></div>

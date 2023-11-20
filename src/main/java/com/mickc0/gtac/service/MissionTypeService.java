@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface MissionTypeService {
 
     void save(MissionType missionType);
+
     List<MissionType> findAll();
     List<MissionTypeDTO> getAll();
     List<MissionType> findAllById(List<Long> ids);

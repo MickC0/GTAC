@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface MissionTypeRepository extends JpaRepository<MissionType, Long> {
-
+    Optional<MissionType> findByName(String name);
 
 }

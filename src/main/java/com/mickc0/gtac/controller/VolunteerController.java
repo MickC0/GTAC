@@ -55,7 +55,7 @@ public class VolunteerController {
 
     @PostMapping
     public String saveVolunteer(@ModelAttribute("volunteer") VolunteerNewDTO volunteerDTO,
-                                @RequestParam(required = false) List<Long> missionTypes) {
+                                @RequestParam(required = false) List<Long> missionTypes, RedirectAttributes redirectAttributes) {
         List<MissionType> selectedMissionTypes = new ArrayList<>();
         if (missionTypes != null && !missionTypes.isEmpty()) {
             selectedMissionTypes = missionTypeService.findAllById(missionTypes);
@@ -75,37 +75,10 @@ public class VolunteerController {
         newVolunteer.setAvailabilities(availabilities);
         newVolunteer.setMissionTypes(new HashSet<>(selectedMissionTypes));
         volunteerService.save(newVolunteer);
+        redirectAttributes.addFlashAttribute("successMessage", "Volontaire enregistré avec succès.");
         return "redirect:/volunteers";
     }
 
-
-    /*@PostMapping
-    public String saveVolunteer(@ModelAttribute VolunteerNewDTO volunteerDTO,@RequestParam List<Long> missionTypes, RedirectAttributes redirectAttributes) {
-        //1 On mappe volunteerDTO vers volunteer simple (nom, prénom, etc)
-        //2 On save le volontaire
-        Volunteer newVolunteer = volunteerService.saveAndReturn(volunteerMapper.mapToEntityLowDetail(volunteerDTO));
-
-        //3 on récupère le volontaire et on l'injecte dans les availability
-        Set<Availability> availabilities = new HashSet<>();
-        for (AvailabilityDTO availabilityDTO : volunteerDTO.getAvailabilities()) {
-            Availability availability = new Availability();
-            availability.setDayOfWeek(availabilityDTO.getDayOfWeek());
-            availability.setStartTime(availabilityDTO.getStartTime());
-            availability.setEndTime(availabilityDTO.getEndTime());
-            availability.setVolunteer(newVolunteer); // Lier la disponibilité au volontaire
-            availabilityService.save(availability);
-            availabilities.add(availability);
-        }
-        newVolunteer.setAvailabilities(availabilities);
-        List<MissionType> selectedMissionType = missionTypeService.findAllById(missionTypes);
-        newVolunteer.setPreferredMissionTypes(new HashSet<>(selectedMissionType));
-
-
-        volunteerService.save(newVolunteer);
-
-        redirectAttributes.addFlashAttribute("successMessage", "Volontaire enregistré avec succès.");
-        return "redirect:/volunteers";
-    }*/
 
     @GetMapping("/add-availability")
     public String AddAvailabilityForm(@RequestParam("volunteerId") Long volunteerId, Model model) {
@@ -192,8 +165,9 @@ public class VolunteerController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateVolunteer(@PathVariable(name = "id") Long id, @ModelAttribute ("volunteer") Volunteer volunteer){
+    public String updateVolunteer(@PathVariable(name = "id") Long id, @ModelAttribute ("volunteer") Volunteer volunteer, RedirectAttributes redirectAttributes){
         volunteerService.updateVolunteer(volunteer);
+        redirectAttributes.addFlashAttribute("successMessage", "Volontaire modifié avec succès.");
         return "redirect:/volunteers";
     }
 

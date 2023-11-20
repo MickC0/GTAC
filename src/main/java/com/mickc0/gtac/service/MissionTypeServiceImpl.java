@@ -3,13 +3,16 @@ package com.mickc0.gtac.service;
 import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.dto.MissionTypeSelectionDTO;
 import com.mickc0.gtac.entity.MissionType;
+import com.mickc0.gtac.exception.CustomDuplicateEntryException;
 import com.mickc0.gtac.mapper.MissionTypeMapper;
 import com.mickc0.gtac.repository.MissionTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,8 +33,30 @@ public class MissionTypeServiceImpl implements MissionTypeService{
 
     @Override
     @Transactional
-    public void save(MissionType missionType) {
+    public void save(MissionType missionType) throws CustomDuplicateEntryException {
+        String normalizedNewName = normalizeString(missionType.getName());
+
+        Optional<MissionType> existingMissionType = missionTypeRepository
+                .findAll()
+                .stream()
+                .filter(mt -> mt.getId() != null && !mt.getId().equals(missionType.getId())) // Ignorer l'entité actuelle
+                .filter(mt -> normalizeString(mt.getName()).equalsIgnoreCase(normalizedNewName))
+                .findFirst();
+
+        if (existingMissionType.isPresent()) {
+            throw new CustomDuplicateEntryException("Un type de mission avec le nom '" + missionType.getName() + "' existe déjà.");
+        }
+
         missionTypeRepository.save(missionType);
+    }
+
+
+
+    private String normalizeString(String input) {
+        if (input == null) return null;
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toLowerCase();
     }
 
     @Override

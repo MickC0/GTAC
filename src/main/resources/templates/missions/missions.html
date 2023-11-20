@@ -36,82 +36,9 @@
         </div>
     </div>
     <div th:replace="~{fragments/modals/message-modal :: message-modal}"></div>
+    <div th:replace="~{fragments/modals/delete-mission-modal :: delete-mission-modal}"></div>
+    <div th:replace="~{fragments/modals/cancel-mission-modal :: cancel-mission-modal}"></div>
 
-    <!-- Modal pour la confirmation de suppression -->
-    <div class="modal fade" id="deleteMissionModal" tabindex="-1" aria-labelledby="deleteMissionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteMissionModalLabel">Supprimer Type de Mission</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <i class="bi bi-exclamation-triangle-fill">
-                        <span>
-                            Êtes-vous sûr de vouloir supprimer la mission ?
-                        </span>
-                    </i>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <a class="btn btn-danger" id="confirmDelete">Confirmer</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            var deleteModal = document.getElementById('deleteMissionModal');
-            deleteModal.addEventListener('show.bs.modal', function(event) {
-                var button = event.relatedTarget;
-                var itemId = button.getAttribute('data-mission-id');
-                var deleteUrl = /*[[@{/missions/delete/}]]*/ 'deletePath';
-
-                var confirmDeleteBtn = document.getElementById('confirmDelete');
-                confirmDeleteBtn.onclick = function() {
-                    window.location.href = deleteUrl + itemId;
-                };
-            });
-        });
-    </script>
-
-    <!-- Modal pour la confirmation de suppression -->
-    <div class="modal fade" id="cancelMissionModal" tabindex="-1" aria-labelledby="cancelMissionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cancelMissionModalLabel">Supprimer Type de Mission</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <i class="bi bi-exclamation-triangle-fill">
-                        <span>
-                            Êtes-vous sûr de vouloir annuler la mission ?
-                        </span>
-                    </i>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <a class="btn btn-danger" id="confirmCancel">Confirmer</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            var deleteModal = document.getElementById('cancelMissionModal');
-            deleteModal.addEventListener('show.bs.modal', function(event) {
-                var button = event.relatedTarget;
-                var itemId = button.getAttribute('data-mission-id');
-                var deleteUrl = /*[[@{/missions/cancel/}]]*/ 'deletePath';
-
-                var confirmDeleteBtn = document.getElementById('confirmCancel');
-                confirmDeleteBtn.onclick = function() {
-                    window.location.href = deleteUrl + itemId;
-                };
-            });
-        });
-    </script>
 
     <div th:replace="~{fragments/scripts :: scripts}"></div>
 

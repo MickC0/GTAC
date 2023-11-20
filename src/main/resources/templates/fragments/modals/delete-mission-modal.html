@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+<div th:fragment="delete-mission-modal">
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      let deleteModal = document.getElementById('deleteMissionModal');
+      deleteModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const itemId = button.getAttribute('data-mission-id');
+        const deleteUrl = /*[[@{/missions/delete/}]]*/ 'deletePath';
+
+        let confirmDeleteBtn = document.getElementById('confirmDelete');
+        confirmDeleteBtn.onclick = function() {
+          window.location.href = deleteUrl + itemId;
+        };
+      });
+    });
+  </script>
+
+
+  <div class="modal fade" id="deleteMissionModal" tabindex="-1" aria-labelledby="deleteMissionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteMissionModalLabel">Supprimer Type de Mission</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <i class="bi bi-exclamation-triangle-fill">
+                        <span>
+                            Êtes-vous sûr de vouloir supprimer la mission ?
+                        </span>
+          </i>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <a class="btn btn-danger" id="confirmDelete">Confirmer</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>
