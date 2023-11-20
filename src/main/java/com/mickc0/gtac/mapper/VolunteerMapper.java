@@ -1,5 +1,6 @@
 package com.mickc0.gtac.mapper;
 
+import com.mickc0.gtac.dto.VolunteerNewDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.MissionStatus;
 import com.mickc0.gtac.entity.Volunteer;
@@ -26,5 +27,14 @@ public class VolunteerMapper {
         return new VolunteerStatusDTO(volunteer.getId(), volunteer.getUuid(),
                 volunteer.getLastName(), volunteer.getFirstName(),
                 volunteer.getEmail(), volunteer.getPhoneNumber(), status);
+    }
+
+    public Volunteer mapToEntityLowDetail(VolunteerNewDTO volunteerNewDTO){
+        Volunteer volunteer = new Volunteer();
+        volunteer.setLastName(volunteerNewDTO.getLastName());
+        volunteer.setFirstName(volunteerNewDTO.getFirstName());
+        volunteer.setEmail(volunteerNewDTO.getEmail());
+        volunteer.setPhoneNumber(volunteerNewDTO.getPhoneNumber());
+        return volunteer;
     }
 }

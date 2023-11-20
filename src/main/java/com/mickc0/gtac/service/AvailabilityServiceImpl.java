@@ -24,6 +24,12 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     }
 
     @Override
+    @Transactional
+    public void save(Availability availability) {
+        availabilityRepository.save(availability);
+    }
+
+    @Override
     public List<Availability> getAllAvailabilities() {
         return availabilityRepository.findAll();
     }

@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VolunteerService {
-    Volunteer save(Volunteer volunteer);
+    Volunteer saveAndReturn(Volunteer volunteer);
+    void save(Volunteer volunteer);
     Optional<Volunteer> findById(Long id);
     List<Volunteer> findAll();
     void updateVolunteer(Volunteer volunteer);

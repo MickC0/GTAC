@@ -28,8 +28,14 @@ public class VolunteerServiceImpl implements VolunteerService{
 
     @Override
     @Transactional
-    public Volunteer save(Volunteer volunteer) {
+    public Volunteer saveAndReturn(Volunteer volunteer) {
         return volunteerRepository.save(volunteer);
+    }
+
+    @Override
+    @Transactional
+    public void save(Volunteer volunteer) {
+        volunteerRepository.save(volunteer);
     }
 
     @Override

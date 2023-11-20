@@ -1,46 +1,119 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
-<div th:replace="~{fragments/head :: head}"></div>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="card col-lg-6 col-md-6 justify-content-center container py-4">
-                <div class="card-header">
-                    <h1>Nouveau bénévole</h1>
-                </div>
-                <div class="card-body">
-                    <form th:action="@{/volunteers}" method="post" id="newVolunteerForm" th:object="${volunteer}">
-                        <div class="form-group">
-                            <label for="lastName" class="col-form-label">Nom :</label>
-                            <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label for="firstName" class="col-form-label">Prénom :</label>
-                            <input th:field="*{firstName}" type="text" id="firstName" class="form-control" required="required">
-                        </div>
+<div class="container">
+    <div class="row">
+        <div class="card col-lg-6 col-md-6 justify-content-center container py-4">
+            <div class="card-header">
+                <h1>Nouveau bénévole</h1>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/volunteers}" method="post" id="newVolunteerForm" th:object="${volunteer}">
+                    <div class="form-group">
+                        <label for="lastName" class="col-form-label">Nom :</label>
+                        <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName" class="col-form-label">Prénom :</label>
+                        <input th:field="*{firstName}" type="text" id="firstName" class="form-control" required="required">
+                    </div>
 
-                        <div class="form-group">
-                            <label for="email" class="col-form-label">Email :</label>
-                            <input th:field="*{email}" type="email" id="email" class="form-control"></input>
-                        </div>
+                    <div class="form-group">
+                        <label for="email" class="col-form-label">Email :</label>
+                        <input th:field="*{email}" type="email" id="email" class="form-control">
+                    </div>
 
-                        <div class="form-group">
-                            <label for="phoneNumber" class="col-form-label">Téléphone :</label>
-                            <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control">
+                    <div class="form-group">
+                        <label for="phoneNumber" class="col-form-label">Téléphone :</label>
+                        <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control">
+                    </div>
+                    <hr>
+
+                    <div th:if="${missionTypes.isEmpty()}">
+                        <div class="alert alert-warning my-2" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill">
+                                <span>La liste des types de mission est actuellement vide. Vous pouvez ajouter des types de mission plus tard.</span>
+                            </i>
                         </div>
-                    </form>
-                </div>
-                <div class="card-footer">
-                    <a class="btn btn-outline-secondary pb-2" th:href="@{/volunteers}">Annuler</a>
-                    <button type="submit" form="newVolunteerForm" class="btn btn-primary">Suivant</button>
-                </div>
+                    </div>
+                    <div class="btn-group me-2" role="group" th:unless="${missionTypes.isEmpty()}">
+                        <div class="form-group" th:each="missionType:${missionTypes}">
+                            <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.id}" th:text="${missionType.name}"></label><br>
+                            <input th:id="${'btn-check-outlined' + missionType.id}" th:value="${missionType.id}" th:name="missionTypes" type="checkbox" class="btn-check" autocomplete="off">
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div id="availabilitySection">
+
+                    </div>
+                    <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-outline-secondary pb-2" th:href="@{/volunteers}">Annuler</a>
+                <button type="submit" form="newVolunteerForm" class="btn btn-primary">Enregistrer</button>
             </div>
         </div>
     </div>
+</div>
 
+<script>
+    document.getElementById('addAvailability').addEventListener('click', function() {
+        var availabilitySection = document.getElementById('availabilitySection');
+        var index = availabilitySection.children.length;
 
+        var availabilityDiv = document.createElement('div');
+        availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center';
+        availabilityDiv.innerHTML = `
+            <div class="col-auto">
+                <label class="form-label" for="availabilities${index}.dayOfWeek">Jour :</label>
+                <select class="form-select" name="availabilities[${index}].dayOfWeek" required="required">
+                    <option selected>Jour</option>
+                    <option value="MONDAY">Lundi</option>
+                    <option value="TUESDAY">Mardi</option>
+                    <option value="WEDNESDAY">Mercredi</option>
+                    <option value="THURSDAY">Jeudi</option>
+                    <option value="FRIDAY">Vendredi</option>
+                    <option value="SATURDAY">Samedi</option>
+                    <option value="SUNDAY">Dimanche</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <label class="form-label" for="availabilities${index}.startTime">Heure de début :</label>
+                <input class="form-control" type="time" name="availabilities[${index}].startTime" />
+            </div>
+            <div class="col-auto">
+                <label class="form-label" for="availabilities${index}.endTime">Heure de fin :</label>
+                <input class="form-control" type="time" name="availabilities[${index}].endTime" />
+            </div>
+        `;
+        availabilitySection.appendChild(availabilityDiv);
+    });
+    // Validation lors de la soumission du formulaire
+    document.getElementById('newVolunteerForm').addEventListener('submit', function(event) {
+        var isValid = true;
+        var availabilityRows = document.querySelectorAll('#availabilitySection > div');
 
-    <div th:replace="~{fragments/scripts :: scripts}"></div>
+        availabilityRows.forEach(function(row) {
+            var dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
+            var startTime = row.querySelector('input[name$=".startTime"]').value;
+            var endTime = row.querySelector('input[name$=".endTime"]').value;
+
+            if ((dayOfWeek || startTime || endTime) && (!dayOfWeek || !startTime || !endTime || startTime >= endTime)) {
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            event.preventDefault();
+            alert('Veuillez vérifier les disponibilités : tous les champs doivent être remplis et l\'heure de début doit être antérieure à l\'heure de fin.');
+        }
+    });
+</script>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
 
 </body>
+<div th:replace="~{fragments/head :: head}"></div>
 </html>
