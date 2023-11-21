@@ -3,7 +3,7 @@
 <body>
 <div class="container">
     <div class="row">
-        <div class="card col-lg-9 col-md-9 justify-content-center container py-4">
+        <div class="card col-lg-12 col-md-9 justify-content-center container py-4">
             <div class="card-header">
                 <h1>Nouveau bénévole</h1>
             </div>
@@ -11,7 +11,7 @@
 
                 <form th:action="@{/volunteers}" method="post" id="newVolunteerForm" th:object="${volunteer}">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-lg-5 mb-4">
                             <div class="form-group">
                                 <label for="lastName" class="col-form-label">Nom :</label>
                                 <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required">
@@ -29,7 +29,12 @@
                                 <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-lg-7 mb-4">
+                            <div class="form-group">
+                                <h5>Types de mission</h5>
+                                <hr>
+                            </div>
+
                             <div th:if="${allMissionTypes.isEmpty()}">
                                 <div class="alert alert-warning my-2" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill">
@@ -43,16 +48,20 @@
                                     <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.id}" th:text="${missionType.name}"></label><br>
                                 </div>
                             </div>
-                            <hr>
-                            <div id="availabilitySection">
+
+                            <div class="form-group">
+                                <h5>Disponibilités</h5>
+                                <hr>
+                                <div id="availabilitySection">
+                                </div>
+                                <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
                             </div>
-                            <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="card-footer">
-                <a class="btn btn-outline-secondary pb-2" th:href="@{/volunteers}">Annuler</a>
+                <a class="btn btn-outline-secondary me-2" th:href="@{/volunteers}">Annuler</a>
                 <button type="submit" form="newVolunteerForm" class="btn btn-primary">Enregistrer</button>
             </div>
         </div>
@@ -85,8 +94,8 @@
         availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
         availabilityDiv.innerHTML = `
             <div class="col-auto">
-                <label class="form-label" for="availabilities${index}.dayOfWeek">Jour :</label>
-                <select class="form-select" name="availabilities[${index}].dayOfWeek" required="required">
+                <label class="form-label-sm" for="availabilities${index}.dayOfWeek">Jour :</label>
+                <select class="form-select-sm" name="availabilities[${index}].dayOfWeek" required="required">
                     <option selected>Jour</option>
                     <option value="MONDAY">Lundi</option>
                     <option value="TUESDAY">Mardi</option>
@@ -98,16 +107,52 @@
                 </select>
             </div>
             <div class="col-auto">
-                <label class="form-label" for="availabilities${index}.startTime">Heure de début :</label>
-                <input class="form-control" type="time" name="availabilities[${index}].startTime" />
+                <label class="form-label-sm" for="availabilities${index}.startTime">Heure de début :</label>
+                <input class="form-control-sm" type="time" name="availabilities[${index}].startTime" />
             </div>
             <div class="col-auto">
-                <label class="form-label" for="availabilities${index}.endTime">Heure de fin :</label>
-                <input class="form-control" type="time" name="availabilities[${index}].endTime" />
+                <label class="form-label-sm" for="availabilities${index}.endTime">Heure de fin :</label>
+                <input class="form-control-sm" type="time" name="availabilities[${index}].endTime" />
             </div>
         `;
+
+        let removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'btn btn-sm btn-danger removeAvailability';
+
+        let icon = document.createElement('i');
+        icon.className = 'bi bi-x-square';
+        removeButton.appendChild(icon);
+        removeButton.addEventListener('click', function() {
+            availabilityDiv.remove();
+            updateAvailabilityIndexes();
+        });
+
+        let buttonCol = document.createElement('div');
+        buttonCol.className = 'col-auto';
+        buttonCol.appendChild(removeButton);
+
+        availabilityDiv.appendChild(buttonCol);
         availabilitySection.appendChild(availabilityDiv);
     });
+
+    document.getElementById('availabilitySection').addEventListener('click', function(event) {
+        if (event.target.classList.contains('removeAvailability')) {
+            event.target.closest('.availabilityRow').remove();
+            updateAvailabilityIndexes();
+        }
+    });
+
+    function updateAvailabilityIndexes() {
+        let availabilityRows = document.querySelectorAll('#availabilitySection > .availabilityRow');
+        availabilityRows.forEach((row, index) => {
+            row.querySelectorAll('select, input').forEach(input => {
+                input.name = input.name.replace(/\[\d+]/, `[${index}]`);
+            });
+        });
+    }
+
+
     // Validation lors de la soumission du formulaire
     document.getElementById('newVolunteerForm').addEventListener('submit', function(event) {
         let isValid = true;

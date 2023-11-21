@@ -122,7 +122,7 @@ public class VolunteerController {
 
     @GetMapping("/add-mission-types")
     public String showAddMissionTypesForm(Model model, @RequestParam("volunteerId") Long volunteerId) {
-        List<MissionType> allMissionTypes = missionTypeService.findAll(); // Récupérez tous les types de missions
+        List<MissionType> allMissionTypes = missionTypeService.findAll();
         model.addAttribute("allMissionTypes", allMissionTypes);
         model.addAttribute("volunteerId", volunteerId);
         return "volunteers/mission-types/add-mission-types";
@@ -133,12 +133,10 @@ public class VolunteerController {
                                   @RequestParam(value = "missionTypeIds", required = false) List<Long> missionTypeIds,
                                   RedirectAttributes redirectAttributes) {
         Volunteer volunteer = volunteerService.findById(volunteerId)
-                .orElseThrow(() -> new EntityNotFoundException("Volontaire avec l'ID " + volunteerId + " non trouvé"));
-
-        // Nettoyez les anciens types de mission associés si nécessaire
+                .orElseThrow(() -> new EntityNotFoundException("Bénévole avec l'ID " + volunteerId + " non trouvé"));
         volunteer.getMissionTypes().clear();
 
-        // Vérifiez si des types de mission ont été sélectionnés
+
         if (missionTypeIds != null && !missionTypeIds.isEmpty()) {
             for (Long missionTypeId : missionTypeIds) {
                 Optional<MissionType> missionTypeOptional = missionTypeService.findById(missionTypeId);
@@ -146,10 +144,10 @@ public class VolunteerController {
             }
         }
 
-        volunteerService.save(volunteer); // Sauvegardez les modifications du volontaire
+        volunteerService.save(volunteer);
 
-        redirectAttributes.addFlashAttribute("successMessage", "Le volontaire a été créé avec succès.");
-        return "redirect:/volunteers"; // Redirigez vers la liste des volontaires ou une autre page appropriée
+        redirectAttributes.addFlashAttribute("successMessage", "Le bénévole a été créé avec succès.");
+        return "redirect:/volunteers";
     }
 
 
@@ -167,7 +165,7 @@ public class VolunteerController {
     @PostMapping("/update/{id}")
     public String updateVolunteer(@PathVariable(name = "id") Long id, @ModelAttribute ("volunteer") Volunteer volunteer, RedirectAttributes redirectAttributes){
         volunteerService.updateVolunteer(volunteer);
-        redirectAttributes.addFlashAttribute("successMessage", "Volontaire modifié avec succès.");
+        redirectAttributes.addFlashAttribute("successMessage", "Bénévole modifié avec succès.");
         return "redirect:/volunteers";
     }
 
