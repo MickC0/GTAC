@@ -63,4 +63,27 @@ public class MissionType {
     public void setMissions(List<Mission> missions) {
         this.missions = missions;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MissionType that)) return false;
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getUuid(), that.getUuid()) && Objects.equals(getName(), that.getName()) && Objects.equals(getDescription(), that.getDescription()) && Objects.equals(getMissions(), that.getMissions());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUuid(), getName(), getDescription(), getMissions());
+    }
+
+    @Override
+    public String toString() {
+        return "MissionType{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", missions=" + missions +
+                '}';
+    }
 }

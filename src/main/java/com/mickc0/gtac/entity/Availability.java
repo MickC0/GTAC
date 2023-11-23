@@ -5,6 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -85,5 +86,17 @@ public class Availability {
                 ", dayOfWeek=" + dayOfWeek +
                 ", volunteer=" + volunteer +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Availability that)) return false;
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getUuid(), that.getUuid()) && Objects.equals(getStartTime(), that.getStartTime()) && Objects.equals(getEndTime(), that.getEndTime()) && getDayOfWeek() == that.getDayOfWeek() && Objects.equals(getVolunteer(), that.getVolunteer());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUuid(), getStartTime(), getEndTime(), getDayOfWeek(), getVolunteer());
     }
 }

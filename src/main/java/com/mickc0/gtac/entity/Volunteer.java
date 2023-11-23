@@ -128,4 +128,33 @@ public class Volunteer {
     public void setMissionTypes(Set<MissionType> preferredMissionTypes) {
         this.missionTypes = preferredMissionTypes;
     }
+
+    @Override
+    public String toString() {
+        return "Volunteer{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", lastName='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", availabilities=" + availabilities +
+                ", unavailabilities=" + unavailabilities +
+                ", missions=" + missions +
+                ", missionTypes=" + missionTypes +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Volunteer volunteer)) return false;
+        return Objects.equals(getId(), volunteer.getId()) && Objects.equals(getUuid(), volunteer.getUuid()) && Objects.equals(getLastName(), volunteer.getLastName()) && Objects.equals(getFirstName(), volunteer.getFirstName()) && Objects.equals(getEmail(), volunteer.getEmail()) && Objects.equals(getPassword(), volunteer.getPassword()) && Objects.equals(getPhoneNumber(), volunteer.getPhoneNumber()) && Objects.equals(getAvailabilities(), volunteer.getAvailabilities()) && Objects.equals(getUnavailabilities(), volunteer.getUnavailabilities()) && Objects.equals(getMissions(), volunteer.getMissions()) && Objects.equals(getMissionTypes(), volunteer.getMissionTypes());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUuid(), getLastName(), getFirstName(), getEmail(), getPassword(), getPhoneNumber(), getAvailabilities(), getUnavailabilities(), getMissions(), getMissionTypes());
+    }
 }

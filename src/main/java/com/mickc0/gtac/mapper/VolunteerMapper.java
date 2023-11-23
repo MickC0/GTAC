@@ -1,20 +1,27 @@
 package com.mickc0.gtac.mapper;
 
+import com.mickc0.gtac.dto.VolunteerEditDTO;
 import com.mickc0.gtac.dto.VolunteerNewDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.MissionStatus;
+import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.repository.MissionAssignmentRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class VolunteerMapper {
 
     private final MissionAssignmentRepository missionAssignmentRepository;
-    public VolunteerMapper(MissionAssignmentRepository missionAssignmentRepository) {
+    private final AvailabilityMapper availabilityMapper;
+    public VolunteerMapper(MissionAssignmentRepository missionAssignmentRepository, AvailabilityMapper availabilityMapper) {
         this.missionAssignmentRepository = missionAssignmentRepository;
+        this.availabilityMapper = availabilityMapper;
     }
 
 
@@ -37,4 +44,21 @@ public class VolunteerMapper {
         volunteer.setPhoneNumber(volunteerNewDTO.getPhoneNumber());
         return volunteer;
     }
+
+    public VolunteerEditDTO mapToEditVolunteerDTO(Volunteer volunteer){
+        VolunteerEditDTO volunteerEditDTO = new VolunteerEditDTO();
+        volunteerEditDTO.setId(volunteer.getId());
+        volunteerEditDTO.setUuid(volunteer.getUuid());
+        volunteerEditDTO.setLastName(volunteer.getLastName());
+        volunteerEditDTO.setFirstName(volunteer.getFirstName());
+        volunteerEditDTO.setEmail(volunteer.getEmail());
+        volunteerEditDTO.setPhoneNumber(volunteer.getPhoneNumber());
+        volunteerEditDTO.setMissionTypes(Optional.ofNullable(volunteer.getMissionTypes()).orElse(Collections.emptySet()).stream()
+                .map(MissionType::getId)
+                .collect(Collectors.toList()));
+        volunteerEditDTO.setAvailabilities(availabilityMapper.mapToAvailabilityDtoListForVolunteerEditDto(volunteer.getAvailabilities()));
+        return volunteerEditDTO;
+    }
+
+
 }

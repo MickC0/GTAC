@@ -16,6 +16,10 @@
       if (hasErrorMessage || hasSuccessMessage) {
         let messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
         messageModal.show();
+
+        setTimeout(function() {
+          messageModal.hide();
+        }, 3000);
       }
     });
   </script>

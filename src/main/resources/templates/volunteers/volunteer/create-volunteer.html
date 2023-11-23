@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
 <body>
 <div class="container">
     <div class="row">
@@ -14,19 +15,19 @@
                         <div class="col-md-6 col-lg-5 mb-4">
                             <div class="form-group">
                                 <label for="lastName" class="col-form-label">Nom :</label>
-                                <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required">
+                                <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required" autocomplete="family-name">
                             </div>
                             <div class="form-group">
                                 <label for="firstName" class="col-form-label">Prénom :</label>
-                                <input th:field="*{firstName}" type="text" id="firstName" class="form-control" required="required">
+                                <input th:field="*{firstName}" type="text" id="firstName" class="form-control" required="required" autocomplete="given-name">
                             </div>
                             <div class="form-group">
                                 <label for="email" class="col-form-label">Email :</label>
-                                <input th:field="*{email}" type="email" id="email" class="form-control">
+                                <input th:field="*{email}" type="email" id="email" class="form-control" autocomplete="off">
                             </div>
                             <div class="form-group">
                                 <label for="phoneNumber" class="col-form-label">Téléphone :</label>
-                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control">
+                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control" autocomplete="tel">
                             </div>
                         </div>
                         <div class="col-md-6 col-lg-7 mb-4">
@@ -42,14 +43,15 @@
                                     </i>
                                 </div>
                             </div>
-                            <div class="row" role="group" th:unless="${allMissionTypes.isEmpty()}">
-                                <div class="col-6 col-md-4 my-1" th:each="missionType:${allMissionTypes}">
+                            <div class="d-flex flex-wrap" role="group" th:unless="${allMissionTypes.isEmpty()}">
+                                <div class="my-2 me-2" th:each="missionType:${allMissionTypes}">
                                     <input th:id="${'btn-check-outlined' + missionType.id}" th:value="${missionType.id}" th:name="missionTypes" type="checkbox" class="btn-check" autocomplete="off">
                                     <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.id}" th:text="${missionType.name}"></label><br>
                                 </div>
                             </div>
 
                             <div class="form-group">
+                                <hr>
                                 <h5>Disponibilités</h5>
                                 <hr>
                                 <div id="availabilitySection">
@@ -67,23 +69,7 @@
         </div>
     </div>
 </div>
-<!-- Modal Bootstrap pour l'alerte -->
-<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger">
-                <h5 class="modal-title text-white" id="alertModalLabel">Alerte</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Veuillez vérifier les disponibilités : tous les champs doivent être remplis, un jour de la semaine doit être sélectionné, et l'heure de début doit être antérieure à l'heure de fin.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <script>
     document.getElementById('addAvailability').addEventListener('click', function() {
@@ -94,10 +80,10 @@
         availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
         availabilityDiv.innerHTML = `
             <div class="col-auto">
-                <label class="form-label-sm" for="availabilities${index}.dayOfWeek">Jour :</label>
-                <select class="form-select-sm" name="availabilities[${index}].dayOfWeek" required="required">
-                    <option selected>Jour</option>
-                    <option value="MONDAY">Lundi</option>
+                <label class="form-label-sm" for="availabilities[${index}].dayOfWeek">Jour :</label>
+                <select class="form-select-sm" name="availabilities[${index}].dayOfWeek" id="availabilities[${index}].dayOfWeek" required="required">
+
+                    <option selected value="MONDAY">Lundi</option>
                     <option value="TUESDAY">Mardi</option>
                     <option value="WEDNESDAY">Mercredi</option>
                     <option value="THURSDAY">Jeudi</option>
@@ -107,12 +93,12 @@
                 </select>
             </div>
             <div class="col-auto">
-                <label class="form-label-sm" for="availabilities${index}.startTime">Heure de début :</label>
-                <input class="form-control-sm" type="time" name="availabilities[${index}].startTime" />
+                <label class="form-label-sm" for="availabilities[${index}].startTime">Heure de début :</label>
+                <input class="form-control-sm" type="time" name="availabilities[${index}].startTime" id="availabilities[${index}].startTime"/>
             </div>
             <div class="col-auto">
-                <label class="form-label-sm" for="availabilities${index}.endTime">Heure de fin :</label>
-                <input class="form-control-sm" type="time" name="availabilities[${index}].endTime" />
+                <label class="form-label-sm" for="availabilities[${index}].endTime">Heure de fin :</label>
+                <input class="form-control-sm" type="time" name="availabilities[${index}].endTime" id="availabilities[${index}].endTime"/>
             </div>
         `;
 
@@ -182,8 +168,26 @@
 
 </script>
 
+
+<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white" id="alertModalLabel">Alerte</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Veuillez vérifier les disponibilités : tous les champs doivent être remplis, un jour de la semaine doit être sélectionné, et l'heure de début doit être antérieure à l'heure de fin.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 </body>
-<div th:replace="~{fragments/head :: head}"></div>
+
 </html>

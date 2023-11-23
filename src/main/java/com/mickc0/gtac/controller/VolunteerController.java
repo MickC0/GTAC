@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/volunteers")
@@ -46,7 +47,6 @@ public class VolunteerController {
 
     @GetMapping("/create")
     public String showCreateForm(Model model){
-
         model.addAttribute("volunteer", new VolunteerNewDTO());
         model.addAttribute("allMissionTypes", missionTypeService.getAll());
         return "volunteers/volunteer/create-volunteer";
@@ -156,14 +156,31 @@ public class VolunteerController {
 
     @GetMapping("/edit/{id}")
     public String editVolunteerForm(@PathVariable(value = "id") Long id, Model model){
-        Volunteer volunteer = volunteerService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid volunteer Id:" + id));
+        VolunteerEditDTO volunteer = volunteerService.findVolunteerEditDTOById(id);
+        List<MissionTypeDTO> allMissionTypes = missionTypeService.getAll();
+
+
+        allMissionTypes.forEach(missionTypeDTO -> {
+            if (volunteer.getMissionTypes().contains(missionTypeDTO.getId())){
+                missionTypeDTO.setSelected(true);
+            }
+        });
+
+        //obligatoire pour récupérer la valeur select dans le front.
+        //model.addAttribute("missionTypeIds", missionTypeIds);
         model.addAttribute("volunteer", volunteer);
+        model.addAttribute("allMissionTypes", allMissionTypes);
         return "/volunteers/volunteer/edit-volunteer";
     }
 
     @PostMapping("/update/{id}")
-    public String updateVolunteer(@PathVariable(name = "id") Long id, @ModelAttribute ("volunteer") Volunteer volunteer, RedirectAttributes redirectAttributes){
+    public String updateVolunteer(@PathVariable(name = "id") Long id, @ModelAttribute ("volunteer") VolunteerEditDTO volunteer,
+                                  @RequestParam(required = false) List<Long> missionTypes, RedirectAttributes redirectAttributes){
+        List<MissionType> selectedMissionTypes = new ArrayList<>();
+        if (missionTypes != null && !missionTypes.isEmpty()) {
+            selectedMissionTypes = missionTypeService.findAllById(missionTypes);
+        }
+
         volunteerService.updateVolunteer(volunteer);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole modifié avec succès.");
         return "redirect:/volunteers";
