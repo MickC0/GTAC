@@ -1,13 +1,6 @@
 package com.mickc0.gtac.dto;
 
-import com.mickc0.gtac.entity.Availability;
-import com.mickc0.gtac.entity.Mission;
-import com.mickc0.gtac.entity.MissionType;
-import com.mickc0.gtac.entity.Unavailability;
-import jakarta.persistence.*;
-
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public class VolunteerEditDTO {

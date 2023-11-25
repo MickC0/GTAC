@@ -1,13 +1,12 @@
 package com.mickc0.gtac.service;
 
-import com.mickc0.gtac.dto.MissionTypeDTO;
+import com.mickc0.gtac.dto.AvailabilityDTO;
 import com.mickc0.gtac.dto.VolunteerEditDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.Availability;
 import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.mapper.AvailabilityMapper;
-import com.mickc0.gtac.mapper.MissionTypeMapper;
 import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.repository.VolunteerRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,13 +26,15 @@ public class VolunteerServiceImpl implements VolunteerService{
     private final VolunteerMapper volunteerMapper;
     private final AvailabilityMapper availabilityMapper;
     private final MissionTypeService missionTypeService;
+    private final AvailabilityService availabilityService;
 
     @Autowired
-    public VolunteerServiceImpl(VolunteerRepository volunteerRepository, VolunteerMapper volunteerMapper, AvailabilityMapper availabilityMapper, MissionTypeService missionTypeService) {
+    public VolunteerServiceImpl(VolunteerRepository volunteerRepository, VolunteerMapper volunteerMapper, AvailabilityMapper availabilityMapper, MissionTypeService missionTypeService, AvailabilityService availabilityService) {
         this.volunteerRepository = volunteerRepository;
         this.volunteerMapper = volunteerMapper;
         this.availabilityMapper = availabilityMapper;
         this.missionTypeService = missionTypeService;
+        this.availabilityService = availabilityService;
     }
 
     @Override
@@ -77,16 +75,26 @@ public class VolunteerServiceImpl implements VolunteerService{
         existingVolunteer.setFirstName(volunteerEditDTO.getFirstName());
         existingVolunteer.setPhoneNumber(volunteerEditDTO.getPhoneNumber());
         existingVolunteer.setEmail(volunteerEditDTO.getEmail());
+        availabilityService.deleteAllByVolunteer(existingVolunteer);
+
+
 
         Set<Availability> updatedAvailabilities = Optional.ofNullable(volunteerEditDTO.getAvailabilities())
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(availabilityMapper::mapToEntity)
+                .map(availabilityDTO -> {
+                    Availability availability = availabilityMapper.mapToNewEntity(availabilityDTO);
+                    availability.setVolunteer(existingVolunteer);
+                    availabilityService.save(availability);
+                    return availability;
+                })
                 .collect(Collectors.toSet());
         existingVolunteer.setAvailabilities(updatedAvailabilities);
 
 
-        Set<MissionType> updatedMissionTypes = volunteerEditDTO.getMissionTypes().stream()
+        Set<MissionType> updatedMissionTypes = Optional.ofNullable(volunteerEditDTO.getMissionTypes())
+                .orElse(Collections.emptyList())
+                .stream()
                 .map(missionTypeService::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)

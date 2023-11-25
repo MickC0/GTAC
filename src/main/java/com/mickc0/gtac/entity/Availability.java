@@ -76,6 +76,7 @@ public class Availability {
         this.volunteer = volunteer;
     }
 
+
     @Override
     public String toString() {
         return "Availability{" +
@@ -86,17 +87,5 @@ public class Availability {
                 ", dayOfWeek=" + dayOfWeek +
                 ", volunteer=" + volunteer +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Availability that)) return false;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getUuid(), that.getUuid()) && Objects.equals(getStartTime(), that.getStartTime()) && Objects.equals(getEndTime(), that.getEndTime()) && getDayOfWeek() == that.getDayOfWeek() && Objects.equals(getVolunteer(), that.getVolunteer());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getUuid(), getStartTime(), getEndTime(), getDayOfWeek(), getVolunteer());
     }
 }

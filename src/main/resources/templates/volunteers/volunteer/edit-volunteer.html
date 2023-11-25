@@ -66,7 +66,30 @@
                                 <h5>Disponibilités</h5>
                                 <hr>
                                 <div id="availabilitySection">
+                                    <div th:each="availability, iterStat : *{availabilities}" class="availabilityRow row gy-2 gx-3 align-items-center mb-2">
+                                        <input type="hidden" th:field="*{availabilities[__${iterStat.index}__].id}" />
+                                        <div class="col-auto">
+                                            <label class="form-label-sm" th:for="${'availabilities' + iterStat.index + '.dayOfWeek'}">Jour :</label>
+                                            <select class="form-select-sm" th:field="*{availabilities[__${iterStat.index}__].dayOfWeek}" required="required">
+                                                <option value="MONDAY" th:selected="${availability.dayOfWeek == 'MONDAY'}">Lundi</option>
+                                                <option value="TUESDAY" th:selected="${availability.dayOfWeek == 'TUESDAY'}">Mardi</option>
+                                                <option value="WEDNESDAY" th:selected="${availability.dayOfWeek == 'WEDNESDAY'}">Mercredi</option>
+                                                <option value="THURSDAY" th:selected="${availability.dayOfWeek == 'THURSDAY'}">Jeudi</option>
+                                                <option value="FRIDAY" th:selected="${availability.dayOfWeek == 'FRIDAY'}">Vendredi</option>
+                                                <option value="SATURDAY" th:selected="${availability.dayOfWeek == 'SATURDAY'}">Samedi</option>
+                                                <option value="SUNDAY" th:selected="${availability.dayOfWeek == 'SUNDAY'}">Dimanche</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-auto">
+                                            <label class="form-label-sm" th:for="${'availabilities' + iterStat.index + '.startTime'}">Heure de début :</label>
+                                            <input class="form-control-sm" type="time" th:field="*{availabilities[__${iterStat.index}__].startTime}" />
+                                        </div>
+                                        <div class="col-auto">
+                                            <label class="form-label-sm" th:for="${'availabilities' + iterStat.index + '.endTime'}">Heure de fin :</label>
+                                            <input class="form-control-sm" type="time" th:field="*{availabilities[__${iterStat.index}__].endTime}" />
+                                        </div>
 
+                                    </div>
                                 </div>
                                 <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
                             </div>
@@ -100,13 +123,16 @@
 </div>
 
 <script>
-    document.getElementById('addAvailability').addEventListener('click', function() {
-        let availabilitySection = document.getElementById('availabilitySection');
-        let index = availabilitySection.children.length;
+    document.addEventListener('DOMContentLoaded', function (){
+        updateAvailabilityIndexes();
 
-        let availabilityDiv = document.createElement('div');
-        availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
-        availabilityDiv.innerHTML = `
+        document.getElementById('addAvailability').addEventListener('click', function() {
+            let availabilitySection = document.getElementById('availabilitySection');
+            let index = availabilitySection.querySelectorAll('.availabilityRow').length;
+
+            let availabilityDiv = document.createElement('div');
+            availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
+            availabilityDiv.innerHTML = `
             <div class="col-auto">
                 <label class="form-label-sm" for="availabilities[${index}].dayOfWeek">Jour :</label>
                 <select class="form-select-sm" name="availabilities[${index}].dayOfWeek" id="availabilities${index}.dayOfWeek" required="required">
@@ -130,69 +156,85 @@
             </div>
         `;
 
-        let removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.className = 'btn btn-sm btn-danger removeAvailability';
+            let removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-sm btn-danger removeAvailability';
 
-        let icon = document.createElement('i');
-        icon.className = 'bi bi-x-square';
-        removeButton.appendChild(icon);
-        removeButton.addEventListener('click', function() {
-            availabilityDiv.remove();
-            updateAvailabilityIndexes();
-        });
-
-        let buttonCol = document.createElement('div');
-        buttonCol.className = 'col-auto';
-        buttonCol.appendChild(removeButton);
-
-        availabilityDiv.appendChild(buttonCol);
-        availabilitySection.appendChild(availabilityDiv);
-    });
-
-    document.getElementById('availabilitySection').addEventListener('click', function(event) {
-        if (event.target.classList.contains('removeAvailability')) {
-            event.target.closest('.availabilityRow').remove();
-            updateAvailabilityIndexes();
-        }
-    });
-
-    function updateAvailabilityIndexes() {
-        let availabilityRows = document.querySelectorAll('#availabilitySection > .availabilityRow');
-        availabilityRows.forEach((row, index) => {
-            row.querySelectorAll('select, input').forEach(input => {
-                input.name = input.name.replace(/\[\d+]/, `[${index}]`);
+            let icon = document.createElement('i');
+            icon.className = 'bi bi-x-square';
+            removeButton.appendChild(icon);
+            removeButton.addEventListener('click', function() {
+                availabilityDiv.remove();
+                updateAvailabilityIndexes();
             });
+
+            let buttonCol = document.createElement('div');
+            buttonCol.className = 'col-auto';
+            buttonCol.appendChild(removeButton);
+
+            availabilityDiv.appendChild(buttonCol);
+            availabilitySection.appendChild(availabilityDiv);
         });
-    }
 
-
-    // Validation lors de la soumission du formulaire
-    document.getElementById('editVolunteerForm').addEventListener('submit', function(event) {
-        let isValid = true;
-        const availabilityRows = document.querySelectorAll('#availabilitySection > div');
-
-        availabilityRows.forEach(function(row) {
-            const dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
-            const startTime = row.querySelector('input[name$=".startTime"]').value;
-            const endTime = row.querySelector('input[name$=".endTime"]').value;
-
-            // Vérifiez si 'dayOfWeek' est égal à l'option non valide (ex. "Jour")
-            if (dayOfWeek === "Jour") {
-                isValid = false;
-            }
-
-            if ((dayOfWeek || startTime || endTime) && (!dayOfWeek || !startTime || !endTime || startTime >= endTime)) {
-                isValid = false;
+        document.getElementById('availabilitySection').addEventListener('click', function(event) {
+            if (event.target.classList.contains('removeAvailability')) {
+                event.target.closest('.availabilityRow').remove();
+                updateAvailabilityIndexes();
             }
         });
-        if (!isValid) {
-            event.preventDefault();
-            const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
-            alertModal.show();
+        function updateAvailabilityIndexes() {
+            let availabilityRows = document.querySelectorAll('#availabilitySection > .availabilityRow');
+            availabilityRows.forEach((row, index) => {
+                row.querySelectorAll('select, input').forEach(input => {
+                    input.name = input.name.replace(/\[\d+]/, `[${index}]`);
+                    input.id = input.id.replace(/\[\d+]/, `[${index}]`);
+                });
+
+                if (!row.querySelector('.removeAvailability')) {
+                    let removeButton = document.createElement('button');
+                    removeButton.type = 'button';
+                    removeButton.className = 'btn btn-sm btn-danger removeAvailability';
+                    removeButton.innerHTML = '<i class="bi bi-x-square"></i>';
+                    removeButton.addEventListener('click', function() {
+                        row.remove();
+                        updateAvailabilityIndexes();
+                    });
+
+                    let buttonCol = document.createElement('div');
+                    buttonCol.className = 'col-auto';
+                    buttonCol.appendChild(removeButton);
+
+                    row.appendChild(buttonCol);
+                }
+            });
         }
+        document.getElementById('editVolunteerForm').addEventListener('submit', function(event) {
+            let isValid = true;
+            const availabilityRows = document.querySelectorAll('#availabilitySection > div');
 
-    });
+            availabilityRows.forEach(function(row) {
+                const dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
+                const startTime = row.querySelector('input[name$=".startTime"]').value;
+                const endTime = row.querySelector('input[name$=".endTime"]').value;
+
+                // Vérifiez si 'dayOfWeek' est égal à l'option non valide (ex. "Jour")
+                if (dayOfWeek === "Jour") {
+                    isValid = false;
+                }
+
+                if ((dayOfWeek || startTime || endTime) && (!dayOfWeek || !startTime || !endTime || startTime >= endTime)) {
+                    isValid = false;
+                }
+            });
+            if (!isValid) {
+                event.preventDefault();
+                const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+                alertModal.show();
+            }
+
+        });
+
+    })
 
 </script>
 

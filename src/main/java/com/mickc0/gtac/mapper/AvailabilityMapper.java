@@ -31,6 +31,15 @@ public class AvailabilityMapper {
         return availability;
     }
 
+    public Availability mapToNewEntity(AvailabilityDTO dto) {
+        Availability availability = new Availability();
+        availability.setId(dto.getId());
+        availability.setStartTime(dto.getStartTime());
+        availability.setEndTime(dto.getEndTime());
+        availability.setDayOfWeek(dto.getDayOfWeek());
+        return availability;
+    }
+
     public List<AvailabilityDTO> mapToAvailabilityDtoListForVolunteerEditDto(Set<Availability> availabilities) {
         return availabilities.stream()
                 .map(this::mapToDto)

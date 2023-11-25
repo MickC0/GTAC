@@ -68,7 +68,7 @@ public class VolunteerController {
             availability.setDayOfWeek(availabilityDTO.getDayOfWeek());
             availability.setStartTime(availabilityDTO.getStartTime());
             availability.setEndTime(availabilityDTO.getEndTime());
-            availability.setVolunteer(newVolunteer); // Lier la disponibilité au volontaire
+            availability.setVolunteer(newVolunteer);
             availabilityService.save(availability);
             availabilities.add(availability);
         }
@@ -180,7 +180,6 @@ public class VolunteerController {
         if (missionTypes != null && !missionTypes.isEmpty()) {
             selectedMissionTypes = missionTypeService.findAllById(missionTypes);
         }
-
         volunteerService.updateVolunteer(volunteer);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole modifié avec succès.");
         return "redirect:/volunteers";
