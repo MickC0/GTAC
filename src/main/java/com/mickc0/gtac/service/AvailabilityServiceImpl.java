@@ -52,4 +52,9 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
         availabilityRepository.deleteAllByVolunteer(volunteer);
     }
+
+    @Override
+    public void deleteAllByVolunteerId(Long id) {
+        availabilityRepository.deleteAllByVolunteerId(id);
+    }
 }

@@ -104,7 +104,6 @@
         </div>
     </div>
 </div>
-<!-- Modal pour l'alerte -->
 <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -113,7 +112,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Veuillez vérifier les disponibilités : tous les champs doivent être remplis, un jour de la semaine doit être sélectionné, et l'heure de début doit être antérieure à l'heure de fin.
+                <p>Veuillez vérifier les disponibilités :</p>
+                <ul>
+                    <li>tous les champs doivent être remplis,</li>
+                    <li>un jour de la semaine doit être sélectionné,</li>
+                    <li>l'heure de début doit être antérieure à l'heure de fin,</li>
+                    <li>les créneaux de doivent pas être identiques ou se chevaucher.</li>
+                </ul>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
@@ -211,27 +216,43 @@
         document.getElementById('editVolunteerForm').addEventListener('submit', function(event) {
             let isValid = true;
             const availabilityRows = document.querySelectorAll('#availabilitySection > div');
+            let availabilities = [];
 
             availabilityRows.forEach(function(row) {
                 const dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
                 const startTime = row.querySelector('input[name$=".startTime"]').value;
                 const endTime = row.querySelector('input[name$=".endTime"]').value;
 
-                // Vérifiez si 'dayOfWeek' est égal à l'option non valide (ex. "Jour")
                 if (dayOfWeek === "Jour") {
                     isValid = false;
                 }
 
                 if ((dayOfWeek || startTime || endTime) && (!dayOfWeek || !startTime || !endTime || startTime >= endTime)) {
                     isValid = false;
+                } else {
+                    availabilities.push({ dayOfWeek, startTime, endTime });
                 }
             });
+
+            function isOverlapping(start1, end1, start2, end2) {
+                return !(start1 >= end2 || start2 >= end1);
+            }
+
+            for (let i = 0; i < availabilities.length; i++) {
+                for (let j = i + 1; j < availabilities.length; j++) {
+                    let a1 = availabilities[i];
+                    let a2 = availabilities[j];
+
+                    if (a1.dayOfWeek === a2.dayOfWeek && isOverlapping(a1.startTime, a1.endTime, a2.startTime, a2.endTime)) {
+                        isValid = false;
+                    }
+                }
+            }
             if (!isValid) {
                 event.preventDefault();
                 const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
                 alertModal.show();
             }
-
         });
 
     })

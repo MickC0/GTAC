@@ -15,4 +15,6 @@ public interface AvailabilityService {
     void deleteByUuid(UUID uuid);
 
     void deleteAllByVolunteer(Volunteer volunteer);
+
+    void deleteAllByVolunteerId(Long id);
 }

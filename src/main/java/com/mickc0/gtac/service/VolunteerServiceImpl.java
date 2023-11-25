@@ -108,6 +108,7 @@ public class VolunteerServiceImpl implements VolunteerService{
     @Override
     @Transactional
     public void deleteVolunteer(Long id) {
+        availabilityService.deleteAllByVolunteerId(id);
         volunteerRepository.deleteById(id);
     }
 

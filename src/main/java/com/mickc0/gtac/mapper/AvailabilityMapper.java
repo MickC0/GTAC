@@ -4,6 +4,8 @@ import com.mickc0.gtac.dto.AvailabilityDTO;
 import com.mickc0.gtac.entity.Availability;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,15 +43,32 @@ public class AvailabilityMapper {
     }
 
     public List<AvailabilityDTO> mapToAvailabilityDtoListForVolunteerEditDto(Set<Availability> availabilities) {
-        return availabilities.stream()
+        List<AvailabilityDTO> availabilityDTOList = availabilities.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
+
+        sortAvailabilities(availabilityDTOList);
+        return availabilityDTOList;
     }
 
-    public Set<Availability> mapToEntitySet(List<AvailabilityDTO> dtos) {
-        return dtos.stream()
+    public Set<Availability> mapToEntitySet(List<AvailabilityDTO> availabilities) {
+        return availabilities.stream()
                 .map(this::mapToEntity)
                 .collect(Collectors.toSet());
+    }
+
+    private static class AvailabilityComparator implements Comparator<AvailabilityDTO> {
+        @Override
+        public int compare(AvailabilityDTO a1, AvailabilityDTO a2) {
+            int dayCompare = a1.getDayOfWeek().compareTo(a2.getDayOfWeek());
+            if (dayCompare != 0) {
+                return dayCompare;
+            }
+            return a1.getStartTime().compareTo(a2.getStartTime());
+        }
+    }
+    private void sortAvailabilities(List<AvailabilityDTO> availabilities) {
+        availabilities.sort(new AvailabilityComparator());
     }
 
 

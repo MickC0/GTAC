@@ -13,4 +13,6 @@ public interface AvailabilityRepository extends JpaRepository<Availability,Long>
     void deleteByUuid(UUID uuid);
 
     void deleteAllByVolunteer(Volunteer volunteer);
+
+    void deleteAllByVolunteerId(Long id);
 }

@@ -24,10 +24,10 @@ public class Volunteer {
     private String password;
     @Column(name = "phone_number")
     private String phoneNumber;
-    @OneToMany(mappedBy = "volunteer",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "volunteer")
     private Set<Availability> availabilities;
 
-    @OneToMany(mappedBy = "volunteer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "volunteer")
     private Set<Unavailability> unavailabilities;
 
     @ManyToMany(mappedBy = "assignedVolunteers")
