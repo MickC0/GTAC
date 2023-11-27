@@ -1,22 +1,19 @@
 package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.*;
-import com.mickc0.gtac.entity.Availability;
-import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.entity.Volunteer;
+import com.mickc0.gtac.mapper.UnavailabilityMapper;
 import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.service.AvailabilityService;
 import com.mickc0.gtac.service.MissionTypeService;
+import com.mickc0.gtac.service.UnavailabilityService;
 import com.mickc0.gtac.service.VolunteerService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/volunteers")
@@ -27,14 +24,18 @@ public class VolunteerController {
     private final AvailabilityService availabilityService;
     private final MissionTypeService missionTypeService;
     private final VolunteerMapper volunteerMapper;
+    private final UnavailabilityService unavailabilityService;
+    private final UnavailabilityMapper unavailabilityMapper;
 
 
 
-    public VolunteerController(VolunteerService volunteerService, AvailabilityService availabilityService, MissionTypeService missionTypeService, VolunteerMapper volunteerMapper) {
+    public VolunteerController(VolunteerService volunteerService, AvailabilityService availabilityService, MissionTypeService missionTypeService, VolunteerMapper volunteerMapper, UnavailabilityService unavailabilityService, UnavailabilityMapper unavailabilityMapper) {
         this.volunteerService = volunteerService;
         this.availabilityService = availabilityService;
         this.missionTypeService = missionTypeService;
         this.volunteerMapper = volunteerMapper;
+        this.unavailabilityService = unavailabilityService;
+        this.unavailabilityMapper = unavailabilityMapper;
     }
 
     @GetMapping
@@ -53,10 +54,10 @@ public class VolunteerController {
     }
 
 
+    //TODO refactorer dans le service
     @PostMapping
-    public String saveVolunteer(@ModelAttribute("volunteer") VolunteerNewDTO volunteerDTO,
-                                @RequestParam(required = false) List<Long> missionTypes, RedirectAttributes redirectAttributes) {
-        List<MissionType> selectedMissionTypes = new ArrayList<>();
+    public String saveVolunteer(@ModelAttribute("volunteer") VolunteerNewDTO volunteerNewDTO, RedirectAttributes redirectAttributes) {
+        /*List<MissionType> selectedMissionTypes = new ArrayList<>();
         if (missionTypes != null && !missionTypes.isEmpty()) {
             selectedMissionTypes = missionTypeService.findAllById(missionTypes);
         }
@@ -73,90 +74,26 @@ public class VolunteerController {
             availabilities.add(availability);
         }
         newVolunteer.setAvailabilities(availabilities);
-        newVolunteer.setMissionTypes(new HashSet<>(selectedMissionTypes));
-        volunteerService.save(newVolunteer);
+
+        Set<Unavailability> unavailabilities = new HashSet<>();
+        for (UnavailabilityDTO unavailabilityDTO : volunteerDTO.getUnavailabilities()){
+            Unavailability unavailability = new Unavailability();
+            unavailability.setStartDate(unavailabilityDTO.getStartDate());
+            unavailability.setEndDate(unavailabilityDTO.getEndDate());
+            unavailability.setVolunteer(newVolunteer);
+            unavailabilityService.save(unavailability);
+            unavailabilities.add(unavailability);
+        }
+        newVolunteer.setUnavailabilities(unavailabilities);
+        newVolunteer.setMissionTypes(new HashSet<>(selectedMissionTypes));*/
+        volunteerService.save(volunteerNewDTO);
         redirectAttributes.addFlashAttribute("successMessage", "Volontaire enregistré avec succès.");
         return "redirect:/volunteers";
     }
 
-
-    @GetMapping("/add-availability")
-    public String AddAvailabilityForm(@RequestParam("volunteerId") Long volunteerId, Model model) {
-        model.addAttribute("volunteerId", volunteerId);
-        model.addAttribute("availabilityForm", new AvailabilityFormDTO());
-        return "volunteers/availabilities/add-availabilities";
-    }
-
-    @PostMapping("/add-availability")
-    public String addAvailability(@ModelAttribute AvailabilityFormDTO availabilityForm, @RequestParam("volunteerId") Long volunteerId,
-                                  RedirectAttributes redirectAttributes, BindingResult result) {
-        Volunteer volunteer = volunteerService.findById(volunteerId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid volunteer Id:" + volunteerId));
-        if (availabilityForm.getAvailabilities() != null) {
-            for (Availability availability : availabilityForm.getAvailabilities()) {
-                if (availability.getDayOfWeek() != null || availability.getStartTime() != null || availability.getEndTime() != null) {
-                    if (availability.getDayOfWeek() == null || availability.getStartTime() == null || availability.getEndTime() == null || availability.getStartTime().isAfter(availability.getEndTime())) {
-                        result.rejectValue("availabilities", "InvalidAvailability", "Vérifiez que tous les champs de disponibilité sont remplis correctement et que l'heure de début est antérieure à l'heure de fin.");
-                        break;
-                    }
-                }
-            }
-        }
-        if (result.hasErrors()) {
-            redirectAttributes.addAttribute("volunteerId", volunteerId);
-            return "redirect:/volunteers/add-availability";
-        }
-        // Ici, traitez les disponibilités soumises
-        for (Availability availability : availabilityForm.getAvailabilities()) {
-            Availability newAvailability = new Availability();
-            newAvailability.setVolunteer(volunteer);
-            newAvailability.setDayOfWeek(availability.getDayOfWeek());
-            newAvailability.setStartTime(availability.getStartTime());
-            newAvailability.setEndTime(availability.getEndTime());
-            availabilityService.createAvailability(newAvailability);
-        }
-        redirectAttributes.addAttribute("volunteerId", volunteerId);
-        redirectAttributes.addFlashAttribute("successMessage", "Disponibilités ajoutées avec succès.");
-        return "redirect:/volunteers/add-mission-types";
-    }
-
-    @GetMapping("/add-mission-types")
-    public String showAddMissionTypesForm(Model model, @RequestParam("volunteerId") Long volunteerId) {
-        List<MissionType> allMissionTypes = missionTypeService.findAll();
-        model.addAttribute("allMissionTypes", allMissionTypes);
-        model.addAttribute("volunteerId", volunteerId);
-        return "volunteers/mission-types/add-mission-types";
-    }
-
-    @PostMapping("/add-mission-types")
-    public String addMissionTypes(@RequestParam("volunteerId") Long volunteerId,
-                                  @RequestParam(value = "missionTypeIds", required = false) List<Long> missionTypeIds,
-                                  RedirectAttributes redirectAttributes) {
-        Volunteer volunteer = volunteerService.findById(volunteerId)
-                .orElseThrow(() -> new EntityNotFoundException("Bénévole avec l'ID " + volunteerId + " non trouvé"));
-        volunteer.getMissionTypes().clear();
-
-
-        if (missionTypeIds != null && !missionTypeIds.isEmpty()) {
-            for (Long missionTypeId : missionTypeIds) {
-                Optional<MissionType> missionTypeOptional = missionTypeService.findById(missionTypeId);
-                missionTypeOptional.ifPresent(volunteer.getMissionTypes()::add);
-            }
-        }
-
-        volunteerService.save(volunteer);
-
-        redirectAttributes.addFlashAttribute("successMessage", "Le bénévole a été créé avec succès.");
-        return "redirect:/volunteers";
-    }
-
-
-
-
-
     @GetMapping("/edit/{id}")
     public String editVolunteerForm(@PathVariable(value = "id") Long id, Model model){
-        VolunteerEditDTO volunteer = volunteerService.findVolunteerEditDTOById(id);
+        VolunteerDTO volunteer = volunteerService.findVolunteerEditDTOById(id);
         List<MissionTypeDTO> allMissionTypes = missionTypeService.getAll();
 
 
@@ -166,20 +103,14 @@ public class VolunteerController {
             }
         });
 
-        //obligatoire pour récupérer la valeur select dans le front.
-        //model.addAttribute("missionTypeIds", missionTypeIds);
         model.addAttribute("volunteer", volunteer);
         model.addAttribute("allMissionTypes", allMissionTypes);
         return "/volunteers/volunteer/edit-volunteer";
     }
 
     @PostMapping("/update/{id}")
-    public String updateVolunteer(@PathVariable(name = "id") Long id, @ModelAttribute ("volunteer") VolunteerEditDTO volunteer,
-                                  @RequestParam(required = false) List<Long> missionTypes, RedirectAttributes redirectAttributes){
-        List<MissionType> selectedMissionTypes = new ArrayList<>();
-        if (missionTypes != null && !missionTypes.isEmpty()) {
-            selectedMissionTypes = missionTypeService.findAllById(missionTypes);
-        }
+    public String updateVolunteer(@PathVariable(name = "id") Long id, @ModelAttribute ("volunteer") VolunteerDTO volunteer,
+                                  RedirectAttributes redirectAttributes){
         volunteerService.updateVolunteer(volunteer);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole modifié avec succès.");
         return "redirect:/volunteers";
@@ -205,4 +136,8 @@ public class VolunteerController {
         //model.addAttribute("volunteers", volunteers);
         return "volunteers/volunteers";
     }
+
+
+
+
 }

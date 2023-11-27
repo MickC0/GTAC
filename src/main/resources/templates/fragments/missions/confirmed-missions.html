@@ -23,7 +23,6 @@
                 <table class="table-responsive table table-striped table-hover" th:unless="${confirmedMissions.isEmpty()}">
                     <thead>
                     <tr>
-                        <th>uuid</th>
                         <th>Nom</th>
                         <th>Type</th>
                         <th>Statut</th>
@@ -34,7 +33,6 @@
                     </thead>
                     <tbody class="scrollable-list">
                     <tr th:each="confirmedMission:${confirmedMissions}">
-                        <td th:text="${confirmedMission.uuid}"></td>
                         <td th:text="${confirmedMission.title}"></td>
                         <td th:text="${confirmedMission.missionType.name}"></td>
                         <td th:text="${confirmedMission.status}"></td>

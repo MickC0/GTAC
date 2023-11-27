@@ -107,7 +107,7 @@ public class MissionServiceImpl implements MissionService {
         LocalTime startTime = missionStart.toLocalTime();
         LocalTime endTime = missionEnd.toLocalTime();
 
-        return volunteerRepository.findAvailableVolunteersForMission(missionStart, missionEnd, dayOfWeek, startTime, endTime, missionType);
+        return volunteerRepository.findAvailableVolunteersForMission(missionStart, missionEnd, dayOfWeek, startTime, endTime, missionTypeId);
     }
 
 

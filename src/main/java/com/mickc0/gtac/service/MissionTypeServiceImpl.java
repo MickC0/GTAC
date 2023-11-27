@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,13 +34,19 @@ public class MissionTypeServiceImpl implements MissionTypeService{
 
     @Override
     @Transactional
-    public void save(MissionType missionType) throws CustomDuplicateEntryException {
+    public void save(MissionTypeDTO missionTypeDTO) throws CustomDuplicateEntryException {
+        MissionType missionType;
+        if(missionTypeDTO.getUuid() == null){
+            missionType = missionTypeMapper.mapToNewMissionTypeEntity(missionTypeDTO);
+        } else {
+            missionType = missionTypeMapper.mapToMissionTypeEntity(missionTypeDTO);
+        }
         String normalizedNewName = normalizeString(missionType.getName());
 
         Optional<MissionType> existingMissionType = missionTypeRepository
                 .findAll()
                 .stream()
-                .filter(mt -> mt.getId() != null && !mt.getId().equals(missionType.getId())) // Ignorer l'entité actuelle
+                .filter(mt -> mt.getId() != null && !mt.getId().equals(missionType.getId()))
                 .filter(mt -> normalizeString(mt.getName()).equalsIgnoreCase(normalizedNewName))
                 .findFirst();
 
@@ -84,7 +91,8 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     }
 
     @Override
-    public Optional<MissionType> findById(Long id) {
-        return missionTypeRepository.findById(id);
+    public Optional<MissionTypeDTO> findByUuid(UUID uuid) {
+        return Optional.ofNullable(missionTypeMapper.mapToMissionTypeDto(missionTypeRepository.findByUuid(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + uuid))));
     }
 }

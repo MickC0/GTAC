@@ -7,8 +7,9 @@ public class MissionTypeDTO {
     private Long id;
     private UUID uuid;
     private String name;
+    private String description;
     private boolean selected;
-
+    private boolean isActive;
 
     public Long getId() {
         return id;
@@ -16,6 +17,14 @@ public class MissionTypeDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -26,6 +35,14 @@ public class MissionTypeDTO {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public boolean isSelected() {
         return selected;
     }
@@ -33,21 +50,12 @@ public class MissionTypeDTO {
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
-    public UUID getUuid() {
-        return uuid;
+
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-
-    @Override
-    public String toString() {
-        return "MissionTypeDTO{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", name='" + name + '\'' +
-                ", selected=" + selected +
-                '}';
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

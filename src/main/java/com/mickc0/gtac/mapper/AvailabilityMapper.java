@@ -35,7 +35,6 @@ public class AvailabilityMapper {
 
     public Availability mapToNewEntity(AvailabilityDTO dto) {
         Availability availability = new Availability();
-        availability.setId(dto.getId());
         availability.setStartTime(dto.getStartTime());
         availability.setEndTime(dto.getEndTime());
         availability.setDayOfWeek(dto.getDayOfWeek());

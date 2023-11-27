@@ -68,6 +68,7 @@
                                 <div id="availabilitySection">
                                     <div th:each="availability, iterStat : *{availabilities}" class="availabilityRow row gy-2 gx-3 align-items-center mb-2">
                                         <input type="hidden" th:field="*{availabilities[__${iterStat.index}__].id}" />
+                                        <input type="hidden" th:field="*{availabilities[__${iterStat.index}__].uuid}" />
                                         <div class="col-auto">
                                             <label class="form-label-sm" th:for="${'availabilities' + iterStat.index + '.dayOfWeek'}">Jour :</label>
                                             <select class="form-select-sm" th:field="*{availabilities[__${iterStat.index}__].dayOfWeek}" required="required">
@@ -88,10 +89,31 @@
                                             <label class="form-label-sm" th:for="${'availabilities' + iterStat.index + '.endTime'}">Heure de fin :</label>
                                             <input class="form-control-sm" type="time" th:field="*{availabilities[__${iterStat.index}__].endTime}" />
                                         </div>
-
                                     </div>
                                 </div>
                                 <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
+                            </div>
+                            <div class="form-group">
+                                <hr>
+                                <h5>Indisponibilités</h5>
+                                <hr>
+                                <div id="unavailabilitySection">
+                                    <th:block th:each="unavailability, stat : *{unavailabilities}">
+                                        <input type="hidden" th:field="*{unavailabilities[__${stat.index}__].id}" />
+                                        <input type="hidden" th:field="*{unavailabilities[__${stat.index}__].uuid}" />
+                                        <div class="unavailabilityRow row gy-2 gx-3 align-items-center mb-2">
+                                            <div class="col-auto">
+                                                <label class="form-label-sm" th:for="${'unavailabilities' + stat.index + '.startDate'}">Date de début :</label>
+                                                <input type="date" th:field="*{unavailabilities[__${stat.index}__].startDate}" class="form-control-sm" />
+                                            </div>
+                                            <div class="col-auto">
+                                                <label class="form-label-sm" th:for="${'unavailabilities' + stat.index + '.endDate'}">Date de fin :</label>
+                                                <input type="date" th:field="*{unavailabilities[__${stat.index}__].endDate}" class="form-control-sm" />
+                                            </div>
+                                        </div>
+                                    </th:block>
+                                </div>
+                                <button type="button" id="addUnavailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Indisponibilité</button>
                             </div>
                         </div>
                     </div>
@@ -130,6 +152,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function (){
         updateAvailabilityIndexes();
+        updateUnavailabilityIndexes();
 
         document.getElementById('addAvailability').addEventListener('click', function() {
             let availabilitySection = document.getElementById('availabilitySection');
@@ -176,7 +199,6 @@
             let buttonCol = document.createElement('div');
             buttonCol.className = 'col-auto';
             buttonCol.appendChild(removeButton);
-
             availabilityDiv.appendChild(buttonCol);
             availabilitySection.appendChild(availabilityDiv);
         });
@@ -192,7 +214,7 @@
             availabilityRows.forEach((row, index) => {
                 row.querySelectorAll('select, input').forEach(input => {
                     input.name = input.name.replace(/\[\d+]/, `[${index}]`);
-                    input.id = input.id.replace(/\[\d+]/, `[${index}]`);
+                    input.id = input.id.replace(/\[\d+]/, index.toString());
                 });
 
                 if (!row.querySelector('.removeAvailability')) {
@@ -213,6 +235,7 @@
                 }
             });
         }
+
         document.getElementById('editVolunteerForm').addEventListener('submit', function(event) {
             let isValid = true;
             const availabilityRows = document.querySelectorAll('#availabilitySection > div');
@@ -248,6 +271,108 @@
                     }
                 }
             }
+            if (!isValid) {
+                event.preventDefault();
+                const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+                alertModal.show();
+            }
+        });
+
+        document.getElementById('addUnavailability').addEventListener('click', function() {
+            let unavailabilitySection = document.getElementById('unavailabilitySection');
+            let index = unavailabilitySection.getElementsByClassName('unavailabilityRow').length;
+
+            let unavailabilityDiv = document.createElement('div');
+            unavailabilityDiv.className = 'unavailabilityRow row gy-2 gx-3 align-items-center mb-2';
+            unavailabilityDiv.innerHTML = `
+                <div class="col-auto">
+                    <label class="form-label-sm" for="unavailabilities${index}.startDate">Date de début :</label>
+                    <input class="form-control-sm" type="date" name="unavailabilities[${index}].startDate" id="unavailabilities${index}.startDate"/>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label-sm" for="unavailabilities${index}.endDate">Date de fin :</label>
+                    <input class="form-control-sm" type="date" name="unavailabilities[${index}].endDate" id="unavailabilities${index}.endDate"/>
+                </div>
+            `;
+
+            let removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-sm btn-danger removeUnavailability';
+
+            let icon = document.createElement('i');
+            icon.className = 'bi bi-x-square';
+            removeButton.appendChild(icon);
+            removeButton.addEventListener('click', function() {
+                unavailabilityDiv.remove();
+                updateUnavailabilityIndexes();
+            });
+
+            let buttonCol = document.createElement('div');
+            buttonCol.className = 'col-auto';
+            buttonCol.appendChild(removeButton);
+            unavailabilityDiv.appendChild(buttonCol);
+            unavailabilitySection.appendChild(unavailabilityDiv);
+
+        });
+
+        document.getElementById('unavailabilitySection').addEventListener('click', function(event) {
+            if (event.target.classList.contains('removeUnavailability')) {
+                event.target.closest('.unavailabilityRow').remove();
+                updateUnavailabilityIndexes();
+            }
+        });
+
+        function updateUnavailabilityIndexes() {
+            let unavailabilityRows = document.querySelectorAll('#unavailabilitySection > .unavailabilityRow');
+            unavailabilityRows.forEach((row, index) => {
+                row.querySelectorAll('select, input').forEach(input => {
+                    input.name = input.name.replace(/\[\d+]/, `[${index}]`);
+                    input.id = input.id.replace(/\d+/, index.toString());
+                });
+                if (!row.querySelector('.removeUnavailability')) {
+                    let removeButton = document.createElement('button');
+                    removeButton.type = 'button';
+                    removeButton.className = 'btn btn-sm btn-danger removeUnavailability';
+                    removeButton.innerHTML = '<i class="bi bi-x-square"></i>';
+                    removeButton.addEventListener('click', function() {
+                        row.remove();
+                        updateUnavailabilityIndexes();
+                    });
+
+                    let buttonCol = document.createElement('div');
+                    buttonCol.className = 'col-auto';
+                    buttonCol.appendChild(removeButton);
+
+                    row.appendChild(buttonCol);
+                }
+            });
+        }
+
+        document.getElementById('editVolunteerForm').addEventListener('submit', function(event) {
+            let isValid = true;
+            const unavailabilityRows = document.querySelectorAll('#unavailabilitySection > div');
+
+            let unavailabilities = [];
+            unavailabilityRows.forEach(function(row) {
+                const startDate = row.querySelector('input[name$=".startDate"]').value;
+                const endDate = row.querySelector('input[name$=".endDate"]').value;
+
+                if (!startDate || !endDate || new Date(startDate) > new Date(endDate)) {
+                    isValid = false;
+                } else {
+                    unavailabilities.push({startDate: new Date(startDate), endDate: new Date(endDate)});
+                }
+            });
+
+            for (let i = 0; i < unavailabilities.length; i++) {
+                for (let j = i + 1; j < unavailabilities.length; j++) {
+                    if ((unavailabilities[i].startDate < unavailabilities[j].endDate) &&
+                        (unavailabilities[j].startDate < unavailabilities[i].endDate)) {
+                        isValid = false;
+                    }
+                }
+            }
+
             if (!isValid) {
                 event.preventDefault();
                 const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));

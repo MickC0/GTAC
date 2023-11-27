@@ -126,5 +126,15 @@ public class MissionController {
         return "redirect:/missions";
     }
 
+    @GetMapping("/confirmed/{id}")
+    public String showConfirmedMissionForm(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes){
+        Mission mission = missionService.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid mission Id:" + id));
+        model.addAttribute("mission", mission);
+        //List<Volunteer> availableVolunteers = volunteerService.findAvailableForMission(mission);
+        //model.addAttribute("availableVolunteers", availableVolunteers);
+        return "missions/confirmed-mission/create-confirmed-mission";
+    }
+
 
 }

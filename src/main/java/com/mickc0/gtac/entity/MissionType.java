@@ -21,6 +21,17 @@ public class MissionType {
     private String name;
     @Column(name = "description")
     private String description;
+    @Column(name = "is_active")
+    private boolean isActive = true;
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     @OneToMany(mappedBy = "missionType")
     private List<Mission> missions;
 

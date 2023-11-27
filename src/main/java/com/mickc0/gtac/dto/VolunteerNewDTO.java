@@ -2,6 +2,7 @@ package com.mickc0.gtac.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class VolunteerNewDTO {
 
@@ -10,8 +11,8 @@ public class VolunteerNewDTO {
     private String email;
     private String phoneNumber;
     private List<AvailabilityDTO> availabilities = new ArrayList<>();
-    private List<Long> preferredMissionTypeIds = new ArrayList<>();
-
+    private List<MissionTypeDTO> missionTypes;
+    private List<UnavailabilityDTO> unavailabilities = new ArrayList<>();
 
     public String getLastName() {
         return lastName;
@@ -53,12 +54,19 @@ public class VolunteerNewDTO {
         this.availabilities = availabilities;
     }
 
-    public List<Long> getPreferredMissionTypeIds() {
-        return preferredMissionTypeIds;
+    public List<MissionTypeDTO> getMissionTypes() {
+        return missionTypes;
     }
 
-    public void setPreferredMissionTypeIds(List<Long> preferredMissionTypeIds) {
-        this.preferredMissionTypeIds = preferredMissionTypeIds;
+    public void setMissionTypes(List<MissionTypeDTO> missionTypes) {
+        this.missionTypes = missionTypes;
     }
 
+    public List<UnavailabilityDTO> getUnavailabilities() {
+        return unavailabilities;
+    }
+
+    public void setUnavailabilities(List<UnavailabilityDTO> unavailabilities) {
+        this.unavailabilities = unavailabilities;
+    }
 }

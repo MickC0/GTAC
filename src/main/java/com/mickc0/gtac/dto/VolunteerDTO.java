@@ -3,24 +3,16 @@ package com.mickc0.gtac.dto;
 import java.util.List;
 import java.util.UUID;
 
-public class VolunteerEditDTO {
+public class VolunteerDTO {
 
-    private Long id;
     private UUID uuid;
     private String lastName;
     private String firstName;
     private String email;
     private String phoneNumber;
     private List<AvailabilityDTO> availabilities;
-    private List<Long> missionTypes;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private List<MissionTypeDTO> missionTypes;
+    private List<UnavailabilityDTO> unavailabilities;
 
     public UUID getUuid() {
         return uuid;
@@ -70,12 +62,19 @@ public class VolunteerEditDTO {
         this.availabilities = availabilities;
     }
 
-
-    public List<Long> getMissionTypes() {
+    public List<MissionTypeDTO> getMissionTypes() {
         return missionTypes;
     }
 
-    public void setMissionTypes(List<Long> missionTypes) {
+    public void setMissionTypes(List<MissionTypeDTO> missionTypes) {
         this.missionTypes = missionTypes;
+    }
+
+    public List<UnavailabilityDTO> getUnavailabilities() {
+        return unavailabilities;
+    }
+
+    public void setUnavailabilities(List<UnavailabilityDTO> unavailabilities) {
+        this.unavailabilities = unavailabilities;
     }
 }

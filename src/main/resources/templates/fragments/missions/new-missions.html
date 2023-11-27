@@ -22,7 +22,6 @@
                 <table class="table-responsive table table-striped table-hover" th:unless="${newMissions.isEmpty()}">
                     <thead>
                     <tr>
-                        <th>uuid</th>
                         <th>Nom</th>
                         <th>Type</th>
                         <th>Statut</th>
@@ -32,7 +31,6 @@
                     <tbody>
 
                     <tr th:each="newMission:${newMissions}">
-                        <td th:text="${newMission.uuid}"></td>
                         <td th:text="${newMission.title}"></td>
                         <td th:text="${newMission.missionType.name}"></td>
                         <td th:text="${newMission.status}"></td>
@@ -42,7 +40,6 @@
                             <!-- Editer -->
                             <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/new/{id}(id=${newMission.id})}"><i class="bi bi-pencil-square"></i></a>
                             <!-- Supprimer -->
-                            <!--<a class="btn btn-danger btn-sm" th:href="@{/missions/delete/{id}(id=${newMission.id})}"><i class="bi bi-trash"></i></a>-->
                             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMissionModal" th:attr="data-mission-id=${newMission.id}"><i class="bi bi-trash"></i></button>
                             <!-- Voir -->
                             <a class="btn btn-info btn-sm" th:href="@{/missions/{id}(id=${newMission.id})}"><i class="bi bi-eye"></i></a>

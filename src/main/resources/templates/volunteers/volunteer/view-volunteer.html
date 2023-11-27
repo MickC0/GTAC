@@ -11,18 +11,46 @@
             <div class="col d-flex flex-column h-sm-100 col-sm-9">
                 <main class="row overflow-auto">
                     <div class="col pt-4">
-                        <h1 class="py-2" th:text="${volunteer.lastName}"></h1>
+                        <h1 class="py-2">Profil</h1>
                         <hr />
-
                         <div class="card">
                             <div class="card-header">
 
                             </div>
                             <div class="card-body">
-                                <p>Nom : <span th:text="${volunteer.lastName}"></span></p>
-                                <p>Nom : <span th:text="${volunteer.firstName}"></span></p>
-                                <p th:text="${volunteer.email}"></p>
-                                <p th:text="${volunteer.phoneNumber}"></p>
+                                <div class="row">
+                                    <div class="col-md-5 col-sm-12 mb-4">
+                                        <h3>Informations Personnelles</h3>
+                                        <hr />
+                                        <p><strong>Nom :</strong> <span th:text="${volunteer.lastName}"></span></p>
+                                        <p><strong>Prénom :</strong> <span th:text="${volunteer.firstName}"></span></p>
+                                        <p><strong>Email :</strong> <span th:text="${volunteer.email}"></span></p>
+                                        <p><strong>Téléphone :</strong> <span th:text="${volunteer.phoneNumber}"></span></p>
+                                    </div>
+                                    <div class="col-md-7 col-sm-12 mb-4">
+                                        <h3>Activités et Disponibilités</h3>
+                                        <hr />
+                                        <p><strong>Missions :</strong></p>
+                                        <ul class="list-group">
+                                            <li class="list-group-item" th:each="mission : ${volunteer.missions}" th:text="${mission.title}"></li>
+                                        </ul>
+                                        <hr>
+                                        <p><strong>Types de Mission :</strong></p>
+                                        <ul class="list-group">
+                                            <li class="list-group-item" th:each="type : ${volunteer.missionTypes}" th:text="${type.name}"></li>
+                                        </ul>
+                                        <hr>
+                                        <p><strong>Disponibilités :</strong></p>
+                                        <ul class="list-group">
+                                            <li class="list-group-item" th:each="availability : ${volunteer.availabilities}" th:text="${availability.dayOfWeek} + ' ' + ${availability.startTime} + ' - ' + ${availability.endTime}"></li>
+                                        </ul>
+                                        <hr>
+                                        <p><strong>Indisponibilités :</strong></p>
+                                        <ul class="list-group">
+                                            <li class="list-group-item" th:each="unavailability : ${volunteer.unavailabilities}" th:text="${unavailability.startDate} + ' - ' + ${unavailability.endDate}"></li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-footer">
                                 <a class="btn btn-secondary" th:href="@{/volunteers}">Retour</a>

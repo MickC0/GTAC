@@ -12,7 +12,7 @@
 
                 <form th:action="@{/volunteers}" method="post" id="newVolunteerForm" th:object="${volunteer}">
                     <div class="row">
-                        <div class="col-md-6 col-lg-5 mb-4">
+                        <div class="col-md-5 col-sm-12 mb-4">
                             <div class="form-group">
                                 <label for="lastName" class="col-form-label">Nom :</label>
                                 <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required" autocomplete="family-name">
@@ -30,7 +30,7 @@
                                 <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control" autocomplete="tel">
                             </div>
                         </div>
-                        <div class="col-md-6 col-lg-7 mb-4">
+                        <div class="col-md-7 col-sm-12 mb-4">
                             <div class="form-group">
                                 <h5>Types de mission</h5>
                                 <hr>
@@ -45,8 +45,8 @@
                             </div>
                             <div class="d-flex flex-wrap" role="group" th:unless="${allMissionTypes.isEmpty()}">
                                 <div class="my-2 me-2" th:each="missionType:${allMissionTypes}">
-                                    <input th:id="${'btn-check-outlined' + missionType.id}" th:value="${missionType.id}" th:name="missionTypes" type="checkbox" class="btn-check" autocomplete="off">
-                                    <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.id}" th:text="${missionType.name}"></label><br>
+                                    <input th:id="${'btn-check-outlined' + missionType.uuid}" th:value="${missionType}" th:name="missionTypes" type="checkbox" class="btn-check" autocomplete="off">
+                                    <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.uuid}" th:text="${missionType.name}"></label><br>
                                 </div>
                             </div>
 
@@ -57,6 +57,15 @@
                                 <div id="availabilitySection">
                                 </div>
                                 <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
+                            </div>
+
+                            <div class="form-group">
+                                <hr>
+                                <h5>Indisponibilités</h5>
+                                <hr>
+                                <div id="unavailabilitySection">
+                                </div>
+                                <button type="button" id="addUnavailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Indisponibilité</button>
                             </div>
                         </div>
                     </div>
@@ -181,6 +190,82 @@
         }
     });
 
+    document.getElementById('addUnavailability').addEventListener('click', function() {
+        let unavailabilitySection = document.getElementById('unavailabilitySection');
+        let index = unavailabilitySection.children.length;
+
+        let unavailabilityDiv = document.createElement('div');
+        unavailabilityDiv.className = 'unavailabilityRow row gy-2 gx-3 align-items-center mb-2';
+        unavailabilityDiv.innerHTML = `
+            <div class="col-auto">
+                <label class="form-label-sm" for="unavailabilities[${index}].startDate">Date de début :</label>
+                <input class="form-control-sm" type="date" name="unavailabilities[${index}].startDate" id="unavailabilities[${index}].startDate" required="required"/>
+            </div>
+            <div class="col-auto">
+                <label class="form-label-sm" for="unavailabilities[${index}].endDate">Date de fin :</label>
+                <input class="form-control-sm" type="date" name="unavailabilities[${index}].endDate" id="unavailabilities[${index}].endDate" required="required"/>
+            </div>
+        `;
+
+        let removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'btn btn-sm btn-danger removeUnavailability';
+        removeButton.addEventListener('click', function() {
+            unavailabilityDiv.remove();
+            // Pas besoin de mettre à jour les index ici.
+        });
+        let icon = document.createElement('i');
+        icon.className = 'bi bi-x-square';
+        removeButton.appendChild(icon);
+        removeButton.addEventListener('click', function() {
+            unavailabilityDiv.remove();
+            updateAvailabilityIndexes();
+        });
+        let buttonCol = document.createElement('div');
+        buttonCol.className = 'col-auto';
+        buttonCol.appendChild(removeButton);
+
+        unavailabilityDiv.appendChild(buttonCol);
+        unavailabilitySection.appendChild(unavailabilityDiv);
+    });
+
+    document.getElementById('unavailabilitySection').addEventListener('click', function(event) {
+        if (event.target.classList.contains('removeUnavailability')) {
+            event.target.closest('.unavailabilityRow').remove();
+        }
+    });
+
+    document.getElementById('newVolunteerForm').addEventListener('submit', function(event) {
+        let isValid = true;
+        const unavailabilityRows = document.querySelectorAll('#unavailabilitySection > div');
+
+        let unavailabilities = [];
+        unavailabilityRows.forEach(function(row) {
+            const startDate = row.querySelector('input[name$=".startDate"]').value;
+            const endDate = row.querySelector('input[name$=".endDate"]').value;
+
+            if (!startDate || !endDate || new Date(startDate) > new Date(endDate)) {
+                isValid = false;
+            } else {
+                unavailabilities.push({startDate: new Date(startDate), endDate: new Date(endDate)});
+            }
+        });
+
+        for (let i = 0; i < unavailabilities.length; i++) {
+            for (let j = i + 1; j < unavailabilities.length; j++) {
+                if ((unavailabilities[i].startDate < unavailabilities[j].endDate) &&
+                    (unavailabilities[j].startDate < unavailabilities[i].endDate)) {
+                    isValid = false;
+                }
+            }
+        }
+
+        if (!isValid) {
+            event.preventDefault();
+            const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            alertModal.show();
+        }
+    });
 
 
 </script>

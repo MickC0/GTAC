@@ -28,8 +28,6 @@
                                 <table class="table table-responsive table-striped table-hover">
                                     <thead>
                                         <tr>
-                                            <th>id</th>
-                                            <th>uuid</th>
                                             <th>Nom</th>
                                             <th>Prénom</th>
                                             <th>Email</th>
@@ -40,8 +38,6 @@
                                     </thead>
                                     <tbody>
                                         <tr th:each="v:${volunteers}">
-                                            <td th:text="${v.id}"></td>
-                                            <td th:text="${v.uuid}"></td>
                                             <td th:text="${v.lastName}"></td>
                                             <td th:text="${v.firstName}"></td>
                                             <td th:text="${v.email}"></td>
@@ -49,12 +45,17 @@
                                             <td th:text="${v.status}"></td>
                                             <td>
                                                 <!-- Editer -->
-                                                <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.id})}"><i class="bi bi-pencil-square"></i></a>
+                                                <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.id})}">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
                                                 <!-- Supprimer -->
-                                                <!--<a class="btn btn-danger btn-sm" th:href="@{/volunteers/delete/{id}(id=${v.id})}"><i class="bi bi-trash"></i></a>-->
-                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteVolunteerModal" th:attr="data-volunteer-id=${v.id}"><i class="bi bi-trash"></i></button>
+                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteVolunteerModal" th:attr="data-volunteer-id=${v.id}" >
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
                                                 <!-- Voir -->
-                                                <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.id})}"><i class="bi bi-eye"></i></a>
+                                                <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.id})}">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     </tbody>

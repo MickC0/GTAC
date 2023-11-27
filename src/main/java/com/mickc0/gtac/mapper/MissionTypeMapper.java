@@ -14,24 +14,30 @@ public class MissionTypeMapper {
 
     public MissionTypeDTO mapToMissionTypeDto(MissionType missionType){
         MissionTypeDTO missionTypeDTO = new MissionTypeDTO();
-        missionTypeDTO.setId(missionType.getId());
         missionTypeDTO.setUuid(missionType.getUuid());
         missionTypeDTO.setName(missionType.getName());
         missionTypeDTO.setSelected(false);
+        missionTypeDTO.setActive(missionType.isActive());
         return missionTypeDTO;
+    }
+
+    public MissionType mapToNewMissionTypeEntity(MissionTypeDTO missionTypeDTO){
+        MissionType missionType = new MissionType();
+        missionType.setName(missionTypeDTO.getName());
+        missionType.setDescription(missionTypeDTO.getDescription());
+        return missionType;
     }
 
     public MissionType mapToMissionTypeEntity(MissionTypeDTO missionTypeDTO){
         MissionType missionType = new MissionType();
-        missionTypeDTO.setId(missionType.getId());
-        missionTypeDTO.setUuid(missionType.getUuid());
-        missionTypeDTO.setName(missionType.getName());
+        missionType.setUuid(missionTypeDTO.getUuid());
+        missionType.setName(missionTypeDTO.getName());
+        missionType.setDescription(missionTypeDTO.getDescription());
         return missionType;
     }
 
     public MissionTypeDTO mapToMissionTypeDtoForVolunteerEditDto(MissionType missionType){
         MissionTypeDTO missionTypeDTO = new MissionTypeDTO();
-        missionTypeDTO.setId(missionType.getId());
         missionTypeDTO.setUuid(missionType.getUuid());
         missionTypeDTO.setName(missionType.getName());
         missionTypeDTO.setSelected(true);
@@ -42,6 +48,12 @@ public class MissionTypeMapper {
         return missionTypes.stream()
                 .map(this::mapToMissionTypeDtoForVolunteerEditDto)
                 .collect(Collectors.toList());
+    }
+
+    public Set<MissionType> mapToMissionTypeEntitySetFromDtoList(List<MissionTypeDTO> missionTypeDTOs) {
+        return missionTypeDTOs.stream()
+                .map(this::mapToMissionTypeEntity)
+                .collect(Collectors.toSet());
     }
 
 }

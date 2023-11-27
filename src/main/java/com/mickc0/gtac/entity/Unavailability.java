@@ -67,27 +67,5 @@ public class Unavailability {
         this.volunteer = volunteer;
     }
 
-    @Override
-    public String toString() {
-        return "Unavailability{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", volunteer=" + volunteer +
-                '}';
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Unavailability that = (Unavailability) o;
-        return Objects.equals(id, that.id) && Objects.equals(uuid, that.uuid) && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate) && Objects.equals(volunteer, that.volunteer);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, uuid, startDate, endDate, volunteer);
-    }
 }

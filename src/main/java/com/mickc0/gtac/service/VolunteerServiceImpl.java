@@ -1,12 +1,15 @@
 package com.mickc0.gtac.service;
 
-import com.mickc0.gtac.dto.AvailabilityDTO;
-import com.mickc0.gtac.dto.VolunteerEditDTO;
+import com.mickc0.gtac.dto.VolunteerDTO;
+import com.mickc0.gtac.dto.VolunteerNewDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.Availability;
 import com.mickc0.gtac.entity.MissionType;
+import com.mickc0.gtac.entity.Unavailability;
 import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.mapper.AvailabilityMapper;
+import com.mickc0.gtac.mapper.MissionTypeMapper;
+import com.mickc0.gtac.mapper.UnavailabilityMapper;
 import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.repository.VolunteerRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,15 +31,21 @@ public class VolunteerServiceImpl implements VolunteerService{
     private final VolunteerMapper volunteerMapper;
     private final AvailabilityMapper availabilityMapper;
     private final MissionTypeService missionTypeService;
+    private final MissionTypeMapper missionTypeMapper;
     private final AvailabilityService availabilityService;
+    private final UnavailabilityMapper unavailabilityMapper;
+    private final UnavailabilityService unavailabilityService;
 
     @Autowired
-    public VolunteerServiceImpl(VolunteerRepository volunteerRepository, VolunteerMapper volunteerMapper, AvailabilityMapper availabilityMapper, MissionTypeService missionTypeService, AvailabilityService availabilityService) {
+    public VolunteerServiceImpl(VolunteerRepository volunteerRepository, VolunteerMapper volunteerMapper, AvailabilityMapper availabilityMapper, MissionTypeService missionTypeService, MissionTypeMapper missionTypeMapper, AvailabilityService availabilityService, UnavailabilityMapper unavailabilityMapper, UnavailabilityService unavailabilityService) {
         this.volunteerRepository = volunteerRepository;
         this.volunteerMapper = volunteerMapper;
         this.availabilityMapper = availabilityMapper;
         this.missionTypeService = missionTypeService;
+        this.missionTypeMapper = missionTypeMapper;
         this.availabilityService = availabilityService;
+        this.unavailabilityMapper = unavailabilityMapper;
+        this.unavailabilityService = unavailabilityService;
     }
 
     @Override
@@ -45,8 +56,49 @@ public class VolunteerServiceImpl implements VolunteerService{
 
     @Override
     @Transactional
-    public void save(Volunteer volunteer) {
-        volunteerRepository.save(volunteer);
+    public void save(VolunteerNewDTO volunteer) {
+        Volunteer newVolunteer = saveAndReturn(volunteerMapper.mapToEntityLowDetail(volunteer));
+
+        Set<Unavailability> unavailabilities = Optional.ofNullable(volunteer.getUnavailabilities())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(unavailabilityDTO -> {
+                    Unavailability unavailability;
+                    if (unavailabilityDTO.getUuid() == null){
+                        unavailability = unavailabilityMapper.mapToNewEntity(unavailabilityDTO);
+                    } else {
+                        unavailability = unavailabilityMapper.mapToEntity(unavailabilityDTO);
+                    }
+                    unavailability.setVolunteer(newVolunteer);
+                    unavailabilityService.save(unavailability);
+                    return unavailability;
+                })
+                .collect(Collectors.toSet());
+        newVolunteer.setUnavailabilities(unavailabilities);
+
+        Set<Availability> updatedAvailabilities = Optional.ofNullable(volunteer.getAvailabilities())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(availabilityDTO -> {
+                    Availability availability;
+                    if (availabilityDTO.getUuid() == null){
+                        availability = availabilityMapper.mapToNewEntity(availabilityDTO);
+                    } else {
+                        availability = availabilityMapper.mapToEntity(availabilityDTO);
+                    }
+                    availability.setVolunteer(newVolunteer);
+                    availabilityService.save(availability);
+                    return availability;
+                })
+                .collect(Collectors.toSet());
+        newVolunteer.setAvailabilities(updatedAvailabilities);
+
+        Set<MissionType> updatedMissionTypes = missionTypeMapper.mapToMissionTypeEntitySetFromDtoList(volunteer.getMissionTypes());
+        newVolunteer.setMissionTypes(updatedMissionTypes);
+
+
+
+        volunteerRepository.save(newVolunteer);
     }
 
     @Override
@@ -55,8 +107,8 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
-    public VolunteerEditDTO findVolunteerEditDTOById(Long id) {
-        return volunteerMapper.mapToEditVolunteerDTO(volunteerRepository.findById(id)
+    public VolunteerDTO findVolunteerEditDTOById(Long id) {
+        return volunteerMapper.mapToDTO(volunteerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Le bénévole avec l'Id: " + id + " n'existe pas")));
     }
 
@@ -67,23 +119,42 @@ public class VolunteerServiceImpl implements VolunteerService{
 
     @Override
     @Transactional
-    public void updateVolunteer(VolunteerEditDTO volunteerEditDTO) {
-        Volunteer existingVolunteer = volunteerRepository.findById(volunteerEditDTO.getId())
+    public void updateVolunteer(VolunteerDTO volunteerDTO) {
+        Volunteer existingVolunteer = volunteerRepository.findByUuid(volunteerDTO.getUuid())
                 .orElseThrow(() -> new EntityNotFoundException("Ce volontaire n'existe pas"));
-        existingVolunteer.getMissionTypes().clear();
-        existingVolunteer.setLastName(volunteerEditDTO.getLastName());
-        existingVolunteer.setFirstName(volunteerEditDTO.getFirstName());
-        existingVolunteer.setPhoneNumber(volunteerEditDTO.getPhoneNumber());
-        existingVolunteer.setEmail(volunteerEditDTO.getEmail());
-        availabilityService.deleteAllByVolunteer(existingVolunteer);
+        //existingVolunteer.getMissionTypes().clear();
+        existingVolunteer.setLastName(volunteerDTO.getLastName());
+        existingVolunteer.setFirstName(volunteerDTO.getFirstName());
+        existingVolunteer.setPhoneNumber(volunteerDTO.getPhoneNumber());
+        existingVolunteer.setEmail(volunteerDTO.getEmail());
 
+        Set<Unavailability> updatedUnavailabilities = Optional.ofNullable(volunteerDTO.getUnavailabilities())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(unavailabilityDTO -> {
+                    Unavailability unavailability;
+                    if (unavailabilityDTO.getUuid() == null){
+                        unavailability = unavailabilityMapper.mapToNewEntity(unavailabilityDTO);
+                    } else {
+                        unavailability = unavailabilityMapper.mapToEntity(unavailabilityDTO);
+                    }
+                    unavailability.setVolunteer(existingVolunteer);
+                    unavailabilityService.save(unavailability);
+                    return unavailability;
+                })
+                .collect(Collectors.toSet());
+        existingVolunteer.setUnavailabilities(updatedUnavailabilities);
 
-
-        Set<Availability> updatedAvailabilities = Optional.ofNullable(volunteerEditDTO.getAvailabilities())
+        Set<Availability> updatedAvailabilities = Optional.ofNullable(volunteerDTO.getAvailabilities())
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(availabilityDTO -> {
-                    Availability availability = availabilityMapper.mapToNewEntity(availabilityDTO);
+                    Availability availability;
+                    if (availabilityDTO.getUuid() == null){
+                        availability = availabilityMapper.mapToNewEntity(availabilityDTO);
+                    } else {
+                        availability = availabilityMapper.mapToEntity(availabilityDTO);
+                    }
                     availability.setVolunteer(existingVolunteer);
                     availabilityService.save(availability);
                     return availability;
@@ -91,14 +162,7 @@ public class VolunteerServiceImpl implements VolunteerService{
                 .collect(Collectors.toSet());
         existingVolunteer.setAvailabilities(updatedAvailabilities);
 
-
-        Set<MissionType> updatedMissionTypes = Optional.ofNullable(volunteerEditDTO.getMissionTypes())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(missionTypeService::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toSet());
+        Set<MissionType> updatedMissionTypes = missionTypeMapper.mapToMissionTypeEntitySetFromDtoList(volunteerDTO.getMissionTypes());
         existingVolunteer.setMissionTypes(updatedMissionTypes);
 
 
@@ -119,6 +183,15 @@ public class VolunteerServiceImpl implements VolunteerService{
         return volunteers.stream()
                 .map(volunteer -> volunteerMapper.mapToStatusDTO(volunteer, now))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Volunteer> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, Long missionTypeId) {
+        DayOfWeek dayOfWeek = start.getDayOfWeek();
+        LocalTime startTime = start.toLocalTime();
+        LocalTime endTime = end.toLocalTime();
+
+        return volunteerRepository.findAvailableVolunteersForMission(start, end, dayOfWeek, startTime, endTime, missionTypeId);
     }
 
 }
