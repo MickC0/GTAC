@@ -14,5 +14,7 @@ public interface AvailabilityRepository extends JpaRepository<Availability,Long>
 
     void deleteAllByVolunteer(Volunteer volunteer);
 
-    void deleteAllByVolunteerId(Long id);
+    void deleteAllByVolunteerUuid(UUID uuid);
+
+    Availability findByUuid(UUID uuid);
 }

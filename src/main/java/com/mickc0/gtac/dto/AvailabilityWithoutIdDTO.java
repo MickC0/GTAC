@@ -4,20 +4,11 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.UUID;
 
-public class AvailabilityDTO {
-    private Long id;
+public class AvailabilityWithoutIdDTO {
     private UUID uuid;
     private LocalTime startTime;
     private LocalTime endTime;
     private DayOfWeek dayOfWeek;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public UUID getUuid() {
         return uuid;

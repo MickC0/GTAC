@@ -1,13 +1,11 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.MissionTypeDTO;
-import com.mickc0.gtac.dto.MissionTypeSelectionDTO;
 import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.exception.CustomDuplicateEntryException;
 import com.mickc0.gtac.mapper.MissionTypeMapper;
 import com.mickc0.gtac.repository.MissionTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +34,16 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     @Transactional
     public void save(MissionTypeDTO missionTypeDTO) throws CustomDuplicateEntryException {
         MissionType missionType;
+
         if(missionTypeDTO.getUuid() == null){
-            missionType = missionTypeMapper.mapToNewMissionTypeEntity(missionTypeDTO);
+            missionType = new MissionType();
         } else {
-            missionType = missionTypeMapper.mapToMissionTypeEntity(missionTypeDTO);
+            missionType = missionTypeRepository.findByUuid(missionTypeDTO.getUuid())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + missionTypeDTO.getUuid()));
         }
+        missionType.setName(missionTypeDTO.getName());
+        missionType.setDescription(missionTypeDTO.getDescription());
+
         String normalizedNewName = normalizeString(missionType.getName());
 
         Optional<MissionType> existingMissionType = missionTypeRepository
@@ -49,15 +52,11 @@ public class MissionTypeServiceImpl implements MissionTypeService{
                 .filter(mt -> mt.getId() != null && !mt.getId().equals(missionType.getId()))
                 .filter(mt -> normalizeString(mt.getName()).equalsIgnoreCase(normalizedNewName))
                 .findFirst();
-
         if (existingMissionType.isPresent()) {
             throw new CustomDuplicateEntryException("Un type de mission avec le nom '" + missionType.getName() + "' existe déjà.");
         }
-
         missionTypeRepository.save(missionType);
     }
-
-
 
     private String normalizeString(String input) {
         if (input == null) return null;
@@ -77,7 +76,7 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     }
 
     @Override
-    public List<MissionTypeDTO> getAll() {
+    public List<MissionTypeDTO> findAllDto() {
         List<MissionType> missionTypes = missionTypeRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
         return missionTypes.stream()
                 .map(missionTypeMapper::mapToMissionTypeDto)
@@ -86,13 +85,14 @@ public class MissionTypeServiceImpl implements MissionTypeService{
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
-        missionTypeRepository.deleteById(id);
+    public void deleteByUuid(UUID uuid) {
+        missionTypeRepository.deleteByUuid(uuid);
     }
 
     @Override
-    public Optional<MissionTypeDTO> findByUuid(UUID uuid) {
+    public Optional<MissionTypeDTO> findMissionTypeDTOByUuid(UUID uuid) {
         return Optional.ofNullable(missionTypeMapper.mapToMissionTypeDto(missionTypeRepository.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + uuid))));
     }
+
 }

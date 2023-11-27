@@ -1,7 +1,6 @@
 package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.*;
-import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.mapper.UnavailabilityMapper;
 import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.service.AvailabilityService;
@@ -48,57 +47,35 @@ public class VolunteerController {
 
     @GetMapping("/create")
     public String showCreateForm(Model model){
-        model.addAttribute("volunteer", new VolunteerNewDTO());
-        model.addAttribute("allMissionTypes", missionTypeService.getAll());
+        model.addAttribute("volunteer", new VolunteerDTO());
+        model.addAttribute("allMissionTypes", missionTypeService.findAllDto());
         return "volunteers/volunteer/create-volunteer";
     }
 
 
-    //TODO refactorer dans le service
     @PostMapping
-    public String saveVolunteer(@ModelAttribute("volunteer") VolunteerNewDTO volunteerNewDTO, RedirectAttributes redirectAttributes) {
-        /*List<MissionType> selectedMissionTypes = new ArrayList<>();
-        if (missionTypes != null && !missionTypes.isEmpty()) {
-            selectedMissionTypes = missionTypeService.findAllById(missionTypes);
-        }
+    public String saveVolunteer(@ModelAttribute("volunteer") VolunteerDTO volunteerDTO,
+                                @RequestParam(name = "missionTypeUuids", required = false) List<String> missionTypeUuids, RedirectAttributes redirectAttributes) {
 
-        Volunteer newVolunteer = volunteerService.saveAndReturn(volunteerMapper.mapToEntityLowDetail(volunteerDTO));
-        Set<Availability> availabilities = new HashSet<>();
-        for (AvailabilityDTO availabilityDTO : volunteerDTO.getAvailabilities()) {
-            Availability availability = new Availability();
-            availability.setDayOfWeek(availabilityDTO.getDayOfWeek());
-            availability.setStartTime(availabilityDTO.getStartTime());
-            availability.setEndTime(availabilityDTO.getEndTime());
-            availability.setVolunteer(newVolunteer);
-            availabilityService.save(availability);
-            availabilities.add(availability);
-        }
-        newVolunteer.setAvailabilities(availabilities);
-
-        Set<Unavailability> unavailabilities = new HashSet<>();
-        for (UnavailabilityDTO unavailabilityDTO : volunteerDTO.getUnavailabilities()){
-            Unavailability unavailability = new Unavailability();
-            unavailability.setStartDate(unavailabilityDTO.getStartDate());
-            unavailability.setEndDate(unavailabilityDTO.getEndDate());
-            unavailability.setVolunteer(newVolunteer);
-            unavailabilityService.save(unavailability);
-            unavailabilities.add(unavailability);
-        }
-        newVolunteer.setUnavailabilities(unavailabilities);
-        newVolunteer.setMissionTypes(new HashSet<>(selectedMissionTypes));*/
-        volunteerService.save(volunteerNewDTO);
+        volunteerService.saveOrUpdate(volunteerDTO, missionTypeUuids);
         redirectAttributes.addFlashAttribute("successMessage", "Volontaire enregistré avec succès.");
         return "redirect:/volunteers";
     }
 
     @GetMapping("/edit/{id}")
-    public String editVolunteerForm(@PathVariable(value = "id") Long id, Model model){
-        VolunteerDTO volunteer = volunteerService.findVolunteerEditDTOById(id);
-        List<MissionTypeDTO> allMissionTypes = missionTypeService.getAll();
+    public String editVolunteerForm(@PathVariable(value = "id") UUID uuid, Model model){
+        VolunteerDTO volunteer = volunteerService.findVolunteerDTOByUuid(uuid);
+        List<MissionTypeDTO> allMissionTypes = missionTypeService.findAllDto();
 
-
+        //TODO p il n'y a pas la liste ?
         allMissionTypes.forEach(missionTypeDTO -> {
-            if (volunteer.getMissionTypes().contains(missionTypeDTO.getId())){
+            List<MissionTypeDTO> test = volunteer.getMissionTypes();
+            for (MissionTypeDTO m:test) {
+                System.out.println("dto v uuid " + m.getUuid());
+                System.out.println("dto v name " + m.getName());
+                System.out.println("dto v description " + m.getDescription());
+            }
+            if (volunteer.getMissionTypes().contains(missionTypeDTO.getUuid())){
                 missionTypeDTO.setSelected(true);
             }
         });
@@ -109,24 +86,30 @@ public class VolunteerController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateVolunteer(@PathVariable(name = "id") Long id, @ModelAttribute ("volunteer") VolunteerDTO volunteer,
+    public String updateVolunteer(@PathVariable(name = "id") UUID uuid, @ModelAttribute ("volunteer") VolunteerDTO volunteer,
+                                  @RequestParam(name = "missionTypeUuids", required = false) List<String> missionTypeUuids,
                                   RedirectAttributes redirectAttributes){
-        volunteerService.updateVolunteer(volunteer);
+        volunteerService.saveOrUpdate(volunteer, missionTypeUuids);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole modifié avec succès.");
         return "redirect:/volunteers";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteVolunteer(@PathVariable (value = "id") Long id){
-        volunteerService.deleteVolunteer(id);
+    public String deleteVolunteer(@PathVariable (value = "id") UUID uuid){
+        volunteerService.deleteVolunteer(uuid);
         return "redirect:/volunteers";
     }
 
     @GetMapping("/view/{id}")
-    public String viewVolunteer(@PathVariable (value = "id") Long id, Model model){
-        Volunteer volunteer = volunteerService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid volunteer Id:" + id));
-        model.addAttribute("volunteer", volunteer);
+    public String viewVolunteer(@PathVariable (value = "id") UUID uuid, Model model, RedirectAttributes redirectAttributes){
+        try {
+            VolunteerDTO volunteer = volunteerService.findVolunteerDTOByUuid(uuid);
+            model.addAttribute("volunteer", volunteer);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e);
+        }
+
+
         return "volunteers/volunteer/view-volunteer";
     }
 

@@ -23,4 +23,6 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
     List<Volunteer> findAvailableVolunteersForMission(LocalDateTime missionStart, LocalDateTime missionEnd, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, Long missionTypeId);
 
     Optional<Volunteer> findByUuid(UUID uuid);
+
+    void deleteByUuid(UUID uuid);
 }

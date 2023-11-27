@@ -23,10 +23,9 @@
                 <p>Description : <span th:text="${mission.description}"></span></p>
                 <p th:text="${mission.comment}"></p>
                 <p th:text="${mission.status}"></p>
-                <form th:action="@{/missions/plan/{id}(id=${mission.id})}" method="post" id="planMissionForm" th:object="${mission}">
+                <form th:action="@{/missions/plan/{id}(id=${mission.uuid})}" method="post" id="planMissionForm" th:object="${mission}">
 
                     <input type="hidden" name="uuid" id="uuid" th:field="*{uuid}">
-                    <input type="hidden" name="id" id="id" th:field="*{id}">
                     <input type="hidden" name="status" id="status" th:field="*{status}">
                     <input type="hidden" th:field="*{title}" id="name">
                     <input type="hidden" th:field="*{missionType}" id="missionType">

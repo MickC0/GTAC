@@ -2,7 +2,6 @@ package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.entity.MissionType;
-import com.mickc0.gtac.mapper.MissionTypeMapper;
 import com.mickc0.gtac.service.MissionTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,12 +17,10 @@ import java.util.UUID;
 public class MissionTypeController {
 
     private final MissionTypeService missionTypeService;
-    private final MissionTypeMapper missionTypeMapper;
 
     @Autowired
-    public MissionTypeController(MissionTypeService missionTypeService, MissionTypeMapper missionTypeMapper) {
+    public MissionTypeController(MissionTypeService missionTypeService) {
         this.missionTypeService = missionTypeService;
-        this.missionTypeMapper = missionTypeMapper;
     }
 
     @GetMapping
@@ -48,22 +45,22 @@ public class MissionTypeController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable(name = "id") UUID uuid, Model model) {
-        MissionTypeDTO missionType = missionTypeService.findByUuid(uuid)
+        MissionTypeDTO missionType = missionTypeService.findMissionTypeDTOByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + uuid));
         model.addAttribute("missionType", missionType);
         return "mission-types/edit-type";
     }
 
     @PostMapping("/update/{id}")
-    public String updateMissionType(@PathVariable(name = "id") Long id, @ModelAttribute MissionTypeDTO missionType, RedirectAttributes redirectAttributes) {
+    public String updateMissionType(@PathVariable(name = "id") UUID uuid, @ModelAttribute MissionTypeDTO missionType, RedirectAttributes redirectAttributes) {
         missionTypeService.save(missionType);
         redirectAttributes.addFlashAttribute("successMessage", "Type de mission modifié avec succès.");
         return "redirect:/mission-types";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteMissionType(@PathVariable(name = "id") Long id) {
-        missionTypeService.deleteById(id);
+    public String deleteMissionType(@PathVariable(name = "id") UUID uuid) {
+        missionTypeService.deleteByUuid(uuid);
         return "redirect:/mission-types";
     }
 

@@ -12,11 +12,10 @@ public interface MissionTypeService {
     void save(MissionTypeDTO missionTypeDTO);
 
     List<MissionType> findAll();
-    List<MissionTypeDTO> getAll();
+    List<MissionTypeDTO> findAllDto();
     List<MissionType> findAllById(List<Long> ids);
-    void deleteById(Long id);
-
-    Optional<MissionTypeDTO> findByUuid(UUID uuid);
+    void deleteByUuid(UUID uuid);
+    Optional<MissionTypeDTO> findMissionTypeDTOByUuid(UUID uuid);
 
 
 

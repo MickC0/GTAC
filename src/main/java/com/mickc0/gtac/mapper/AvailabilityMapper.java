@@ -1,10 +1,10 @@
 package com.mickc0.gtac.mapper;
 
 import com.mickc0.gtac.dto.AvailabilityDTO;
+import com.mickc0.gtac.dto.AvailabilityWithoutIdDTO;
 import com.mickc0.gtac.entity.Availability;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -13,9 +13,8 @@ import java.util.stream.Collectors;
 @Component
 public class AvailabilityMapper {
 
-    public AvailabilityDTO mapToDto(Availability availability) {
-        AvailabilityDTO dto = new AvailabilityDTO();
-        dto.setId(availability.getId());
+    public AvailabilityWithoutIdDTO mapToDto(Availability availability) {
+        AvailabilityWithoutIdDTO dto = new AvailabilityWithoutIdDTO();
         dto.setUuid(availability.getUuid());
         dto.setStartTime(availability.getStartTime());
         dto.setEndTime(availability.getEndTime());
@@ -23,17 +22,35 @@ public class AvailabilityMapper {
         return dto;
     }
 
-    public Availability mapToEntity(AvailabilityDTO dto) {
+    public Availability mapToEntity(AvailabilityWithoutIdDTO dto) {
         Availability availability = new Availability();
-        availability.setId(dto.getId());
         availability.setUuid(dto.getUuid());
         availability.setStartTime(dto.getStartTime());
         availability.setEndTime(dto.getEndTime());
         availability.setDayOfWeek(dto.getDayOfWeek());
         return availability;
     }
+    public AvailabilityDTO mapToCompleteDto(Availability availability) {
+        AvailabilityDTO availabilityDTO = new AvailabilityDTO();
+        availabilityDTO.setId(availability.getId());
+        availabilityDTO.setUuid(availability.getUuid());
+        availabilityDTO.setStartTime(availability.getStartTime());
+        availabilityDTO.setEndTime(availability.getEndTime());
+        availabilityDTO.setDayOfWeek(availability.getDayOfWeek());
+        return availabilityDTO;
+    }
 
-    public Availability mapToNewEntity(AvailabilityDTO dto) {
+    public Availability mapToCompleteEntity(AvailabilityDTO availabilityDTO) {
+        Availability availability = new Availability();
+        availability.setId(availabilityDTO.getId());
+        availability.setUuid(availabilityDTO.getUuid());
+        availability.setStartTime(availabilityDTO.getStartTime());
+        availability.setEndTime(availabilityDTO.getEndTime());
+        availability.setDayOfWeek(availabilityDTO.getDayOfWeek());
+        return availability;
+    }
+
+    public Availability mapToNewEntity(AvailabilityWithoutIdDTO dto) {
         Availability availability = new Availability();
         availability.setStartTime(dto.getStartTime());
         availability.setEndTime(dto.getEndTime());
@@ -41,24 +58,24 @@ public class AvailabilityMapper {
         return availability;
     }
 
-    public List<AvailabilityDTO> mapToAvailabilityDtoListForVolunteerEditDto(Set<Availability> availabilities) {
-        List<AvailabilityDTO> availabilityDTOList = availabilities.stream()
+    public List<AvailabilityWithoutIdDTO> mapToAvailabilityDtoListForVolunteerEditDto(Set<Availability> availabilities) {
+        List<AvailabilityWithoutIdDTO> availabilityWithoutIdDTOList = availabilities.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
 
-        sortAvailabilities(availabilityDTOList);
-        return availabilityDTOList;
+        sortAvailabilities(availabilityWithoutIdDTOList);
+        return availabilityWithoutIdDTOList;
     }
 
-    public Set<Availability> mapToEntitySet(List<AvailabilityDTO> availabilities) {
+    public Set<Availability> mapToEntitySet(List<AvailabilityWithoutIdDTO> availabilities) {
         return availabilities.stream()
                 .map(this::mapToEntity)
                 .collect(Collectors.toSet());
     }
 
-    private static class AvailabilityComparator implements Comparator<AvailabilityDTO> {
+    private static class AvailabilityComparator implements Comparator<AvailabilityWithoutIdDTO> {
         @Override
-        public int compare(AvailabilityDTO a1, AvailabilityDTO a2) {
+        public int compare(AvailabilityWithoutIdDTO a1, AvailabilityWithoutIdDTO a2) {
             int dayCompare = a1.getDayOfWeek().compareTo(a2.getDayOfWeek());
             if (dayCompare != 0) {
                 return dayCompare;
@@ -66,7 +83,7 @@ public class AvailabilityMapper {
             return a1.getStartTime().compareTo(a2.getStartTime());
         }
     }
-    private void sortAvailabilities(List<AvailabilityDTO> availabilities) {
+    private void sortAvailabilities(List<AvailabilityWithoutIdDTO> availabilities) {
         availabilities.sort(new AvailabilityComparator());
     }
 

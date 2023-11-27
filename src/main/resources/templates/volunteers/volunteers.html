@@ -45,15 +45,18 @@
                                             <td th:text="${v.status}"></td>
                                             <td>
                                                 <!-- Editer -->
-                                                <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.id})}">
+                                                <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.uuid})}">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
                                                 <!-- Supprimer -->
-                                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteVolunteerModal" th:attr="data-volunteer-id=${v.id}" >
+                                                <button type="button" class="btn btn-sm btn-danger"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteVolunteerModal"
+                                                        th:attr="data-volunteer-id=${v.uuid}">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                                 <!-- Voir -->
-                                                <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.id})}">
+                                                <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.uuid})}">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                             </td>

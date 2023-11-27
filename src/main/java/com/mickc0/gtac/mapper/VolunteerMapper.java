@@ -1,7 +1,6 @@
 package com.mickc0.gtac.mapper;
 
 import com.mickc0.gtac.dto.VolunteerDTO;
-import com.mickc0.gtac.dto.VolunteerNewDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.MissionStatus;
 import com.mickc0.gtac.entity.Volunteer;
@@ -48,12 +47,12 @@ public class VolunteerMapper {
                 volunteer.getEmail(), volunteer.getPhoneNumber(), status);
     }
 
-    public Volunteer mapToEntityLowDetail(VolunteerNewDTO volunteerNewDTO){
+    public Volunteer mapToEntityLowDetail(VolunteerDTO volunteerDTO){
         Volunteer volunteer = new Volunteer();
-        volunteer.setLastName(volunteerNewDTO.getLastName());
-        volunteer.setFirstName(volunteerNewDTO.getFirstName());
-        volunteer.setEmail(volunteerNewDTO.getEmail());
-        volunteer.setPhoneNumber(volunteerNewDTO.getPhoneNumber());
+        volunteer.setLastName(volunteerDTO.getLastName());
+        volunteer.setFirstName(volunteerDTO.getFirstName());
+        volunteer.setEmail(volunteerDTO.getEmail());
+        volunteer.setPhoneNumber(volunteerDTO.getPhoneNumber());
         return volunteer;
     }
 
@@ -64,7 +63,7 @@ public class VolunteerMapper {
         volunteerDTO.setFirstName(volunteer.getFirstName());
         volunteerDTO.setEmail(volunteer.getEmail());
         volunteerDTO.setPhoneNumber(volunteer.getPhoneNumber());
-        volunteerDTO.setMissionTypes(missionTypeMapper.mapToMissionTypeDtoListForVolunteerEditDto(volunteer.getMissionTypes()));
+        volunteerDTO.setMissionTypes(missionTypeMapper.mapToMissionTypeDtoListForVolunteerDto(volunteer.getMissionTypes()));
         volunteerDTO.setAvailabilities(availabilityMapper.mapToAvailabilityDtoListForVolunteerEditDto(volunteer.getAvailabilities()));
         volunteerDTO.setUnavailabilities(unavailabilityMapper.mapToUnavailabilityDtoListForVolunteerEditDto(volunteer.getUnavailabilities()));
         return volunteerDTO;

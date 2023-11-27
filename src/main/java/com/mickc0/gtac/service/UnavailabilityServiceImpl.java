@@ -1,6 +1,7 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.UnavailabilityDTO;
+import com.mickc0.gtac.dto.UnavailabilityWithoutIdDTO;
 import com.mickc0.gtac.entity.Unavailability;
 import com.mickc0.gtac.mapper.UnavailabilityMapper;
 import com.mickc0.gtac.repository.UnavailabilityRepository;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +44,7 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
     }
 
     @Override
-    public List<UnavailabilityDTO> findAll() {
+    public List<UnavailabilityWithoutIdDTO> findAll() {
         return unavailabilityRepository.findAll()
                 .stream()
                 .map(unavailabilityMapper::mapToDto)
@@ -56,7 +58,7 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
     }
 
     @Override
-    public UnavailabilityDTO findById(Long id) {
+    public UnavailabilityWithoutIdDTO findById(Long id) {
         return unavailabilityMapper.mapToDto(unavailabilityRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Indisponibilité non trouvée")));
     }
@@ -66,6 +68,12 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
     public void removeExpiredUnavailabilities() {
         LocalDate today = LocalDate.now();
         unavailabilityRepository.deleteByEndDateBefore(today);
+    }
+
+    @Override
+    public UnavailabilityDTO findUnavailabilityDtoByUuid(UUID uuid) {
+        return unavailabilityMapper.mapToCompleteDto(unavailabilityRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Indisponibilité non trouvée")));
     }
 
 

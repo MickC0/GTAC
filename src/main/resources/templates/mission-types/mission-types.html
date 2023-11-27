@@ -30,8 +30,6 @@
                                 <table class="table table-responsive table-striped table-hover">
                                     <thead>
                                     <tr>
-                                        <th>id</th>
-                                        <th>uuid</th>
                                         <th>Nom</th>
                                         <th>Description</th>
                                         <th>Actions</th>
@@ -39,16 +37,14 @@
                                     </thead>
                                     <tbody>
                                     <tr th:each="missionType:${missionTypes}">
-                                        <td th:text="${missionType.id}"></td>
-                                        <td th:text="${missionType.uuid}"></td>
                                         <td th:text="${missionType.name}"></td>
                                         <td th:text="${missionType.description}"></td>
                                         <td>
                                             <!-- Editer -->
-                                            <a class="btn btn-primary btn-sm" th:href="@{/mission-types/edit/{id}(id=${missionType.id})}"><i class="bi bi-pencil-square"></i></a>
+                                            <a class="btn btn-primary btn-sm" th:href="@{/mission-types/edit/{id}(id=${missionType.uuid})}"><i class="bi bi-pencil-square"></i></a>
                                             <!-- Supprimer -->
                                             <!--<a class="btn btn-danger btn-sm" th:href="@{/mission-types/delete/{id}(id=${m.id})}"><i class="bi bi-trash"></i></a>-->
-                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMissionTypeModal" th:attr="data-missionType-id=${missionType.id}"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-trash"></i></button>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -57,19 +53,7 @@
                             </div>
                             <div class="card-footer">
                                 Pagination
-                                <!--<nav aria-label="Page navigation volunteer">
-                                    <ul class="pagination justify-content-center">
-                                        <li class="page-item">
-                                            <a class="page-link" th:href="@{/index(page=${previousPage})}">Previous</a>
-                                        </li>
-                                        <li class="page-item" th:class="${currentPage==status.index?'active':''}" th:each="page, status:${pages}">
-                                            <a class="page-link"  th:text="${status.index}" th:href="@{/index(page=${status.index},keyword=${keyword})}"></a>
-                                        </li>
-                                        <li class="page-item">
-                                            <a class="page-link" th:href="@{/index(page=${nextPage})}">Next</a>
-                                        </li>
-                                    </ul>
-                                </nav>-->
+
                             </div>
                         </div>
                     </div>

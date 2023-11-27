@@ -1,5 +1,7 @@
 package com.mickc0.gtac.service;
 
+import com.mickc0.gtac.dto.AvailabilityDTO;
+import com.mickc0.gtac.dto.AvailabilityWithoutIdDTO;
 import com.mickc0.gtac.entity.Availability;
 import com.mickc0.gtac.entity.Volunteer;
 
@@ -16,5 +18,7 @@ public interface AvailabilityService {
 
     void deleteAllByVolunteer(Volunteer volunteer);
 
-    void deleteAllByVolunteerId(Long id);
+    void deleteAllByVolunteerUuid(UUID uuid);
+
+    AvailabilityDTO findAvailabilityDtoByUuid(UUID uuid);
 }

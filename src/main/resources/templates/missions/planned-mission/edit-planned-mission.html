@@ -18,10 +18,9 @@
                 <h1>Mise à jour</h1>
             </div>
             <div class="card-body">
-                <form th:action="@{/missions/update/planned/{id}(id=${mission.id})}" method="post" id="editPlanMissionForm" th:object="${mission}">
+                <form th:action="@{/missions/update/planned/{id}(id=${mission.uuid})}" method="post" id="editPlanMissionForm" th:object="${mission}">
 
                     <input type="hidden" name="uuid" id="uuid" th:field="*{uuid}">
-                    <input type="hidden" name="id" id="id" th:field="*{id}">
                     <input type="hidden" name="status" id="status" th:field="*{status}">
                     <div class="form-group">
                         <label for="name" class="col-form-label">Nom de la Mission :</label>
@@ -39,8 +38,8 @@
 
                     <div class="form-group">
                         <label for="missionType" class="col-form-label">Type de mission :</label>
-                        <select class="form-select" th:field="*{missionType.id}" id="missionType" name="missionType" required="required">
-                            <option th:each="t : ${missionTypes}" th:value="${t.id}" th:text="${t.name}"></option>
+                        <select class="form-select" th:field="*{missionType.uuid}" id="missionType" name="missionType" required="required">
+                            <option th:each="t : ${missionTypes}" th:value="${t.uuid}" th:text="${t.name}"></option>
                         </select>
                     </div>
 
@@ -72,9 +71,9 @@
 
 <script>
     document.getElementById('editPlanMissionForm').addEventListener('submit', function(e) {
-        var startDateTime = document.getElementById('startDateTime').value;
-        var endDateTime = document.getElementById('endDateTime').value;
-        var dateAlert = document.getElementById('dateAlert');
+        let startDateTime = document.getElementById('startDateTime').value;
+        let endDateTime = document.getElementById('endDateTime').value;
+        let dateAlert = document.getElementById('dateAlert');
 
         if (startDateTime > endDateTime) {
             dateAlert.classList.remove('d-none');

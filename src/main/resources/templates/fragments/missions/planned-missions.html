@@ -39,13 +39,15 @@
                     <td th:text="${#temporals.format(plannedMission.endDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                     <td>
                         <!-- Confirmer -->
-                        <a class="btn btn-success btn-sm" th:href="@{/missions/confirm/{id}(id=${plannedMission.id})}"><i class="bi bi-person-add"></i></a>
+                        <a class="btn btn-success btn-sm" th:href="@{/missions/confirm/{id}(id=${plannedMission.uuid})}"><i class="bi bi-person-add"></i></a>
                         <!-- Editer -->
-                        <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/planned/{id}(id=${plannedMission.id})}"><i class="bi bi-pencil-square"></i></a>
+                        <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/planned/{id}(id=${plannedMission.uuid})}"><i class="bi bi-pencil-square"></i></a>
                         <!-- Annuler -->
-                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelMissionModal" th:attr="data-mission-id=${plannedMission.id}"><i class="bi bi-x-square"></i></button>
+                        <button type="button" class="btn btn-sm btn-danger"
+                                data-bs-toggle="modal"
+                                data-bs-target="#cancelMissionModal" th:attr="data-mission-id=${plannedMission.uuid}"><i class="bi bi-x-square"></i></button>
                         <!-- Voir -->
-                        <a class="btn btn-info btn-sm" th:href="@{/missions/{id}(id=${plannedMission.id})}"><i class="bi bi-eye"></i></a>
+                        <a class="btn btn-info btn-sm" th:href="@{/missions/{id}(id=${plannedMission.uuid})}"><i class="bi bi-eye"></i></a>
                     </td>
                 </tr>
                 </tbody>

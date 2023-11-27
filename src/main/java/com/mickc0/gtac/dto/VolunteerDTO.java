@@ -10,9 +10,9 @@ public class VolunteerDTO {
     private String firstName;
     private String email;
     private String phoneNumber;
-    private List<AvailabilityDTO> availabilities;
+    private List<AvailabilityWithoutIdDTO> availabilities;
     private List<MissionTypeDTO> missionTypes;
-    private List<UnavailabilityDTO> unavailabilities;
+    private List<UnavailabilityWithoutIdDTO> unavailabilities;
 
     public UUID getUuid() {
         return uuid;
@@ -54,11 +54,11 @@ public class VolunteerDTO {
         this.phoneNumber = phoneNumber;
     }
 
-    public List<AvailabilityDTO> getAvailabilities() {
+    public List<AvailabilityWithoutIdDTO> getAvailabilities() {
         return availabilities;
     }
 
-    public void setAvailabilities(List<AvailabilityDTO> availabilities) {
+    public void setAvailabilities(List<AvailabilityWithoutIdDTO> availabilities) {
         this.availabilities = availabilities;
     }
 
@@ -70,11 +70,11 @@ public class VolunteerDTO {
         this.missionTypes = missionTypes;
     }
 
-    public List<UnavailabilityDTO> getUnavailabilities() {
+    public List<UnavailabilityWithoutIdDTO> getUnavailabilities() {
         return unavailabilities;
     }
 
-    public void setUnavailabilities(List<UnavailabilityDTO> unavailabilities) {
+    public void setUnavailabilities(List<UnavailabilityWithoutIdDTO> unavailabilities) {
         this.unavailabilities = unavailabilities;
     }
 }

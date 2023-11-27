@@ -1,7 +1,10 @@
 package com.mickc0.gtac.service;
 
+import com.mickc0.gtac.dto.AvailabilityDTO;
+import com.mickc0.gtac.dto.AvailabilityWithoutIdDTO;
 import com.mickc0.gtac.entity.Availability;
 import com.mickc0.gtac.entity.Volunteer;
+import com.mickc0.gtac.mapper.AvailabilityMapper;
 import com.mickc0.gtac.repository.AvailabilityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,10 +16,12 @@ import java.util.UUID;
 @Service
 public class AvailabilityServiceImpl implements AvailabilityService {
     private final AvailabilityRepository availabilityRepository;
+    private final AvailabilityMapper availabilityMapper;
 
     @Autowired
-    public AvailabilityServiceImpl(AvailabilityRepository availabilityRepository) {
+    public AvailabilityServiceImpl(AvailabilityRepository availabilityRepository, AvailabilityMapper availabilityMapper) {
         this.availabilityRepository = availabilityRepository;
+        this.availabilityMapper = availabilityMapper;
     }
 
     @Override
@@ -54,7 +59,12 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     }
 
     @Override
-    public void deleteAllByVolunteerId(Long id) {
-        availabilityRepository.deleteAllByVolunteerId(id);
+    public void deleteAllByVolunteerUuid(UUID uuid) {
+        availabilityRepository.deleteAllByVolunteerUuid(uuid);
+    }
+
+    @Override
+    public AvailabilityDTO findAvailabilityDtoByUuid(UUID uuid) {
+        return availabilityMapper.mapToCompleteDto(availabilityRepository.findByUuid(uuid));
     }
 }
