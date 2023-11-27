@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface VolunteerService {
     Volunteer saveAndReturn(Volunteer volunteer);
-    void saveOrUpdate(VolunteerDTO volunteer, List<String> missionTypeUuids);
+    void saveOrUpdate(VolunteerDTO volunteerDTO);
     Optional<Volunteer> findById(Long id);
     VolunteerDTO findVolunteerDTOByUuid(UUID uuid);
     List<Volunteer> findAll();

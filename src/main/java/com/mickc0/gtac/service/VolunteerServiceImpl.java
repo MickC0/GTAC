@@ -55,26 +55,30 @@ public class VolunteerServiceImpl implements VolunteerService{
 
     @Override
     @Transactional
-    public void saveOrUpdate(VolunteerDTO volunteer, List<String> missionTypeUuids) {
-        Volunteer newVolunteer;
-        if (volunteerRepository.findByUuid(volunteer.getUuid()).isPresent()) {
-            newVolunteer = volunteerRepository.findByUuid(volunteer.getUuid())
-                    .orElseThrow(()-> new EntityNotFoundException("Le bénévole avec l'Id: " + volunteer.getUuid() + " n'existe pas"));
+    public void saveOrUpdate(VolunteerDTO volunteerDTO) {
+        Volunteer volunteer;
+        if (volunteerDTO.getUuid() != null && volunteerRepository.findByUuid(volunteerDTO.getUuid()).isPresent()) {
+            volunteer = volunteerRepository.findByUuid(volunteerDTO.getUuid())
+                    .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + volunteerDTO.getUuid() + " n'existe pas"));
         } else {
-            newVolunteer = saveAndReturn(volunteerMapper.mapToEntityLowDetail(volunteer));
+            volunteer = new Volunteer();
         }
 
-        /*Set<MissionType> missionTypes = Optional.ofNullable(missionTypeUuids)
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(uuid -> missionTypeService.findMissionTypeDTOByUuid(UUID.fromString(uuid)))
+        volunteer.setLastName(volunteerDTO.getLastName());
+        volunteer.setFirstName(volunteerDTO.getFirstName());
+        volunteer.setEmail(volunteerDTO.getEmail());
+        volunteer.setPhoneNumber(volunteerDTO.getPhoneNumber());
+
+        Set<MissionType> missionTypes = volunteerDTO.getMissionTypes().stream()
+                .map(UUID::fromString)
+                .map(missionTypeService::findMissionTypeByUuid)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(missionTypeMapper::mapToMissionTypeCompleteEntity)
                 .collect(Collectors.toSet());
-        newVolunteer.setMissionTypes(missionTypes);*/
 
-        Set<Unavailability> unavailabilities = Optional.ofNullable(volunteer.getUnavailabilities())
+        volunteer.setMissionTypes(missionTypes);
+
+        /*Set<Unavailability> unavailabilities = Optional.ofNullable(volunteer.getUnavailabilities())
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(unavailabilityDTO -> {
@@ -112,9 +116,9 @@ public class VolunteerServiceImpl implements VolunteerService{
                     return availability;
                 })
                 .collect(Collectors.toSet());
-        newVolunteer.setAvailabilities(availabilities);
+        newVolunteer.setAvailabilities(availabilities);*/
 
-        volunteerRepository.save(newVolunteer);
+        volunteerRepository.save(volunteer);
     }
 
     @Override

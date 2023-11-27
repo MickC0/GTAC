@@ -1,7 +1,6 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.UnavailabilityDTO;
-import com.mickc0.gtac.dto.UnavailabilityWithoutIdDTO;
 import com.mickc0.gtac.entity.Unavailability;
 import com.mickc0.gtac.mapper.UnavailabilityMapper;
 import com.mickc0.gtac.repository.UnavailabilityRepository;
@@ -44,7 +43,7 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
     }
 
     @Override
-    public List<UnavailabilityWithoutIdDTO> findAll() {
+    public List<UnavailabilityDTO> findAll() {
         return unavailabilityRepository.findAll()
                 .stream()
                 .map(unavailabilityMapper::mapToDto)
@@ -58,7 +57,7 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
     }
 
     @Override
-    public UnavailabilityWithoutIdDTO findById(Long id) {
+    public UnavailabilityDTO findById(Long id) {
         return unavailabilityMapper.mapToDto(unavailabilityRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Indisponibilité non trouvée")));
     }
@@ -72,7 +71,7 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
 
     @Override
     public UnavailabilityDTO findUnavailabilityDtoByUuid(UUID uuid) {
-        return unavailabilityMapper.mapToCompleteDto(unavailabilityRepository.findByUuid(uuid)
+        return unavailabilityMapper.mapToDto(unavailabilityRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Indisponibilité non trouvée")));
     }
 

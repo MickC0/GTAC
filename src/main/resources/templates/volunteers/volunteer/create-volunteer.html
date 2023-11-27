@@ -35,7 +35,6 @@
                                 <h5>Types de mission</h5>
                                 <hr>
                             </div>
-
                             <div th:if="${allMissionTypes.isEmpty()}">
                                 <div class="alert alert-warning my-2" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill">
@@ -49,7 +48,6 @@
                                     <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.uuid}" th:text="${missionType.name}"></label><br>
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <hr>
                                 <h5>Disponibilités</h5>
@@ -58,7 +56,6 @@
                                 </div>
                                 <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
                             </div>
-
                             <div class="form-group">
                                 <hr>
                                 <h5>Indisponibilités</h5>

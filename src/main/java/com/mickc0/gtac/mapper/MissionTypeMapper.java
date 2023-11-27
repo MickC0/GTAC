@@ -21,7 +21,10 @@ public class MissionTypeMapper {
     }
 
 
-    public List<MissionTypeDTO> mapToMissionTypeDtoListForVolunteerDto(Set<MissionType> missionTypes) {
-        return missionTypes.stream().map(this::mapToMissionTypeDto).collect(Collectors.toList());
+    public List<String> mapToMissionTypeUuidListForVolunteerDto(Set<MissionType> missionTypes) {
+        return missionTypes.stream()
+                .map(missionType -> missionType.getUuid().toString())
+                .collect(Collectors.toList());
     }
+
 }

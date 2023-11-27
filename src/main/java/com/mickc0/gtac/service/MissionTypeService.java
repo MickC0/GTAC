@@ -16,6 +16,7 @@ public interface MissionTypeService {
     List<MissionType> findAllById(List<Long> ids);
     void deleteByUuid(UUID uuid);
     Optional<MissionTypeDTO> findMissionTypeDTOByUuid(UUID uuid);
+    Optional<MissionType> findMissionTypeByUuid(UUID uuid);
 
 
 

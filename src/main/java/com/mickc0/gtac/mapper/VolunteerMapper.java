@@ -63,7 +63,7 @@ public class VolunteerMapper {
         volunteerDTO.setFirstName(volunteer.getFirstName());
         volunteerDTO.setEmail(volunteer.getEmail());
         volunteerDTO.setPhoneNumber(volunteer.getPhoneNumber());
-        volunteerDTO.setMissionTypes(missionTypeMapper.mapToMissionTypeDtoListForVolunteerDto(volunteer.getMissionTypes()));
+        volunteerDTO.setMissionTypes(missionTypeMapper.mapToMissionTypeUuidListForVolunteerDto(volunteer.getMissionTypes()));
         volunteerDTO.setAvailabilities(availabilityMapper.mapToAvailabilityDtoListForVolunteerEditDto(volunteer.getAvailabilities()));
         volunteerDTO.setUnavailabilities(unavailabilityMapper.mapToUnavailabilityDtoListForVolunteerEditDto(volunteer.getUnavailabilities()));
         return volunteerDTO;

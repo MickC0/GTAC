@@ -1,7 +1,6 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.AvailabilityDTO;
-import com.mickc0.gtac.dto.AvailabilityWithoutIdDTO;
 import com.mickc0.gtac.entity.Availability;
 import com.mickc0.gtac.entity.Volunteer;
 

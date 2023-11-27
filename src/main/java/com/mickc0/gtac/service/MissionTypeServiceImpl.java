@@ -2,9 +2,11 @@ package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.entity.MissionType;
+import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.exception.CustomDuplicateEntryException;
 import com.mickc0.gtac.mapper.MissionTypeMapper;
 import com.mickc0.gtac.repository.MissionTypeRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -34,12 +36,11 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     @Transactional
     public void save(MissionTypeDTO missionTypeDTO) throws CustomDuplicateEntryException {
         MissionType missionType;
-
-        if(missionTypeDTO.getUuid() == null){
-            missionType = new MissionType();
-        } else {
+        if (missionTypeDTO.getUuid() != null && missionTypeRepository.findByUuid(missionTypeDTO.getUuid()).isPresent()) {
             missionType = missionTypeRepository.findByUuid(missionTypeDTO.getUuid())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + missionTypeDTO.getUuid()));
+                    .orElseThrow(() -> new EntityNotFoundException("Le type de mission avec l'Id: " + missionTypeDTO.getUuid() + " n'existe pas"));
+        } else {
+            missionType = new MissionType();
         }
         missionType.setName(missionTypeDTO.getName());
         missionType.setDescription(missionTypeDTO.getDescription());
@@ -93,6 +94,12 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     public Optional<MissionTypeDTO> findMissionTypeDTOByUuid(UUID uuid) {
         return Optional.ofNullable(missionTypeMapper.mapToMissionTypeDto(missionTypeRepository.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + uuid))));
+    }
+
+    @Override
+    public Optional<MissionType> findMissionTypeByUuid(UUID uuid) {
+        return Optional.ofNullable(missionTypeRepository.findByUuid(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + uuid)));
     }
 
 }

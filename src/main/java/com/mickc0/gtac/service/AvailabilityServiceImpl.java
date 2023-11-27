@@ -1,7 +1,6 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.AvailabilityDTO;
-import com.mickc0.gtac.dto.AvailabilityWithoutIdDTO;
 import com.mickc0.gtac.entity.Availability;
 import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.mapper.AvailabilityMapper;
@@ -65,6 +64,6 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
     @Override
     public AvailabilityDTO findAvailabilityDtoByUuid(UUID uuid) {
-        return availabilityMapper.mapToCompleteDto(availabilityRepository.findByUuid(uuid));
+        return availabilityMapper.mapToDto(availabilityRepository.findByUuid(uuid));
     }
 }

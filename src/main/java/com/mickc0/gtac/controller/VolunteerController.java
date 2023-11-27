@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/volunteers")
@@ -44,7 +45,6 @@ public class VolunteerController {
         return "/volunteers/volunteers";
     }
 
-
     @GetMapping("/create")
     public String showCreateForm(Model model){
         model.addAttribute("volunteer", new VolunteerDTO());
@@ -52,44 +52,33 @@ public class VolunteerController {
         return "volunteers/volunteer/create-volunteer";
     }
 
-
     @PostMapping
     public String saveVolunteer(@ModelAttribute("volunteer") VolunteerDTO volunteerDTO,
                                 @RequestParam(name = "missionTypeUuids", required = false) List<String> missionTypeUuids, RedirectAttributes redirectAttributes) {
-
-        volunteerService.saveOrUpdate(volunteerDTO, missionTypeUuids);
+        volunteerDTO.setMissionTypes(missionTypeUuids);
+        volunteerService.saveOrUpdate(volunteerDTO);
         redirectAttributes.addFlashAttribute("successMessage", "Volontaire enregistré avec succès.");
         return "redirect:/volunteers";
     }
 
     @GetMapping("/edit/{id}")
     public String editVolunteerForm(@PathVariable(value = "id") UUID uuid, Model model){
-        VolunteerDTO volunteer = volunteerService.findVolunteerDTOByUuid(uuid);
+        VolunteerDTO volunteerDTO = volunteerService.findVolunteerDTOByUuid(uuid);
         List<MissionTypeDTO> allMissionTypes = missionTypeService.findAllDto();
 
-        //TODO p il n'y a pas la liste ?
-        allMissionTypes.forEach(missionTypeDTO -> {
-            List<MissionTypeDTO> test = volunteer.getMissionTypes();
-            for (MissionTypeDTO m:test) {
-                System.out.println("dto v uuid " + m.getUuid());
-                System.out.println("dto v name " + m.getName());
-                System.out.println("dto v description " + m.getDescription());
-            }
-            if (volunteer.getMissionTypes().contains(missionTypeDTO.getUuid())){
-                missionTypeDTO.setSelected(true);
-            }
-        });
-
-        model.addAttribute("volunteer", volunteer);
+        Set<String> selectedUuidsSet = (volunteerDTO.getMissionTypes() != null) ? new HashSet<>(volunteerDTO.getMissionTypes()) : new HashSet<>();
+        for (MissionTypeDTO missionTypeDTO : allMissionTypes) {
+            missionTypeDTO.setSelected(selectedUuidsSet.contains(missionTypeDTO.getUuid().toString()));
+        }
+        model.addAttribute("volunteer", volunteerDTO);
         model.addAttribute("allMissionTypes", allMissionTypes);
         return "/volunteers/volunteer/edit-volunteer";
     }
 
     @PostMapping("/update/{id}")
     public String updateVolunteer(@PathVariable(name = "id") UUID uuid, @ModelAttribute ("volunteer") VolunteerDTO volunteer,
-                                  @RequestParam(name = "missionTypeUuids", required = false) List<String> missionTypeUuids,
                                   RedirectAttributes redirectAttributes){
-        volunteerService.saveOrUpdate(volunteer, missionTypeUuids);
+        volunteerService.saveOrUpdate(volunteer);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole modifié avec succès.");
         return "redirect:/volunteers";
     }
