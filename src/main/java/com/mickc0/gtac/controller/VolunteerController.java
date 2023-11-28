@@ -54,7 +54,8 @@ public class VolunteerController {
 
     @PostMapping
     public String saveVolunteer(@ModelAttribute("volunteer") VolunteerDTO volunteerDTO,
-                                @RequestParam(name = "missionTypeUuids", required = false) List<String> missionTypeUuids, RedirectAttributes redirectAttributes) {
+                                @RequestParam(name = "missionTypeUuids", required = false) List<String> missionTypeUuids,
+                                RedirectAttributes redirectAttributes) {
         volunteerDTO.setMissionTypes(missionTypeUuids);
         volunteerService.saveOrUpdate(volunteerDTO);
         redirectAttributes.addFlashAttribute("successMessage", "Volontaire enregistré avec succès.");
@@ -76,7 +77,8 @@ public class VolunteerController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateVolunteer(@PathVariable(name = "id") UUID uuid, @ModelAttribute ("volunteer") VolunteerDTO volunteer,
+    public String updateVolunteer(@PathVariable(name = "id") UUID uuid,
+                                  @ModelAttribute ("volunteer") VolunteerDTO volunteer,
                                   RedirectAttributes redirectAttributes){
         volunteerService.saveOrUpdate(volunteer);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole modifié avec succès.");
@@ -90,9 +92,11 @@ public class VolunteerController {
     }
 
     @GetMapping("/view/{id}")
-    public String viewVolunteer(@PathVariable (value = "id") UUID uuid, Model model, RedirectAttributes redirectAttributes){
+    public String viewVolunteer(@PathVariable (value = "id") UUID uuid,
+                                Model model,
+                                RedirectAttributes redirectAttributes){
         try {
-            VolunteerDTO volunteer = volunteerService.findVolunteerDTOByUuid(uuid);
+            VolunteerProfilDTO volunteer = volunteerService.findVolunteerProfilDTOByUuid(uuid);
             model.addAttribute("volunteer", volunteer);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e);

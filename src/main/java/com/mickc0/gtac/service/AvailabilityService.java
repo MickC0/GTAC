@@ -11,7 +11,8 @@ public interface AvailabilityService {
     Availability createAvailability(Availability availability);
     void save(Availability availability);
     List<Availability> getAllAvailabilities();
-    void deleteAvailability(Long id);
+    void deleteById(Long id);
+    void delete(Availability availability);
 
     void deleteByUuid(UUID uuid);
 
@@ -20,4 +21,5 @@ public interface AvailabilityService {
     void deleteAllByVolunteerUuid(UUID uuid);
 
     AvailabilityDTO findAvailabilityDtoByUuid(UUID uuid);
+    Availability findByUuid(UUID uuid);
 }

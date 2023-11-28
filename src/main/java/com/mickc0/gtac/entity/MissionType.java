@@ -6,7 +6,7 @@ import java.util.*;
 
 
 @Entity
-@Table(name = "mission_types")
+@Table(name = "mission_type")
 public class MissionType {
 
     @Id
@@ -23,14 +23,6 @@ public class MissionType {
     private String description;
     @Column(name = "is_active")
     private boolean isActive = true;
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
 
     @OneToMany(mappedBy = "missionType")
     private List<Mission> missions;
@@ -67,34 +59,19 @@ public class MissionType {
         this.description = description;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     public List<Mission> getMissions() {
         return missions;
     }
 
     public void setMissions(List<Mission> missions) {
         this.missions = missions;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MissionType that)) return false;
-        return Objects.equals(getId(), that.getId()) && Objects.equals(getUuid(), that.getUuid()) && Objects.equals(getName(), that.getName()) && Objects.equals(getDescription(), that.getDescription()) && Objects.equals(getMissions(), that.getMissions());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getUuid(), getName(), getDescription(), getMissions());
-    }
-
-    @Override
-    public String toString() {
-        return "MissionType{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", missions=" + missions +
-                '}';
     }
 }

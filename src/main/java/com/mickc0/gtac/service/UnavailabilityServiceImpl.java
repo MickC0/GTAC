@@ -2,6 +2,7 @@ package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.UnavailabilityDTO;
 import com.mickc0.gtac.entity.Unavailability;
+import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.mapper.UnavailabilityMapper;
 import com.mickc0.gtac.repository.UnavailabilityRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,17 +30,7 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
     @Override
     @Transactional
     public void save(Unavailability unavailability) {
-        /*Unavailability unavailability;
-        if (unavailabilityDTO.getUuid() != null){
-            unavailability = unavailabilityRepository.findByUuid(unavailabilityDTO.getUuid())
-                    .orElseThrow(() -> new EntityNotFoundException("Indisponibilité non trouvée"));
-            unavailability.setStartDate(unavailabilityDTO.getStartDate());
-            unavailability.setEndDate(unavailabilityDTO.getEndDate());
-        } else {
-            unavailability = unavailabilityMapper.mapToEntity(unavailabilityDTO);
-        }*/
-
-        unavailabilityRepository.save(unavailability);
+         unavailabilityRepository.save(unavailability);
     }
 
     @Override
@@ -59,7 +50,7 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
     @Override
     public UnavailabilityDTO findById(Long id) {
         return unavailabilityMapper.mapToDto(unavailabilityRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Indisponibilité non trouvée")));
+                .orElseThrow(() -> new EntityNotFoundException("L'indisponibilité avec l'uuid : " + id + " n'existe pas")));
     }
 
     @Override
@@ -72,7 +63,29 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
     @Override
     public UnavailabilityDTO findUnavailabilityDtoByUuid(UUID uuid) {
         return unavailabilityMapper.mapToDto(unavailabilityRepository.findByUuid(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("Indisponibilité non trouvée")));
+                .orElseThrow(() -> new EntityNotFoundException("L'indisponibilité avec l'uuid : " + uuid + " n'existe pas")));
+    }
+
+    @Override
+    public Unavailability findByUuid(UUID uuid) {
+        return unavailabilityRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("L'indisponibilité avec l'uuid : " + uuid + " n'existe pas"));
+    }
+
+    @Override
+    @Transactional
+    public void delete(Unavailability unavailability) {
+        unavailabilityRepository.delete(unavailability);
+    }
+
+    @Override
+    public void deleteAllByVolunteer(Volunteer volunteer) {
+        unavailabilityRepository.deleteAllByVolunteer(volunteer);
+    }
+
+    @Override
+    public void deleteAllByVolunteerUuid(UUID uuid) {
+        unavailabilityRepository.deleteAllByVolunteerUuid(uuid);
     }
 
 

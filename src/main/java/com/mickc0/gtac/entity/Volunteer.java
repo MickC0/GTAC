@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "volunteers")
+@Table(name = "volunteer")
 public class Volunteer {
 
     @Id
@@ -24,6 +24,7 @@ public class Volunteer {
     private String password;
     @Column(name = "phone_number")
     private String phoneNumber;
+
     @OneToMany(mappedBy = "volunteer")
     private Set<Availability> availabilities;
 
@@ -35,7 +36,7 @@ public class Volunteer {
 
     @ManyToMany
     @JoinTable(
-            name = "volunteer_mission_types",
+            name = "volunteer_mission_type",
             joinColumns = @JoinColumn(name = "volunteer_id"),
             inverseJoinColumns = @JoinColumn(name = "mission_type_id")
     )
@@ -137,8 +138,8 @@ public class Volunteer {
                 ", lastName='" + lastName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", missionTypes=" + missionTypes +
                 '}';
     }
 }

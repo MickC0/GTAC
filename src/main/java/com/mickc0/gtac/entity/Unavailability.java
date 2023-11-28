@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "unavailabilities")
+@Table(name = "unavailability")
 public class Unavailability {
 
     @Id
@@ -66,6 +66,4 @@ public class Unavailability {
     public void setVolunteer(Volunteer volunteer) {
         this.volunteer = volunteer;
     }
-
-
 }

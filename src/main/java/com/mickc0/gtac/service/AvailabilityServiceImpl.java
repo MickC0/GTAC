@@ -5,6 +5,7 @@ import com.mickc0.gtac.entity.Availability;
 import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.mapper.AvailabilityMapper;
 import com.mickc0.gtac.repository.AvailabilityRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +43,14 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
     @Override
     @Transactional
-    public void deleteAvailability(Long id) {
+    public void deleteById(Long id) {
         availabilityRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Availability availability) {
+        availabilityRepository.delete(availability);
     }
 
     @Override
@@ -64,6 +71,13 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
     @Override
     public AvailabilityDTO findAvailabilityDtoByUuid(UUID uuid) {
-        return availabilityMapper.mapToDto(availabilityRepository.findByUuid(uuid));
+        return availabilityMapper.mapToDto(availabilityRepository.findByUuid(uuid)
+                        .orElseThrow(() -> new EntityNotFoundException("La disponibilité avec l'Id: " + uuid + " n'existe pas")));
+    }
+
+    @Override
+    public Availability findByUuid(UUID uuid) {
+        return availabilityRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("La disponibilité avec l'Id: " + uuid + " n'existe pas"));
     }
 }

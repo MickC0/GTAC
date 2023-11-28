@@ -25,12 +25,9 @@ public class AvailabilityMapper {
         List<AvailabilityDTO> availabilityDTOS = availabilities.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
-
         sortAvailabilities(availabilityDTOS);
         return availabilityDTOS;
     }
-
-
 
     private static class AvailabilityComparator implements Comparator<AvailabilityDTO> {
         @Override

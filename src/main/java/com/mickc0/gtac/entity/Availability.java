@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "availabilities")
+@Table(name = "availability")
 public class Availability {
     @Id
     @Column(name = "availability_id")
@@ -28,6 +28,7 @@ public class Availability {
     @ManyToOne
     @JoinColumn(name = "volunteer_id")
     private Volunteer volunteer;
+
     public Long getId() {
         return id;
     }
@@ -74,18 +75,5 @@ public class Availability {
 
     public void setVolunteer(Volunteer volunteer) {
         this.volunteer = volunteer;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Availability{" +
-                "id=" + id +
-                ", uuid=" + uuid +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", dayOfWeek=" + dayOfWeek +
-                ", volunteer=" + volunteer +
-                '}';
     }
 }

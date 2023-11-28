@@ -4,18 +4,9 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 public class UnavailabilityDTO {
-    private Long id;
     private UUID uuid;
     private LocalDate startDate;
     private LocalDate endDate;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public UUID getUuid() {
         return uuid;
@@ -39,5 +30,14 @@ public class UnavailabilityDTO {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    @Override
+    public String toString() {
+        return "UnavailabilityDTO{" +
+                "uuid=" + uuid +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
     }
 }

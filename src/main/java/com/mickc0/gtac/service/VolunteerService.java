@@ -1,6 +1,7 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.VolunteerDTO;
+import com.mickc0.gtac.dto.VolunteerProfilDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.Volunteer;
 
@@ -21,4 +22,5 @@ public interface VolunteerService {
     List<Volunteer> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, Long missionTypeId);
 
 
+    VolunteerProfilDTO findVolunteerProfilDTOByUuid(UUID uuid);
 }

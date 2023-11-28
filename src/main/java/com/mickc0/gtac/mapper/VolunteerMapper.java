@@ -1,6 +1,7 @@
 package com.mickc0.gtac.mapper;
 
 import com.mickc0.gtac.dto.VolunteerDTO;
+import com.mickc0.gtac.dto.VolunteerProfilDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.MissionStatus;
 import com.mickc0.gtac.entity.Volunteer;
@@ -56,7 +57,7 @@ public class VolunteerMapper {
         return volunteer;
     }
 
-    public VolunteerDTO mapToDTO(Volunteer volunteer){
+    public VolunteerDTO mapToDto(Volunteer volunteer){
         VolunteerDTO volunteerDTO = new VolunteerDTO();
         volunteerDTO.setUuid(volunteer.getUuid());
         volunteerDTO.setLastName(volunteer.getLastName());
@@ -64,6 +65,19 @@ public class VolunteerMapper {
         volunteerDTO.setEmail(volunteer.getEmail());
         volunteerDTO.setPhoneNumber(volunteer.getPhoneNumber());
         volunteerDTO.setMissionTypes(missionTypeMapper.mapToMissionTypeUuidListForVolunteerDto(volunteer.getMissionTypes()));
+        volunteerDTO.setAvailabilities(availabilityMapper.mapToAvailabilityDtoListForVolunteerEditDto(volunteer.getAvailabilities()));
+        volunteerDTO.setUnavailabilities(unavailabilityMapper.mapToUnavailabilityDtoListForVolunteerEditDto(volunteer.getUnavailabilities()));
+        return volunteerDTO;
+    }
+
+    public VolunteerProfilDTO mapToProfilDto(Volunteer volunteer){
+        VolunteerProfilDTO volunteerDTO = new VolunteerProfilDTO();
+        volunteerDTO.setUuid(volunteer.getUuid());
+        volunteerDTO.setLastName(volunteer.getLastName());
+        volunteerDTO.setFirstName(volunteer.getFirstName());
+        volunteerDTO.setEmail(volunteer.getEmail());
+        volunteerDTO.setPhoneNumber(volunteer.getPhoneNumber());
+        volunteerDTO.setMissionTypes(missionTypeMapper.mapToMissionTypeDtoListForVolunteerProfilDto(volunteer.getMissionTypes()));
         volunteerDTO.setAvailabilities(availabilityMapper.mapToAvailabilityDtoListForVolunteerEditDto(volunteer.getAvailabilities()));
         volunteerDTO.setUnavailabilities(unavailabilityMapper.mapToUnavailabilityDtoListForVolunteerEditDto(volunteer.getUnavailabilities()));
         return volunteerDTO;

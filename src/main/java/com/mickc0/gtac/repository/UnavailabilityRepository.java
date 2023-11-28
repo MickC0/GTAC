@@ -25,4 +25,8 @@ public interface UnavailabilityRepository extends JpaRepository<Unavailability, 
     @Modifying
     @Query("DELETE FROM Unavailability u WHERE u.endDate < :date")
     void deleteByEndDateBefore(@Param("date") LocalDate date);
+
+    void deleteAllByVolunteer(Volunteer volunteer);
+
+    void deleteAllByVolunteerUuid(UUID uuid);
 }
