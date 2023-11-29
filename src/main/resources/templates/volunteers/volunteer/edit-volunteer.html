@@ -152,54 +152,7 @@
         updateUnavailabilityIndexes();
 
         document.getElementById('addAvailability').addEventListener('click', function() {
-            let availabilitySection = document.getElementById('availabilitySection');
-            let index = availabilitySection.querySelectorAll('.availabilityRow').length;
-
-            let availabilityDiv = document.createElement('div');
-            availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
-            availabilityDiv.innerHTML = `
-            <div class="col-auto">
-                <label class="form-label-sm" for="availabilities[${index}].dayOfWeek">Jour :</label>
-                <select class="form-select-sm" name="availabilities[${index}].dayOfWeek" required="required">
-                    <option selected>Jour</option>
-                    <option value="MONDAY">Lundi</option>
-                    <option value="TUESDAY">Mardi</option>
-                    <option value="WEDNESDAY">Mercredi</option>
-                    <option value="THURSDAY">Jeudi</option>
-                    <option value="FRIDAY">Vendredi</option>
-                    <option value="SATURDAY">Samedi</option>
-                    <option value="SUNDAY">Dimanche</option>
-                </select>
-            </div>
-            <div class="col-auto">
-                <label class="form-label-sm" for="availabilities[${index}].startTime">Heure de début :</label>
-                <input class="form-control-sm" type="time" name="availabilities[${index}].startTime"/>
-            </div>
-            <div class="col-auto">
-                <label class="form-label-sm" for="availabilities[${index}].endTime">Heure de fin :</label>
-                <input class="form-control-sm" type="time" name="availabilities[${index}].endTime"/>
-            </div>
-        `;
-
-            let removeButton = document.createElement('button');
-            removeButton.type = 'button';
-            removeButton.className = 'btn btn-sm btn-danger removeAvailability';
-
-            let icon = document.createElement('i');
-            icon.className = 'bi bi-x-square';
-            removeButton.appendChild(icon);
-
-            removeButton.addEventListener('click', function() {
-                availabilityDiv.remove();
-                updateAvailabilityIndexes();
-            });
-
-            let buttonCol = document.createElement('div');
-            buttonCol.className = 'col-auto';
-            buttonCol.appendChild(removeButton);
-
-            availabilityDiv.appendChild(buttonCol);
-            availabilitySection.appendChild(availabilityDiv);
+            addAvailabilityRow();
         });
 
         document.getElementById('availabilitySection').addEventListener('click', function(event) {
@@ -208,6 +161,99 @@
                 updateAvailabilityIndexes();
             }
         });
+
+        function addAvailabilityRow() {
+            let availabilitySection = document.getElementById('availabilitySection');
+            let index = availabilitySection.querySelectorAll('.availabilityRow').length;
+
+            let availabilityDiv = document.createElement('div');
+            availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
+
+
+            // Créer et ajouter le champ de sélection du jour
+            let divColDay = document.createElement('div');
+            divColDay.className = 'col-auto';
+            let labelDay = document.createElement('label');
+            labelDay.className = 'form-label-sm';
+            labelDay.setAttribute('for', `availabilities[${index}].dayOfWeek`);
+            labelDay.textContent = 'Jour :';
+            let selectDay = document.createElement('select');
+            selectDay.className = 'form-select-sm';
+            selectDay.name = `availabilities[${index}].dayOfWeek`;
+            selectDay.required = true;
+            ['Jour', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'].forEach((day, index) => {
+                let option = document.createElement('option');
+                option.value = day;
+                switch (day) {
+                    case 'MONDAY':
+                        option.textContent = 'Lundi';
+                        break;
+                    case 'TUESDAY':
+                        option.textContent = 'Mardi';
+                        break;
+                    case 'WEDNESDAY':
+                        option.textContent = 'Mercredi';
+                        break;
+                    case 'THURSDAY':
+                        option.textContent = 'Jeudi';
+                        break;
+                    case 'FRIDAY':
+                        option.textContent = 'Vendredi';
+                        break;
+                    case 'SATURDAY':
+                        option.textContent = 'Samedi';
+                        break;
+                    case 'SUNDAY':
+                        option.textContent = 'Dimanche';
+                        break;
+                    default:
+                        option.textContent = 'Jour';
+                        option.value = '';
+                        option.selected = true;
+                }
+                selectDay.appendChild(option);
+            });
+            divColDay.appendChild(labelDay);
+            divColDay.appendChild(selectDay);
+            availabilityDiv.appendChild(divColDay);
+
+            // Créer et ajouter les champs de temps
+            ['startTime', 'endTime'].forEach(time => {
+                let divColTime = document.createElement('div');
+                divColTime.className = 'col-auto';
+                let labelTime = document.createElement('label');
+                labelTime.className = 'form-label-sm';
+                labelTime.setAttribute('for', `availabilities[${index}].${time}`);
+                labelTime.textContent = time === 'startTime' ? 'Heure de début :' : 'Heure de fin :';
+                let inputTime = document.createElement('input');
+                inputTime.className = 'form-control-sm';
+                inputTime.type = 'time';
+                inputTime.name = `availabilities[${index}].${time}`;
+                divColTime.appendChild(labelTime);
+                divColTime.appendChild(inputTime);
+                availabilityDiv.appendChild(divColTime);
+            });
+
+            // Créer et ajouter le bouton de suppression
+            let removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-sm btn-danger removeAvailability';
+            let icon = document.createElement('i');
+            icon.className = 'bi bi-x-square';
+            removeButton.appendChild(icon);
+            removeButton.addEventListener('click', function() {
+                availabilityDiv.remove();
+                updateAvailabilityIndexes();
+            });
+            let buttonCol = document.createElement('div');
+            buttonCol.className = 'col-auto';
+            buttonCol.appendChild(removeButton);
+            availabilityDiv.appendChild(buttonCol);
+
+            availabilitySection.appendChild(availabilityDiv);
+            updateAvailabilityIndexes();
+        }
+
         function updateAvailabilityIndexes() {
             let availabilityRows = document.querySelectorAll('#availabilitySection > .availabilityRow');
             availabilityRows.forEach((row, index) => {
@@ -216,103 +262,34 @@
                 });
 
                 if (!row.querySelector('.removeAvailability')) {
-                    let removeButton = document.createElement('button');
-                    removeButton.type = 'button';
-                    removeButton.className = 'btn btn-sm btn-danger removeAvailability';
-                    removeButton.innerHTML = '<i class="bi bi-x-square"></i>';
-                    removeButton.addEventListener('click', function() {
-                        row.remove();
-                        updateAvailabilityIndexes();
-                    });
-
-                    let buttonCol = document.createElement('div');
-                    buttonCol.className = 'col-auto';
-                    buttonCol.appendChild(removeButton);
-
-                    row.appendChild(buttonCol);
+                    addRemoveButton(row);
                 }
             });
         }
 
-        document.getElementById('editVolunteerForm').addEventListener('submit', function(event) {
-            let isValid = true;
-            const availabilityRows = document.querySelectorAll('#availabilitySection > div');
-            let availabilities = [];
-
-            availabilityRows.forEach(function(row) {
-                const dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
-                const startTime = row.querySelector('input[name$=".startTime"]').value;
-                const endTime = row.querySelector('input[name$=".endTime"]').value;
-
-                if (dayOfWeek === "Jour") {
-                    isValid = false;
-                }
-
-                if ((dayOfWeek || startTime || endTime) && (!dayOfWeek || !startTime || !endTime || startTime >= endTime)) {
-                    isValid = false;
-                } else {
-                    availabilities.push({ dayOfWeek, startTime, endTime });
-                }
-            });
-
-            function isOverlapping(start1, end1, start2, end2) {
-                return !(start1 >= end2 || start2 >= end1);
-            }
-
-            for (let i = 0; i < availabilities.length; i++) {
-                for (let j = i + 1; j < availabilities.length; j++) {
-                    let a1 = availabilities[i];
-                    let a2 = availabilities[j];
-
-                    if (a1.dayOfWeek === a2.dayOfWeek && isOverlapping(a1.startTime, a1.endTime, a2.startTime, a2.endTime)) {
-                        isValid = false;
-                    }
-                }
-            }
-            if (!isValid) {
-                event.preventDefault();
-                const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
-                alertModal.show();
-            }
-        });
-
-        document.getElementById('addUnavailability').addEventListener('click', function() {
-            let unavailabilitySection = document.getElementById('unavailabilitySection');
-            let index = unavailabilitySection.getElementsByClassName('unavailabilityRow').length;
-
-            let unavailabilityDiv = document.createElement('div');
-            unavailabilityDiv.className = 'unavailabilityRow row gy-2 gx-3 align-items-center mb-2';
-            unavailabilityDiv.innerHTML = `
-            <div class="col-auto">
-                <label class="form-label-sm" for="unavailabilities[${index}].startDate">Date de début :</label>
-                <input class="form-control-sm" type="date" name="unavailabilities[${index}].startDate" required="required"/>
-            </div>
-            <div class="col-auto">
-                <label class="form-label-sm" for="unavailabilities[${index}].endDate">Date de fin :</label>
-                <input class="form-control-sm" type="date" name="unavailabilities[${index}].endDate" required="required"/>
-            </div>
-        `;
-
+        function addRemoveButton(row) {
             let removeButton = document.createElement('button');
             removeButton.type = 'button';
-            removeButton.className = 'btn btn-sm btn-danger removeUnavailability';
-
+            removeButton.className = 'btn btn-sm btn-danger removeAvailability';
             let icon = document.createElement('i');
             icon.className = 'bi bi-x-square';
             removeButton.appendChild(icon);
-
             removeButton.addEventListener('click', function() {
-                unavailabilityDiv.remove();
-                updateUnavailabilityIndexes();
+                row.remove();
+                updateAvailabilityIndexes();
             });
 
             let buttonCol = document.createElement('div');
             buttonCol.className = 'col-auto';
             buttonCol.appendChild(removeButton);
 
-            unavailabilityDiv.appendChild(buttonCol);
-            unavailabilitySection.appendChild(unavailabilityDiv);
+            row.appendChild(buttonCol);
+        }
 
+
+
+        document.getElementById('addUnavailability').addEventListener('click', function() {
+            addUnavailabilityRow();
         });
 
         document.getElementById('unavailabilitySection').addEventListener('click', function(event) {
@@ -322,36 +299,115 @@
             }
         });
 
+        function addUnavailabilityRow() {
+            let unavailabilitySection = document.getElementById('unavailabilitySection');
+            let index = unavailabilitySection.querySelectorAll('.unavailabilityRow').length;
+
+            let unavailabilityDiv = document.createElement('div');
+            unavailabilityDiv.className = 'unavailabilityRow row gy-2 gx-3 align-items-center mb-2';
+
+            // Créer les éléments pour la date de début
+            let colStartDate = document.createElement('div');
+            colStartDate.className = 'col-auto';
+            let labelStartDate = document.createElement('label');
+            labelStartDate.className = 'form-label-sm';
+            labelStartDate.setAttribute('for', `unavailabilities[${index}].startDate`);
+            labelStartDate.textContent = 'Date de début :';
+            let inputStartDate = document.createElement('input');
+            inputStartDate.className = 'form-control-sm';
+            inputStartDate.type = 'date';
+            inputStartDate.name = `unavailabilities[${index}].startDate`;
+            inputStartDate.required = true;
+            colStartDate.appendChild(labelStartDate);
+            colStartDate.appendChild(inputStartDate);
+
+            // Créer les éléments pour la date de fin
+            let colEndDate = document.createElement('div');
+            colEndDate.className = 'col-auto';
+            let labelEndDate = document.createElement('label');
+            labelEndDate.className = 'form-label-sm';
+            labelEndDate.setAttribute('for', `unavailabilities[${index}].endDate`);
+            labelEndDate.textContent = 'Date de fin :';
+            let inputEndDate = document.createElement('input');
+            inputEndDate.className = 'form-control-sm';
+            inputEndDate.type = 'date';
+            inputEndDate.name = `unavailabilities[${index}].endDate`;
+            inputEndDate.required = true;
+            colEndDate.appendChild(labelEndDate);
+            colEndDate.appendChild(inputEndDate);
+
+            unavailabilityDiv.appendChild(colStartDate);
+            unavailabilityDiv.appendChild(colEndDate);
+
+            addRemoveUnavailabilityButton(unavailabilityDiv);
+            unavailabilitySection.appendChild(unavailabilityDiv);
+            updateUnavailabilityIndexes();
+        }
+        function addRemoveUnavailabilityButton(row) {
+            let removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn btn-sm btn-danger removeUnavailability';
+            let icon = document.createElement('i');
+            icon.className = 'bi bi-x-square';
+            removeButton.appendChild(icon);
+            removeButton.addEventListener('click', function() {
+                row.remove();
+                updateUnavailabilityIndexes();
+            });
+
+            let buttonCol = document.createElement('div');
+            buttonCol.className = 'col-auto';
+            buttonCol.appendChild(removeButton);
+
+            row.appendChild(buttonCol);
+        }
+
         function updateUnavailabilityIndexes() {
             let unavailabilityRows = document.querySelectorAll('#unavailabilitySection > .unavailabilityRow');
             unavailabilityRows.forEach((row, index) => {
-                row.querySelectorAll('select, input').forEach(input => {
+                row.querySelectorAll('input').forEach(input => {
                     input.name = input.name.replace(/\[\d+]/, `[${index}]`);
                 });
+
                 if (!row.querySelector('.removeUnavailability')) {
-                    let removeButton = document.createElement('button');
-                    removeButton.type = 'button';
-                    removeButton.className = 'btn btn-sm btn-danger removeUnavailability';
-                    removeButton.innerHTML = '<i class="bi bi-x-square"></i>';
-                    removeButton.addEventListener('click', function() {
-                        row.remove();
-                        updateUnavailabilityIndexes();
-                    });
-
-                    let buttonCol = document.createElement('div');
-                    buttonCol.className = 'col-auto';
-                    buttonCol.appendChild(removeButton);
-
-                    row.appendChild(buttonCol);
+                    addRemoveUnavailabilityButton(row);
                 }
             });
         }
 
         document.getElementById('editVolunteerForm').addEventListener('submit', function(event) {
-            let isValid = true;
-            const unavailabilityRows = document.querySelectorAll('#unavailabilitySection > div');
+            if (!validateAvailabilities() || !validateUnavailabilities()) {
+                event.preventDefault();
+                const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+                alertModal.show();
+            }
+        });
 
+        function validateAvailabilities() {
+            const availabilityRows = document.querySelectorAll('#availabilitySection > div');
+            let isValid = true;
+            let availabilities = [];
+
+            availabilityRows.forEach(function(row) {
+                const dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
+                const startTime = row.querySelector('input[name$=".startTime"]').value;
+                const endTime = row.querySelector('input[name$=".endTime"]').value;
+
+                if (dayOfWeek === "Jour" || !dayOfWeek || !startTime || !endTime || startTime >= endTime) {
+                    isValid = false;
+                } else {
+                    availabilities.push({ dayOfWeek, startTime, endTime });
+                }
+            });
+
+            return isValid && !hasOverlap(availabilities, (a, b) => a.dayOfWeek === b.dayOfWeek);
+        }
+
+        function validateUnavailabilities() {
+            const unavailabilityRows = document.querySelectorAll('#unavailabilitySection > div');
+            let isValid = true;
             let unavailabilities = [];
+
             unavailabilityRows.forEach(function(row) {
                 const startDate = row.querySelector('input[name$=".startDate"]').value;
                 const endDate = row.querySelector('input[name$=".endDate"]').value;
@@ -359,27 +415,31 @@
                 if (!startDate || !endDate || startDate > endDate) {
                     isValid = false;
                 } else {
-                    unavailabilities.push({startDate, endDate});
+                    unavailabilities.push({ startDate, endDate });
                 }
             });
 
-            for (let i = 0; i < unavailabilities.length; i++) {
-                for (let j = i + 1; j < unavailabilities.length; j++) {
-                    if ((unavailabilities[i].startDate < unavailabilities[j].endDate) &&
-                        (unavailabilities[j].startDate < unavailabilities[i].endDate)) {
-                        isValid = false;
+            return isValid && !hasOverlap(unavailabilities);
+        }
+
+        function hasOverlap(items, comparator = (a, b) => true) {
+            for (let i = 0; i < items.length; i++) {
+                for (let j = i + 1; j < items.length; j++) {
+                    let a = items[i];
+                    let b = items[j];
+                    if (comparator(a, b) && isOverlapping(a.startTime, a.endTime, b.startTime, b.endTime)) {
+                        return true;
                     }
                 }
             }
+            return false;
+        }
 
-            if (!isValid) {
-                event.preventDefault();
-                const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
-                alertModal.show();
-            }
-        });
+        function isOverlapping(start1, end1, start2, end2) {
+            return !(start1 >= end2 || start2 >= end1);
+        }
 
-    })
+    });
 
 </script>
 
