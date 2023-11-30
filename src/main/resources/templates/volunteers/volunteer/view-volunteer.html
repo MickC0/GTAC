@@ -42,7 +42,7 @@
                                         <hr>
                                         <p><strong>Indisponibilités :</strong></p>
                                         <ul class="list-group">
-                                            <li class="list-group-item" th:each="unavailability : ${volunteer.unavailabilities}" th:text="${unavailability.startDate} + ' - ' + ${unavailability.endDate}"></li>
+                                            <li class="list-group-item" th:each="unavailability : ${volunteer.unavailabilities}" th:text="${#temporals.format(unavailability.startDate, 'dd/MM/yyyy')} + ' - ' + ${#temporals.format(unavailability.endDate, 'dd/MM/yyyy')}"></li>
                                         </ul>
                                     </div>
                                 </div>
