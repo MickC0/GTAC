@@ -180,6 +180,7 @@
             let selectDay = document.createElement('select');
             selectDay.className = 'form-select-sm';
             selectDay.name = `availabilities[${index}].dayOfWeek`;
+            selectDay.id = `availabilities[${index}].dayOfWeek`;
             selectDay.required = true;
             ['Jour', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'].forEach((day, index) => {
                 let option = document.createElement('option');
@@ -317,6 +318,7 @@
             inputStartDate.className = 'form-control-sm';
             inputStartDate.type = 'date';
             inputStartDate.name = `unavailabilities[${index}].startDate`;
+            inputStartDate.id = `unavailabilities[${index}].startDate`;
             inputStartDate.required = true;
             colStartDate.appendChild(labelStartDate);
             colStartDate.appendChild(inputStartDate);
@@ -332,6 +334,7 @@
             inputEndDate.className = 'form-control-sm';
             inputEndDate.type = 'date';
             inputEndDate.name = `unavailabilities[${index}].endDate`;
+            inputEndDate.id = `unavailabilities[${index}].endDate`;
             inputEndDate.required = true;
             colEndDate.appendChild(labelEndDate);
             colEndDate.appendChild(inputEndDate);

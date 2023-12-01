@@ -216,4 +216,5 @@ public class VolunteerServiceImpl implements VolunteerService{
                 .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + uuid + " n'existe pas")));
     }
 
+
 }

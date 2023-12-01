@@ -37,7 +37,7 @@
                                         <hr>
                                         <p><strong>Disponibilités :</strong></p>
                                         <ul class="list-group">
-                                            <li class="list-group-item" th:each="availability : ${volunteer.availabilities}" th:text="${availability.dayOfWeek} + ' ' + ${availability.startTime} + ' - ' + ${availability.endTime}"></li>
+                                            <li class="list-group-item" th:each="availability : ${volunteer.availabilities}" th:text="${@translationUtils.translateDayOfWeek(availability.dayOfWeek)} + ' ' + ${availability.startTime} + ' - ' + ${availability.endTime}"></li>
                                         </ul>
                                         <hr>
                                         <p><strong>Indisponibilités :</strong></p>
