@@ -64,7 +64,6 @@ public class VolunteerServiceImpl implements VolunteerService{
         volunteer.setPhoneNumber(volunteerDTO.getPhoneNumber());
         volunteer = saveAndReturn(volunteer);
 
-        //mission types
         handleMissionTypes(volunteerDTO, volunteer);
 
         handleAvailabilities(volunteerDTO, volunteer);

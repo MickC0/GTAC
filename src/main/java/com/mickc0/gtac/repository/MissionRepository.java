@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface MissionRepository extends JpaRepository<Mission, Long> {
 
@@ -21,5 +23,7 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
     List<Mission> findByStatusAndEndDateTimeLessThanEqual(MissionStatus missionStatus, LocalDateTime now);
 
     List<Mission> findByStatus(MissionStatus status);
+
+    Optional<Mission> findByUuid(UUID uuid);
 
 }

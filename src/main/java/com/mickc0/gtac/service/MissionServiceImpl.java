@@ -1,7 +1,10 @@
 package com.mickc0.gtac.service;
 
+import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.entity.*;
+import com.mickc0.gtac.mapper.MissionMapper;
 import com.mickc0.gtac.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +21,8 @@ import java.util.Optional;
 public class MissionServiceImpl implements MissionService {
 
     private final MissionRepository missionRepository;
-
+    private final MissionMapper missionMapper;
+    private final MissionTypeService missionTypeService;
     private final AvailabilityRepository availabilityRepository;
     private final UnavailabilityRepository unavailabilityRepository;
     private final VolunteerRepository volunteerRepository;
@@ -26,8 +30,10 @@ public class MissionServiceImpl implements MissionService {
     private final MissionTypeRepository missionTypeRepository;
 
     @Autowired
-    public MissionServiceImpl(MissionRepository missionRepository, AvailabilityRepository availabilityRepository, UnavailabilityRepository unavailabilityRepository, VolunteerRepository volunteerRepository, MissionAssignmentRepository missionAssignmentRepository, MissionTypeRepository missionTypeRepository) {
+    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper, MissionTypeService missionTypeService, AvailabilityRepository availabilityRepository, UnavailabilityRepository unavailabilityRepository, VolunteerRepository volunteerRepository, MissionAssignmentRepository missionAssignmentRepository, MissionTypeRepository missionTypeRepository) {
         this.missionRepository = missionRepository;
+        this.missionMapper = missionMapper;
+        this.missionTypeService = missionTypeService;
         this.availabilityRepository = availabilityRepository;
         this.unavailabilityRepository = unavailabilityRepository;
         this.volunteerRepository = volunteerRepository;
@@ -37,13 +43,24 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     @Transactional
-    public void save(Mission mission) {
+    public void save(MissionDTO missionDTO) {
+        Mission mission;
+        if(missionDTO.getUuid() != null && missionRepository.findByUuid(missionDTO.getUuid()).isPresent()){
+            mission = missionRepository.findByUuid(missionDTO.getUuid())
+                    .orElseThrow(() -> new EntityNotFoundException(("La mission avec l'Id : "+ missionDTO.getUuid() + " n'existe pas.")));
+        } else {
+            mission = new Mission();
+        }
+        mission.setTitle(missionDTO.getTitle());
+        mission.setDescription(missionDTO.getDescription());
+        mission.setComment(missionDTO.getComment());
+        mission.setMissionType(missionTypeService.findMissionTypeByUuid(missionDTO.getMissionType().getUuid()));
         mission.setStatus(MissionStatus.NEW);
         missionRepository.save(mission);
     }
 
     @Override
-    public List<Mission> findAll() {
+    public List<MissionDTO> findAll() {
         return missionRepository.findAll();
     }
 
