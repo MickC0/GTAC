@@ -50,6 +50,7 @@
                                            th:value="${missionType.uuid}"
                                            th:name="missionTypes" type="checkbox" class="btn-check" autocomplete="off"
                                            th:checked="${missionType.selected}"
+                                           th:disabled="${!missionType.active}"
                                     >
                                     <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.uuid}" th:text="${missionType.name}"></label><br>
                                     <input type="hidden"

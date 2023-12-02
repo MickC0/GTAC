@@ -102,4 +102,20 @@ public class MissionTypeServiceImpl implements MissionTypeService{
                 .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + uuid)));
     }
 
+    @Override
+    public List<MissionTypeDTO> findAllActive() {
+        List<MissionType> missionTypes = missionTypeRepository.findAllActive(Sort.by(Sort.Direction.ASC, "name"));
+        return missionTypes.stream()
+                .map(missionTypeMapper::mapToMissionTypeDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deactivateByUuid(UUID uuid) {
+        MissionType missionType = missionTypeRepository.findByUuid(uuid)
+                    .orElseThrow(() -> new EntityNotFoundException("Le type de mission avec l'Id: " + uuid + " n'existe pas"));
+        missionType.setActive(false);
+        missionTypeRepository.save(missionType);
+    }
+
 }

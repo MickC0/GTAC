@@ -44,7 +44,7 @@
                             </div>
                             <div class="d-flex flex-wrap" role="group" th:unless="${allMissionTypes.isEmpty()}">
                                 <div class="my-2 me-2" th:each="missionType:${allMissionTypes}">
-                                    <input th:id="${'btn-check-outlined' + missionType.uuid}" th:value="${missionType.uuid}" th:name="missionTypeUuids" type="checkbox" class="btn-check" autocomplete="off">
+                                    <input th:id="${'btn-check-outlined' + missionType.uuid}" th:value="${missionType.uuid}" th:disabled="${!missionType.active}" th:name="missionTypeUuids" type="checkbox" class="btn-check" autocomplete="off">
                                     <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.uuid}" th:text="${missionType.name}"></label><br>
                                 </div>
                             </div>

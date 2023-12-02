@@ -18,8 +18,8 @@ public interface MissionTypeService {
     Optional<MissionTypeDTO> findMissionTypeDTOByUuid(UUID uuid);
     Optional<MissionType> findMissionTypeByUuid(UUID uuid);
 
+    List<MissionTypeDTO> findAllActive();
 
 
-
-
+    void deactivateByUuid(UUID uuid);
 }

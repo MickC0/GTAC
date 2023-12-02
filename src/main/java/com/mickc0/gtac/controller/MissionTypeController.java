@@ -25,7 +25,7 @@ public class MissionTypeController {
 
     @GetMapping
     public String listMissionTypes(Model model) {
-        List<MissionType> missionTypes = missionTypeService.findAll();
+        List<MissionTypeDTO> missionTypes = missionTypeService.findAllDto();
         model.addAttribute("missionTypes", missionTypes);
         return "mission-types/mission-types";
     }
@@ -61,6 +61,12 @@ public class MissionTypeController {
     @GetMapping("/delete/{id}")
     public String deleteMissionType(@PathVariable(name = "id") UUID uuid) {
         missionTypeService.deleteByUuid(uuid);
+        return "redirect:/mission-types";
+    }
+
+    @GetMapping("/deactivate/{id}")
+    public String deactivateMissionType(@PathVariable(name = "id") UUID uuid) {
+        missionTypeService.deactivateByUuid(uuid);
         return "redirect:/mission-types";
     }
 
