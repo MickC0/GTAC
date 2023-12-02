@@ -22,4 +22,6 @@ public interface MissionTypeService {
 
 
     void deactivateByUuid(UUID uuid);
+
+    void activateByUuid(UUID uuid);
 }

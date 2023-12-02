@@ -118,4 +118,12 @@ public class MissionTypeServiceImpl implements MissionTypeService{
         missionTypeRepository.save(missionType);
     }
 
+    @Override
+    public void activateByUuid(UUID uuid) {
+        MissionType missionType = missionTypeRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Le type de mission avec l'Id: " + uuid + " n'existe pas"));
+        missionType.setActive(true);
+        missionTypeRepository.save(missionType);
+    }
+
 }

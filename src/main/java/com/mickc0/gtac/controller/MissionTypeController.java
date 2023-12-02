@@ -70,4 +70,10 @@ public class MissionTypeController {
         return "redirect:/mission-types";
     }
 
+    @GetMapping("/activate/{id}")
+    public String activateMissionType(@PathVariable(name = "id") UUID uuid) {
+        missionTypeService.activateByUuid(uuid);
+        return "redirect:/mission-types";
+    }
+
 }
