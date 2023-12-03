@@ -22,7 +22,7 @@
                 <p th:text="${mission.missionType.name}"></p>
                 <p>Description : <span th:text="${mission.description}"></span></p>
                 <p th:text="${mission.comment}"></p>
-                <p th:text="${mission.status}"></p>
+                <p th:text="${@translationUtils.translateMissionStatus(mission.status)}"></p>
                 <form th:action="@{/missions/plan/{id}(id=${mission.uuid})}" method="post" id="planMissionForm" th:object="${mission}">
 
                     <input type="hidden" name="uuid" id="uuid" th:field="*{uuid}">

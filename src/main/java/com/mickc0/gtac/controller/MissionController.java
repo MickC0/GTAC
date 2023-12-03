@@ -95,7 +95,6 @@ public class MissionController {
         MissionDTO missionDTO = missionService.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid mission Id:" + uuid));
         model.addAttribute("mission", missionDTO);
-
         return "missions/planned-mission/create-planned-mission";
     }
 

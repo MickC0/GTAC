@@ -34,7 +34,7 @@
                 <tr th:each="plannedMission:${plannedMissions}">
                     <td th:text="${plannedMission.title}"></td>
                     <td th:text="${plannedMission.missionType.name}"></td>
-                    <td th:text="${plannedMission.status}"></td>
+                    <td th:text="${@translationUtils.translateMissionStatus(plannedMission.status)}"></td>
                     <td th:text="${#temporals.format(plannedMission.startDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                     <td th:text="${#temporals.format(plannedMission.endDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                     <td>

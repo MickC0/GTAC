@@ -33,7 +33,7 @@
                     <tr th:each="newMission:${newMissions}">
                         <td th:text="${newMission.title}"></td>
                         <td th:text="${newMission.missionType.name}"></td>
-                        <td th:text="${newMission.status}"></td>
+                        <td th:text="${@translationUtils.translateMissionStatus(newMission.status)}"></td>
                         <td>
                             <!-- Planifier -->
                             <a class="btn btn-success btn-sm" th:href="@{/missions/plan/new/{id}(id=${newMission.uuid})}"><i class="bi bi-calendar-plus"></i></a>

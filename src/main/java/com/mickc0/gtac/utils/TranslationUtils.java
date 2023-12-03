@@ -1,5 +1,6 @@
 package com.mickc0.gtac.utils;
 
+import com.mickc0.gtac.entity.MissionStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +15,18 @@ public class TranslationUtils {
             case "SATURDAY" -> "Samedi";
             case "SUNDAY" -> "Dimanche";
             default -> day;
+        };
+    }
+
+    public static String translateMissionStatus(MissionStatus status) {
+        return switch (status) {
+            case NEW -> "Nouveau";
+            case PLANNED -> "Planifié";
+            case CONFIRMED -> "Confirmé";
+            case ONGOING -> "En cours";
+            case DONE -> "Terminé";
+            case CANCELLED -> "Annulé";
+            default -> status.toString();
         };
     }
 
