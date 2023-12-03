@@ -15,9 +15,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class MissionServiceImpl implements MissionService {
 
     private final MissionRepository missionRepository;
@@ -47,21 +48,25 @@ public class MissionServiceImpl implements MissionService {
         Mission mission;
         if(missionDTO.getUuid() != null && missionRepository.findByUuid(missionDTO.getUuid()).isPresent()){
             mission = missionRepository.findByUuid(missionDTO.getUuid())
-                    .orElseThrow(() -> new EntityNotFoundException(("La mission avec l'Id : "+ missionDTO.getUuid() + " n'existe pas.")));
+                    .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id : "+ missionDTO.getUuid() + " n'existe pas."));
         } else {
             mission = new Mission();
         }
         mission.setTitle(missionDTO.getTitle());
         mission.setDescription(missionDTO.getDescription());
         mission.setComment(missionDTO.getComment());
-        mission.setMissionType(missionTypeService.findMissionTypeByUuid(missionDTO.getMissionType().getUuid()));
+        mission.setMissionType(missionTypeService.findMissionTypeByUuid(missionDTO.getMissionType().getUuid())
+                .orElseThrow(() -> new EntityNotFoundException("Le type de mission avec l'Id : "+ missionDTO.getMissionType().getUuid() + " n'existe pas.")));
         mission.setStatus(MissionStatus.NEW);
+        mission.setRequiredVolunteerNumber(missionDTO.getRequiredVolunteerNumber());
         missionRepository.save(mission);
     }
 
     @Override
     public List<MissionDTO> findAll() {
-        return missionRepository.findAll();
+        return missionRepository.findAll().stream()
+                .map(missionMapper::mapToDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -71,9 +76,21 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
+    public void deleteByUuid(UUID uuid) {
+        missionRepository.deleteByUuid(uuid);
+    }
+
+    @Override
     public Optional<Mission> findById(Long id) {
         return missionRepository.findById(id);
     }
+
+    @Override
+    public Optional<MissionDTO> findByUuid(UUID uuid) {
+        return Optional.ofNullable(missionMapper.mapToDTO(missionRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id: " + uuid + " n'existe pas"))));
+    }
+
     public List<Mission> findByStatus(MissionStatus status) {
         return missionRepository.findByStatus(status);
     }
@@ -111,21 +128,6 @@ public class MissionServiceImpl implements MissionService {
         return false; // Aucune disponibilité ne correspond
     }
 
-    @Override
-    public List<Volunteer> getAvailableUsersForMission(Long missionId, Long missionTypeId) {
-        Mission mission = missionRepository.findById(missionId)
-                .orElseThrow(() -> new RuntimeException("Mission not found"));
-        MissionType missionType = missionTypeRepository.findById(missionTypeId)
-                .orElseThrow(() -> new RuntimeException("Mission type not found"));
-
-        LocalDateTime missionStart = mission.getStartDateTime();
-        LocalDateTime missionEnd = mission.getEndDateTime();
-        DayOfWeek dayOfWeek = missionStart.getDayOfWeek();
-        LocalTime startTime = missionStart.toLocalTime();
-        LocalTime endTime = missionEnd.toLocalTime();
-
-        return volunteerRepository.findAvailableVolunteersForMission(missionStart, missionEnd, dayOfWeek, startTime, endTime, missionTypeId);
-    }
 
 
     /*@Override
@@ -161,18 +163,18 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     @Transactional
-    public Mission startMission(Long missionId) {
-        Mission mission = missionRepository.findById(missionId)
-                .orElseThrow(() -> new RuntimeException("Mission not found"));
+    public Mission startMission(UUID uuid) {
+        Mission mission = missionRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("La mission avec l'id : " + uuid + " n'existe pas."));
         mission.setStatus(MissionStatus.ONGOING);
         return missionRepository.save(mission);
     }
 
     @Override
     @Transactional
-    public void cancelMission(Long missionId) {
-        Mission mission = missionRepository.findById(missionId)
-                .orElseThrow(() -> new RuntimeException("Mission not found"));
+    public void cancelMission(UUID uuid) {
+        Mission mission = missionRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("La mission avec l'id : " + uuid + " n'existe pas."));
         mission.setStatus(MissionStatus.CANCELLED);
         missionRepository.save(mission);
     }
@@ -209,8 +211,25 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public void planMission(Mission mission) {
-        if (mission.getStartDateTime() != null && mission.getEndDateTime() != null) {
+    public void planMission(MissionDTO missionDTO) {
+        Mission mission;
+        if(missionDTO.getUuid() != null && missionRepository.findByUuid(missionDTO.getUuid()).isPresent()){
+            mission = missionRepository.findByUuid(missionDTO.getUuid())
+                    .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id : "+ missionDTO.getUuid() + " n'existe pas."));
+        } else {
+            mission = new Mission();
+        }
+
+        mission.setTitle(missionDTO.getTitle());
+        mission.setDescription(missionDTO.getDescription());
+        mission.setComment(missionDTO.getComment());
+        mission.setMissionType(missionTypeService.findMissionTypeByUuid(missionDTO.getMissionType().getUuid())
+                .orElseThrow(() -> new EntityNotFoundException("Le type de mission avec l'Id : "+ missionDTO.getMissionType().getUuid() + " n'existe pas.")));
+        mission.setRequiredVolunteerNumber(missionDTO.getRequiredVolunteerNumber());
+
+        if (missionDTO.getStartDateTime() != null && missionDTO.getEndDateTime() != null) {
+            mission.setStartDateTime(missionDTO.getStartDateTime());
+            mission.setEndDateTime(missionDTO.getEndDateTime());
             mission.setStatus(MissionStatus.PLANNED);
             missionRepository.save(mission);
         } else {

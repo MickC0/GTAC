@@ -19,7 +19,7 @@ public interface VolunteerService {
     void deleteVolunteer(UUID uuid);
     List<VolunteerStatusDTO> findAllVolunteersWithStatus();
 
-    List<Volunteer> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, Long missionTypeId);
+    List<VolunteerDTO> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, UUID missionTypeUuid);
 
 
     VolunteerProfilDTO findVolunteerProfilDTOByUuid(UUID uuid);

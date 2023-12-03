@@ -201,12 +201,14 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
-    public List<Volunteer> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, Long missionTypeId) {
+    public List<VolunteerDTO> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, UUID missionTypeUuid) {
         DayOfWeek dayOfWeek = start.getDayOfWeek();
         LocalTime startTime = start.toLocalTime();
         LocalTime endTime = end.toLocalTime();
 
-        return volunteerRepository.findAvailableVolunteersForMission(start, end, dayOfWeek, startTime, endTime, missionTypeId);
+        return volunteerRepository.findAvailableVolunteersForMission(start, end, dayOfWeek, startTime, endTime, missionTypeUuid).stream()
+                .map(volunteerMapper::mapToConfirmDto)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -19,8 +19,8 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
             "AND a.mission.endDateTime >= :missionStart) AND v.id NOT IN " +
             "(SELECT i.volunteer.id FROM Unavailability i WHERE i.startDate <= :missionEnd AND i.endDate >= :missionStart) " +
             "AND EXISTS (SELECT d FROM Availability d WHERE d.volunteer = v AND d.dayOfWeek = :dayOfWeek AND d.startTime <= :startTime AND d.endTime >= :endTime) " +
-            "AND EXISTS (SELECT mt FROM v.missionTypes mt WHERE mt.id = :missionTypeId)")
-    List<Volunteer> findAvailableVolunteersForMission(LocalDateTime missionStart, LocalDateTime missionEnd, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, Long missionTypeId);
+            "AND EXISTS (SELECT mt FROM v.missionTypes mt WHERE mt.uuid = :missionTypeUuid)")
+    List<Volunteer> findAvailableVolunteersForMission(LocalDateTime missionStart, LocalDateTime missionEnd, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime, UUID missionTypeUuid);
 
     Optional<Volunteer> findByUuid(UUID uuid);
 

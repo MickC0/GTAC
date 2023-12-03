@@ -83,5 +83,14 @@ public class VolunteerMapper {
         return volunteerDTO;
     }
 
+    public VolunteerDTO mapToConfirmDto(Volunteer volunteer){
+        VolunteerDTO volunteerDTO = new VolunteerDTO();
+        volunteerDTO.setUuid(volunteer.getUuid());
+        volunteerDTO.setLastName(volunteer.getLastName());
+        volunteerDTO.setFirstName(volunteer.getFirstName());
+        volunteerDTO.setEmail(volunteer.getEmail());
+        volunteerDTO.setPhoneNumber(volunteer.getPhoneNumber());
+        return volunteerDTO;
+    }
 
 }

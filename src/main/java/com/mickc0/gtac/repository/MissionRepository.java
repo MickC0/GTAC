@@ -26,4 +26,5 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
 
     Optional<Mission> findByUuid(UUID uuid);
 
+    void deleteByUuid(UUID uuid);
 }

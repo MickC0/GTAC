@@ -18,17 +18,18 @@ public interface MissionService {
     void deleteByUuid(UUID uuid);
 
     Optional<Mission> findById(Long id);
+    Optional<MissionDTO> findByUuid(UUID uuid);
     List<Mission> findByStatus(MissionStatus status);
 
     boolean isUserAvailableForMission(Long userId, LocalDateTime missionStart, LocalDateTime missionEnd);
     //Mission planMission(Long missionId, List<Long> userIds, Long chiefUserId);
-    List<Volunteer> getAvailableUsersForMission(Long missionId, Long missionTypeId);
-    Mission startMission(Long missionId);
-    void cancelMission(Long missionId);
+
+    Mission startMission(UUID uuid);
+    void cancelMission(UUID uuid);
 
     List<Mission> findMissionsToUpdateStatus(LocalDateTime now);
     void updateMissionStatus(Long missionId, LocalDateTime now);
-    void planMission(Mission mission);
+    void planMission(MissionDTO missionDTO);
 
 
 
