@@ -1,9 +1,12 @@
 package com.mickc0.gtac.controller;
 
+import com.mickc0.gtac.dto.MissionAssignmentDTO;
+import com.mickc0.gtac.dto.MissionConfirmationDTO;
 import com.mickc0.gtac.dto.MissionDTO;
 import com.mickc0.gtac.dto.VolunteerDTO;
 import com.mickc0.gtac.entity.MissionStatus;
 import com.mickc0.gtac.entity.MissionType;
+import com.mickc0.gtac.service.MissionAssignmentService;
 import com.mickc0.gtac.service.MissionService;
 import com.mickc0.gtac.service.MissionTypeService;
 import com.mickc0.gtac.service.VolunteerService;
@@ -24,12 +27,14 @@ public class MissionController {
     private final MissionService missionService;
     private final MissionTypeService missionTypeService;
     private final VolunteerService volunteerService;
+    private final MissionAssignmentService missionAssignmentService;
 
     @Autowired
-    public MissionController(MissionService missionService, MissionTypeService missionTypeService, VolunteerService volunteerService) {
+    public MissionController(MissionService missionService, MissionTypeService missionTypeService, VolunteerService volunteerService, MissionAssignmentService missionAssignmentService) {
         this.missionService = missionService;
         this.missionTypeService = missionTypeService;
         this.volunteerService = volunteerService;
+        this.missionAssignmentService = missionAssignmentService;
     }
 
     @GetMapping
@@ -119,6 +124,25 @@ public class MissionController {
         return "redirect:/missions";
     }
 
+    @GetMapping("/confirm/{id}")
+    public String showConfirmMissionForm(@PathVariable("id") UUID uuid, Model model){
+        MissionConfirmationDTO missionConfirmationDTO = new MissionConfirmationDTO();
+
+        MissionDTO missionDTO = missionService.findByUuid(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid mission Id:" + uuid));
+        missionConfirmationDTO.setMission(missionDTO);
+
+        List<VolunteerDTO> availableVolunteers = volunteerService.getAvailableUsersForMission(missionDTO.getStartDateTime(),
+                missionDTO.getEndDateTime(),missionDTO.getMissionType().getUuid());
+        missionConfirmationDTO.setAvailableVolunteers(availableVolunteers);
+        List<MissionAssignmentDTO> assignments = missionAssignmentService.findAllCurrentMissionAssignment(uuid);
+        model.addAttribute("confirmation", missionConfirmationDTO);
+        return "missions/confirmed-mission/create-confirmed-mission";
+    }
+
+
+
+
     @GetMapping("/cancel/{id}")
     public String cancelMission(@PathVariable(name = "id") UUID uuid, RedirectAttributes redirectAttributes) {
         try {
@@ -129,17 +153,4 @@ public class MissionController {
         }
         return "redirect:/missions";
     }
-
-    @GetMapping("/confirm/{id}")
-    public String showConfirmedMissionForm(@PathVariable("id") UUID uuid, Model model, RedirectAttributes redirectAttributes){
-        MissionDTO missionDTO = missionService.findByUuid(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid mission Id:" + uuid));
-        model.addAttribute("mission", missionDTO);
-        List<VolunteerDTO> availableVolunteers = volunteerService.getAvailableUsersForMission(missionDTO.getStartDateTime(),
-                missionDTO.getEndDateTime(),missionDTO.getMissionType().getUuid());
-        model.addAttribute("availableVolunteers", availableVolunteers);
-        return "missions/confirmed-mission/create-confirmed-mission";
-    }
-
-
 }
