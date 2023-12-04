@@ -46,13 +46,6 @@ public class Mission {
     @DateTimeFormat
     private LocalDateTime endDateTime;
 
-    @ManyToMany
-    @JoinTable(
-            name = "mission_volunteer",
-            joinColumns = @JoinColumn(name = "mission_id"),
-            inverseJoinColumns = @JoinColumn(name = "volunteer_id")
-    )
-    private List<Volunteer> assignedVolunteers;
 
     public Long getId() {
         return id;
@@ -134,11 +127,4 @@ public class Mission {
         this.endDateTime = endDateTime;
     }
 
-    public List<Volunteer> getAssignedVolunteers() {
-        return assignedVolunteers;
-    }
-
-    public void setAssignedVolunteers(List<Volunteer> assignedVolunteers) {
-        this.assignedVolunteers = assignedVolunteers;
-    }
 }

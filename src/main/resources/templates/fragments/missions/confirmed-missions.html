@@ -26,21 +26,23 @@
                         <th>Nom</th>
                         <th>Type</th>
                         <th>Statut</th>
+                        <th>Nombre de bénévoles requis</th>
                         <th>Date de début</th>
                         <th>Date de fin</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody class="scrollable-list">
+                    <tbody>
                     <tr th:each="confirmedMission:${confirmedMissions}">
                         <td th:text="${confirmedMission.title}"></td>
                         <td th:text="${confirmedMission.missionType.name}"></td>
                         <td th:text="${@translationUtils.translateMissionStatus(confirmedMission.status)}"></td>
+                        <td th:text="${confirmedMission.requiredVolunteerNumber}"></td>
                         <td th:text="${#temporals.format(confirmedMission.startDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                         <td th:text="${#temporals.format(confirmedMission.endDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                         <td>
                             <!-- Editer -->
-                            <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/{id}(id=${confirmedMission.uuid})}"><i class="bi bi-pencil-square"></i></a>
+                            <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/confirmed/{id}(id=${confirmedMission.uuid})}"><i class="bi bi-pencil-square"></i></a>
                             <!-- Supprimer -->
                             <a class="btn btn-danger btn-sm" th:href="@{/missions/delete/{id}(id=${confirmedMission.uuid})}"><i class="bi bi-trash"></i></a>
                             <!-- Voir -->

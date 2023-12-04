@@ -26,7 +26,6 @@ public class MissionMapper {
         missionDTO.setStartDateTime(mission.getStartDateTime());
         missionDTO.setEndDateTime(mission.getEndDateTime());
         missionDTO.setMissionType(missionTypeMapper.mapToMissionTypeDto(mission.getMissionType()));
-        missionDTO.setAssignedVolunteersUuids(mission.getAssignedVolunteers().stream().map(Volunteer::getUuid).collect(Collectors.toList()));
         return missionDTO;
     }
 }

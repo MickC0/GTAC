@@ -19,7 +19,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class MissionTypeServiceImpl implements MissionTypeService{
 
     private final MissionTypeRepository missionTypeRepository;

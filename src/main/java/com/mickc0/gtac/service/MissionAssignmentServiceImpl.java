@@ -53,7 +53,12 @@ public class MissionAssignmentServiceImpl implements MissionAssignmentService {
             return assignment;
         }).collect(Collectors.toList());
         missionAssignmentRepository.saveAll(assignments);
-        mission.setStatus(MissionStatus.CONFIRMED);
-        missionService.saveMission(mission);
+
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllAssignmentsForMission(UUID uuid) {
+        missionAssignmentRepository.deleteAllAssignmentsByMissionUuid(uuid);
     }
 }

@@ -17,7 +17,6 @@ public class MissionDTO {
     private int requiredVolunteerNumber;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
-    private List<UUID> assignedVolunteersUuids;
 
     public UUID getUuid() {
         return uuid;
@@ -91,11 +90,4 @@ public class MissionDTO {
         this.endDateTime = endDateTime;
     }
 
-    public List<UUID> getAssignedVolunteersUuids() {
-        return assignedVolunteersUuids;
-    }
-
-    public void setAssignedVolunteersUuids(List<UUID> assignedVolunteersUuids) {
-        this.assignedVolunteersUuids = assignedVolunteersUuids;
-    }
 }

@@ -10,8 +10,10 @@
     document.addEventListener('DOMContentLoaded', function () {
       let hasErrorMessage = [[${not #strings.isEmpty(errorMessage)}]];
       let hasSuccessMessage = [[${not #strings.isEmpty(successMessage)}]];
+      let hasInformationMessage = [[${not #strings.isEmpty(informationMessage)}]];
       console.log("Erreur: " + hasErrorMessage);
       console.log("Succès: " + hasSuccessMessage);
+      console.log("Information: " + hasInformationMessage);
 
       if (hasErrorMessage || hasSuccessMessage) {
         let messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
@@ -24,8 +26,8 @@
     });
   </script>
 
-  <div  th:if="${not #strings.isEmpty(successMessage) or not #strings.isEmpty(errorMessage)}"
-        class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div th:if="${not #strings.isEmpty(successMessage) or not #strings.isEmpty(errorMessage) or not #strings.isEmpty(informationMessage)}"
+       class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div th:if="${not #strings.isEmpty(successMessage)}" class="modal-header bg-success text-white">
@@ -34,8 +36,13 @@
         <div th:if="${not #strings.isEmpty(errorMessage)}" class="modal-header bg-danger text-white">
           <h5 class="modal-title">Erreur</h5>
         </div>
+        <div th:if="${not #strings.isEmpty(informationMessage)}" class="modal-header bg-info text-white">
+          <h5 class="modal-title">Information</h5>
+        </div>
         <div class="modal-body">
-          <p th:text="${successMessage ?: errorMessage}"></p>
+          <p th:if="${not #strings.isEmpty(successMessage)}" th:text="${successMessage}"></p>
+          <p th:if="${not #strings.isEmpty(errorMessage)}" th:text="${errorMessage}"></p>
+          <p th:if="${not #strings.isEmpty(informationMessage)}" th:text="${informationMessage}"></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
@@ -43,6 +50,8 @@
       </div>
     </div>
   </div>
+
+
 
 </div>
 

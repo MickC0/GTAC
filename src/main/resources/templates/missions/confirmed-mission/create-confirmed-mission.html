@@ -11,13 +11,14 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h3>Informations de la mission</h3>
+                        <h3>Informations</h3>
                         <hr>
                         <p>Titre : <span th:text="${confirmation.mission.title}"></span></p>
                         <p>Type de mission : <span th:text="${confirmation.mission.missionType.name}"></span></p>
+                        <p>Statut : <span th:text="${@translationUtils.translateMissionStatus(confirmation.mission.status)}"></span></p>
                         <p>Description : <span th:text="${confirmation.mission.description}"></span></p>
                         <p>Commentaire : <span th:text="${confirmation.mission.comment}"></span></p>
-                        <p>Statut : <span th:text="${@translationUtils.translateMissionStatus(confirmation.mission.status)}"></span></p>
+                        <p>Nombre de bénévoles requis : <span th:text="${confirmation.mission.requiredVolunteerNumber}"></span></p>
                         <p>Date de début : <span th:text="${#temporals.format(confirmation.mission.startDateTime, 'dd/MM/yyyy HH:mm')}"></span></p>
                         <p>Date de fin : <span th:text="${#temporals.format(confirmation.mission.endDateTime, 'dd/MM/yyyy HH:mm')}"></span></p>
                     </div>
@@ -25,20 +26,27 @@
                         <h3>Ajouter des volontaires</h3>
                         <hr>
                         <form th:action="@{/missions/confirm/{id}(id=${confirmation.mission.uuid})}" method="post" id="confirmMissionForm" th:object="${confirmation}">
-                            <input type="hidden" name="missionUuid" th:value="${confirmation.mission.uuid}">
                             <div class="form-group">
                                 <input type="hidden" name="missionUuid" th:value="${confirmation.mission.uuid}">
                                 <ul class="list-group">
                                     <li th:each="volunteer, volunteerStat : ${confirmation.availableVolunteers}" class="list-group-item">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" th:value="${volunteer.uuid}" th:name="volunteerUuids" th:id="${'volunteer' + volunteerStat.index}">
-                                            <label class="form-check-label" th:for="${'volunteer' + volunteerStat.index}">
-                                                <strong th:text="${volunteer.lastName.toUpperCase()} + ' ' + ${volunteer.firstName}"></strong> -
+                                        <div class="d-flex flex-column">
+                                            <div class="d-flex justify-content-between">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" th:value="${volunteer.uuid}" th:name="volunteerUuids" th:id="${'volunteer' + volunteerStat.index}" required="required">
+                                                    <label class="form-check-label" th:for="${'volunteer' + volunteerStat.index}">
+                                                        <strong th:text="${volunteer.lastName.toUpperCase()} + ' ' + ${volunteer.firstName}"></strong>
+                                                    </label>
+                                                </div>
+                                                <div>
+                                                    <input type="radio" autocomplete="off" class="btn-check" th:name="chiefUuid" th:value="${volunteer.uuid}" th:id="${'chief' + volunteerStat.index}">
+                                                    <label class="btn btn-outline-secondary" th:for="${'chief' + volunteerStat.index}">Chef de mission</label>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
                                                 <span th:text="${volunteer.email}"></span>,
                                                 <span th:text="${volunteer.phoneNumber}"></span>
-                                            </label>
-                                            <input type="radio" th:name="chiefUuid" th:value="${volunteer.uuid}" th:id="${'chief' + volunteerStat.index}">
-                                            <label th:for="${'chief' + volunteerStat.index}">Chef</label>
+                                            </div>
                                         </div>
                                     </li>
                                 </ul>
@@ -46,7 +54,6 @@
                         </form>
                     </div>
                 </div>
-
             </div>
             <div class="card-footer">
                 <a class="btn btn-outline-secondary pb-2" th:href="@{/missions}">Annuler</a>

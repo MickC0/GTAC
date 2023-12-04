@@ -25,6 +25,7 @@
                         <th>Nom</th>
                         <th>Type</th>
                         <th>Statut</th>
+                        <th>Nombre de bénévoles requis</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
@@ -34,6 +35,7 @@
                         <td th:text="${newMission.title}"></td>
                         <td th:text="${newMission.missionType.name}"></td>
                         <td th:text="${@translationUtils.translateMissionStatus(newMission.status)}"></td>
+                        <td th:text="${newMission.requiredVolunteerNumber}"></td>
                         <td>
                             <!-- Planifier -->
                             <a class="btn btn-success btn-sm" th:href="@{/missions/plan/new/{id}(id=${newMission.uuid})}"><i class="bi bi-calendar-plus"></i></a>

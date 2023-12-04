@@ -25,6 +25,7 @@
                     <th>Nom</th>
                     <th>Type</th>
                     <th>Statut</th>
+                    <th>Nombre de bénévoles requis</th>
                     <th>Date de début</th>
                     <th>Date de fin</th>
                     <th>Actions</th>
@@ -35,6 +36,7 @@
                     <td th:text="${plannedMission.title}"></td>
                     <td th:text="${plannedMission.missionType.name}"></td>
                     <td th:text="${@translationUtils.translateMissionStatus(plannedMission.status)}"></td>
+                    <td th:text="${plannedMission.requiredVolunteerNumber}"></td>
                     <td th:text="${#temporals.format(plannedMission.startDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                     <td th:text="${#temporals.format(plannedMission.endDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                     <td>

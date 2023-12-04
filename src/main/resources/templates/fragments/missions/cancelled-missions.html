@@ -25,16 +25,18 @@
                         <th>Nom</th>
                         <th>Type</th>
                         <th>Statut</th>
+                        <th>Nombre de bénévoles requis</th>
                         <th>Date de début</th>
                         <th>Date de fin</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody class="scrollable-list">
+                    <tbody>
                     <tr th:each="cancelledMission:${cancelledMissions}">
                         <td th:text="${cancelledMission.title}"></td>
                         <td th:text="${cancelledMission.missionType.name}"></td>
                         <td th:text="${@translationUtils.translateMissionStatus(cancelledMission.status)}"></td>
+                        <td th:text="${cancelledMission.requiredVolunteerNumber}"></td>
                         <td th:text="${#temporals.format(cancelledMission.startDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                         <td th:text="${#temporals.format(cancelledMission.endDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                         <td>

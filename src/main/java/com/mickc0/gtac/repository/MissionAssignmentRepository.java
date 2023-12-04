@@ -14,4 +14,5 @@ public interface MissionAssignmentRepository extends JpaRepository<MissionAssign
 
     List<MissionAssignment> findByMissionUuid(UUID missionUuid);
 
+    void deleteAllAssignmentsByMissionUuid(UUID uuid);
 }

@@ -19,7 +19,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class VolunteerServiceImpl implements VolunteerService{
 
     private final VolunteerRepository volunteerRepository;
@@ -201,12 +200,12 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
-    public List<VolunteerDTO> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, UUID missionTypeUuid) {
+    public List<VolunteerDTO> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, UUID missionTypeUuid, UUID currentMissionUuid) {
         DayOfWeek dayOfWeek = start.getDayOfWeek();
         LocalTime startTime = start.toLocalTime();
         LocalTime endTime = end.toLocalTime();
 
-        return volunteerRepository.findAvailableVolunteersForMission(start, end, dayOfWeek, startTime, endTime, missionTypeUuid).stream()
+        return volunteerRepository.findAvailableVolunteersForMission(start, end, dayOfWeek, startTime, endTime, missionTypeUuid, currentMissionUuid).stream()
                 .map(volunteerMapper::mapToConfirmDto)
                 .collect(Collectors.toList());
     }

@@ -25,16 +25,18 @@
                         <th>Nom</th>
                         <th>Type</th>
                         <th>Statut</th>
+                        <th>Nombre de bénévoles requis</th>
                         <th>Date de début</th>
                         <th>Date de fin</th>
                         <th>Actions</th>
                     </tr>
                     </thead>
-                    <tbody class="scrollable-list">
+                    <tbody>
                     <tr th:each="completedMission:${completedMissions}">
                         <td th:text="${completedMission.title}"></td>
                         <td th:text="${completedMission.missionType.name}"></td>
                         <td th:text="${@translationUtils.translateMissionStatus(completedMission.status)}"></td>
+                        <td th:text="${completedMission.requiredVolunteerNumber}"></td>
                         <td th:text="${#temporals.format(completedMission.startDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                         <td th:text="${#temporals.format(completedMission.endDateTime, 'dd/MM/yyyy HH:mm')}"></td>
                         <td>

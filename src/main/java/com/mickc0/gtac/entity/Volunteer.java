@@ -31,9 +31,6 @@ public class Volunteer {
     @OneToMany(mappedBy = "volunteer")
     private Set<Unavailability> unavailabilities;
 
-    @ManyToMany(mappedBy = "assignedVolunteers")
-    private Set<Mission> missions;
-
     @ManyToMany
     @JoinTable(
             name = "volunteer_mission_type",
@@ -114,13 +111,6 @@ public class Volunteer {
         this.unavailabilities = unavailabilities;
     }
 
-    public Set<Mission> getMissions() {
-        return missions;
-    }
-
-    public void setMissions(Set<Mission> missions) {
-        this.missions = missions;
-    }
 
     public Set<MissionType> getMissionTypes() {
         return missionTypes;

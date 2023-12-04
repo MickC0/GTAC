@@ -54,11 +54,13 @@ public class AvailabilityServiceImpl implements AvailabilityService {
     }
 
     @Override
+    @Transactional
     public void deleteByUuid(UUID uuid) {
         availabilityRepository.deleteByUuid(uuid);
     }
 
     @Override
+    @Transactional
     public void deleteAllByVolunteer(Volunteer volunteer) {
 
         availabilityRepository.deleteAllByVolunteer(volunteer);

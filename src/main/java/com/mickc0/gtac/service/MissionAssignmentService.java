@@ -10,4 +10,6 @@ public interface MissionAssignmentService {
     List<MissionAssignmentDTO> findAllCurrentMissionAssignment(UUID uuid);
 
     void assignVolunteersToMission(UUID uuid, List<UUID> volunteerUuids, UUID chiefUuid);
+
+    void deleteAllAssignmentsForMission(UUID uuid);
 }

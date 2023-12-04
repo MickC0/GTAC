@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link href="/webjars/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/webjars/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css">
-
-</head>
+<div th:replace="~{fragments/head :: head}"></div>
 <body>
 <div class="container">
     <div class="row">
@@ -45,7 +36,7 @@
 
                     <div class="form-group">
                         <label for="requiredVolunteerNumber" class="col-form-label">Nombre de Bénévoles Requis:</label>
-                        <input th:field="*{requiredVolunteerNumber}" type="number" id="requiredVolunteerNumber" class="form-control" required="required">
+                        <input th:field="*{requiredVolunteerNumber}" type="number" id="requiredVolunteerNumber" class="form-control" required="required" min="0">
                     </div>
 
                     <div id="dateAlert" class="alert alert-danger d-none" role="alert">

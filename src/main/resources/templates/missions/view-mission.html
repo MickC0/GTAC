@@ -11,20 +11,38 @@
         <div class="col d-flex flex-column h-sm-100 col-sm-9">
             <main class="row overflow-auto">
                 <div class="col pt-4">
-                    <h1 class="py-2" th:text="${mission.title}"></h1>
+                    <h1 class="py-2" th:text="${mission.missionDTO.title}"></h1>
                     <hr />
 
                     <div class="card">
                         <div class="card-header">
-
                         </div>
                         <div class="card-body">
-                            <p>Description : <span th:text="${mission.description}"></span></p>
-                            <p th:text="${mission.comment}"></p>
-                            <p th:text="${@translationUtils.translateMissionStatus(mission.status)}"></p>
-                            <p th:text="${mission.missionType.name}"></p>
-                            <p th:text="${#temporals.format(mission.startDateTime, 'dd.MM.yyyy HH:mm')}"></p>
-                            <p th:text="${#temporals.format(mission.endDateTime, 'dd.MM.yyyy HH:mm')}"></p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p>Description : <span th:text="${mission.missionDTO.description}"></span></p>
+                                    <p>Commentaire : <span th:text="${mission.missionDTO.comment}"></span></p>
+                                    <p>Statut : <span th:text="${@translationUtils.translateMissionStatus(mission.missionDTO.status)}"></span></p>
+                                    <p>Type de mission : <span th:text="${mission.missionDTO.missionType.name}"></span></p>
+                                    <p>Date de début : <span th:text="${#temporals.format(mission.missionDTO.startDateTime, 'dd.MM.yyyy HH:mm')}"></span></p>
+                                    <p>Date de fin : <span th:text="${#temporals.format(mission.missionDTO.endDateTime, 'dd.MM.yyyy HH:mm')}"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h3>Volontaires Assignés</h3>
+                                    <ul class="list-group">
+                                        <li th:each="volunteer : ${mission.assignedVolunteers}" class="list-group-item">
+                                            <div class="ms-2 me-auto">
+                                                <span th:text="${volunteer.volunteer.lastName.toUpperCase()} + ' ' + ${volunteer.volunteer.firstName}"></span>
+                                                <span th:if="${volunteer.chief}" class="badge bg-primary ms-2 me-auto">Chef de mission</span>
+                                            </div>
+                                            <div class="ms-2 me-auto">
+                                                <small th:text="${volunteer.volunteer.email}"></small><br>
+                                                <small th:text="${volunteer.volunteer.phoneNumber}"></small>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-footer">
                             <a class="btn btn-secondary" th:href="@{/missions}">Retour</a>
