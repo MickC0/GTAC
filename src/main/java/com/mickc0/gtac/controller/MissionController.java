@@ -140,7 +140,19 @@ public class MissionController {
         return "missions/confirmed-mission/create-confirmed-mission";
     }
 
-
+    @PostMapping("/confirm/{id}")
+    public String confirmMission(@PathVariable("id") UUID uuid,
+                                 @RequestParam("volunteerUuids") List<UUID> volunteerUuids,
+                                 @RequestParam("chiefUuid") UUID chiefUuid,
+                                 RedirectAttributes redirectAttributes){
+        try {
+            missionAssignmentService.assignVolunteersToMission(uuid, volunteerUuids, chiefUuid);
+            redirectAttributes.addFlashAttribute("successMessage", "Mission confirmée avec succès.");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la confirmation de la mission.");
+        }
+        return "redirect:/missions";
+    }
 
 
     @GetMapping("/cancel/{id}")

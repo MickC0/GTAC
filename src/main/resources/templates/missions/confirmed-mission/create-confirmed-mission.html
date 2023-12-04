@@ -37,6 +37,8 @@
                                                 <span th:text="${volunteer.email}"></span>,
                                                 <span th:text="${volunteer.phoneNumber}"></span>
                                             </label>
+                                            <input type="radio" th:name="chiefUuid" th:value="${volunteer.uuid}" th:id="${'chief' + volunteerStat.index}">
+                                            <label th:for="${'chief' + volunteerStat.index}">Chef</label>
                                         </div>
                                     </li>
                                 </ul>

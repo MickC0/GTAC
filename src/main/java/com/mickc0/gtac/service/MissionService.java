@@ -19,6 +19,7 @@ public interface MissionService {
 
     Optional<Mission> findById(Long id);
     Optional<MissionDTO> findByUuid(UUID uuid);
+    Optional<Mission> findMissionByUuid(UUID uuid);
     List<Mission> findByStatus(MissionStatus status);
 
     boolean isUserAvailableForMission(Long userId, LocalDateTime missionStart, LocalDateTime missionEnd);
@@ -31,6 +32,5 @@ public interface MissionService {
     void updateMissionStatus(Long missionId, LocalDateTime now);
     void planMission(MissionDTO missionDTO);
 
-
-
+    void saveMission(Mission mission);
 }

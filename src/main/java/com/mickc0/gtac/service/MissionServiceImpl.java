@@ -91,6 +91,12 @@ public class MissionServiceImpl implements MissionService {
                 .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id: " + uuid + " n'existe pas"))));
     }
 
+    @Override
+    public Optional<Mission> findMissionByUuid(UUID uuid) {
+        return Optional.ofNullable(missionRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id: " + uuid + " n'existe pas")));
+    }
+
     public List<Mission> findByStatus(MissionStatus status) {
         return missionRepository.findByStatus(status);
     }
@@ -239,6 +245,12 @@ public class MissionServiceImpl implements MissionService {
             missionRepository.save(mission);
         }
     }
+
+    @Override
+    public void saveMission(Mission mission) {
+        missionRepository.save(mission);
+    }
+
 
     private void releaseUsersFromMission(Long missionId) {
         List<MissionAssignment> assignments = missionAssignmentRepository.findByMissionId(missionId);

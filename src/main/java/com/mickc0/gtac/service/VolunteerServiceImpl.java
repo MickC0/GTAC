@@ -217,5 +217,11 @@ public class VolunteerServiceImpl implements VolunteerService{
                 .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + uuid + " n'existe pas")));
     }
 
+    @Override
+    public List<Volunteer> findVolunteersByUuids(List<UUID> volunteerUuids) {
+        return volunteerRepository.findAllByUuidIn(volunteerUuids);
+
+    }
+
 
 }

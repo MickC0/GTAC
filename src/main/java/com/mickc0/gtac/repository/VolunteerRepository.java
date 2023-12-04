@@ -25,4 +25,6 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
     Optional<Volunteer> findByUuid(UUID uuid);
 
     void deleteByUuid(UUID uuid);
+
+    List<Volunteer> findAllByUuidIn(List<UUID> volunteerUuids);
 }
