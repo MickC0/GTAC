@@ -47,6 +47,13 @@
                                     th:attr="data-mission-id=${ongoingMission.uuid}"><i class="bi bi-x-square"></i></button>
                             <!-- Voir -->
                             <a class="btn btn-info btn-sm" th:href="@{/missions/{id}(id=${ongoingMission.uuid})}"><i class="bi bi-eye"></i></a>
+                            <!-- Terminer -->
+                            <!-- Lancer -->
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#endMissionModal"
+                                    th:attr="data-mission-id=${ongoingMission.uuid}">
+                                <i class="bi bi-play me-1"></i><span>Terminer</span>
+                            </button>
                         </td>
                     </tr>
                     </tbody>

@@ -222,5 +222,10 @@ public class VolunteerServiceImpl implements VolunteerService{
 
     }
 
+    @Override
+    public Optional<Volunteer> findVolunteerByUuid(UUID uuid) {
+        return volunteerRepository.findByUuid(uuid);
+    }
+
 
 }

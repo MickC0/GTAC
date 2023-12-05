@@ -25,4 +25,6 @@ public interface VolunteerService {
     VolunteerProfilDTO findVolunteerProfilDTOByUuid(UUID uuid);
 
     List<Volunteer> findVolunteersByUuids(List<UUID> volunteerUuids);
+
+    Optional<Volunteer> findVolunteerByUuid(UUID volunteerUuid);
 }

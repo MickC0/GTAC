@@ -24,22 +24,14 @@ public class MissionServiceImpl implements MissionService {
     private final MissionRepository missionRepository;
     private final MissionMapper missionMapper;
     private final MissionTypeService missionTypeService;
-    private final AvailabilityRepository availabilityRepository;
-    private final UnavailabilityRepository unavailabilityRepository;
-    private final VolunteerRepository volunteerRepository;
     private final MissionAssignmentRepository missionAssignmentRepository;
-    private final MissionTypeRepository missionTypeRepository;
 
     @Autowired
-    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper, MissionTypeService missionTypeService, AvailabilityRepository availabilityRepository, UnavailabilityRepository unavailabilityRepository, VolunteerRepository volunteerRepository, MissionAssignmentRepository missionAssignmentRepository, MissionTypeRepository missionTypeRepository) {
+    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper, MissionTypeService missionTypeService, MissionAssignmentRepository missionAssignmentRepository) {
         this.missionRepository = missionRepository;
         this.missionMapper = missionMapper;
         this.missionTypeService = missionTypeService;
-        this.availabilityRepository = availabilityRepository;
-        this.unavailabilityRepository = unavailabilityRepository;
-        this.volunteerRepository = volunteerRepository;
         this.missionAssignmentRepository = missionAssignmentRepository;
-        this.missionTypeRepository = missionTypeRepository;
     }
 
     @Override
@@ -143,11 +135,19 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     @Transactional
-    public Mission startMission(UUID uuid) {
+    public void launchMission(UUID uuid) {
         Mission mission = missionRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("La mission avec l'id : " + uuid + " n'existe pas."));
         mission.setStatus(MissionStatus.ONGOING);
-        return missionRepository.save(mission);
+        missionRepository.save(mission);
+    }
+
+    @Override
+    public void endMission(UUID uuid) {
+        Mission mission = missionRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("La mission avec l'id : " + uuid + " n'existe pas."));
+        mission.setStatus(MissionStatus.DONE);
+        missionRepository.save(mission);
     }
 
     @Override
@@ -193,6 +193,7 @@ public class MissionServiceImpl implements MissionService {
     public void saveMission(Mission mission) {
         missionRepository.save(mission);
     }
+
 
 
     private void releaseUsersFromMission(Long missionId) {

@@ -44,9 +44,19 @@
                             <!-- Editer -->
                             <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/confirmed/{id}(id=${confirmedMission.uuid})}"><i class="bi bi-pencil-square"></i></a>
                             <!-- Supprimer -->
-                            <a class="btn btn-danger btn-sm" th:href="@{/missions/delete/{id}(id=${confirmedMission.uuid})}"><i class="bi bi-trash"></i></a>
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#cancelMissionModal"
+                                    th:attr="data-mission-id=${confirmedMission.uuid}">
+                                <i class="bi bi-trash"></i>
+                            </button>
                             <!-- Voir -->
                             <a class="btn btn-info btn-sm" th:href="@{/missions/{id}(id=${confirmedMission.uuid})}"><i class="bi bi-eye"></i></a>
+                            <!-- Lancer -->
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#launchMissionModal"
+                                    th:attr="data-mission-id=${confirmedMission.uuid}">
+                                <i class="bi bi-play me-1"></i><span>Lancer</span>
+                            </button>
                         </td>
                     </tr>
                     </tbody>

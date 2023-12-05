@@ -2,12 +2,12 @@ package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.entity.MissionStatus;
-import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.service.MissionAssignmentService;
 import com.mickc0.gtac.service.MissionService;
 import com.mickc0.gtac.service.MissionTypeService;
 import com.mickc0.gtac.service.VolunteerService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -156,51 +156,37 @@ public class MissionController {
         return "redirect:/missions";
     }
 
-    @GetMapping("/confirm/{id}")
-    public String showConfirmMissionForm(@PathVariable("id") UUID uuid, Model model){
+    @GetMapping({"/confirm/{id}", "/edit/confirmed/{id}"})
+    public String showConfirmMissionForm(@PathVariable("id") UUID uuid, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request){
+        String requestUri = request.getRequestURI();
+        if (volunteerService.findAll().isEmpty()) {
+            redirectAttributes.addFlashAttribute("informationMessage", "Veuillez d'abord créer des bénévoles pour confirmer une mission.");
+            return "redirect:/missions";
+        }
+
         MissionConfirmationDTO missionConfirmationDTO = new MissionConfirmationDTO();
+
         MissionDTO missionDTO = missionService.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("L'id " + uuid + "de la mission n'est pas valide."));
         missionConfirmationDTO.setMission(missionDTO);
+        if (missionDTO.getRequiredVolunteerNumber() == 0){
+            redirectAttributes.addFlashAttribute("informationMessage", "Veuillez d'abord modifier le nombre de bénévoles requis pour effectuer " +
+                    "la mission.");
+            return "redirect:/missions";
+        }
 
         List<VolunteerDTO> availableVolunteers = volunteerService.getAvailableUsersForMission(missionDTO.getStartDateTime(),
                 missionDTO.getEndDateTime(),missionDTO.getMissionType().getUuid(), uuid)
                 .stream().limit(missionDTO.getRequiredVolunteerNumber()*2L).collect(Collectors.toList());
         missionConfirmationDTO.setAvailableVolunteers(availableVolunteers);
-        model.addAttribute("confirmation", missionConfirmationDTO);
-        return "missions/confirmed-mission/create-confirmed-mission";
-    }
-
-    @PostMapping("/confirm/{id}")
-    public String confirmMission(@PathVariable("id") UUID uuid,
-                                 @RequestParam("volunteerUuids") List<UUID> volunteerUuids,
-                                 @RequestParam(value = "chiefUuid", required = false) UUID chiefUuid,
-                                 RedirectAttributes redirectAttributes){
-        MissionDTO missionDTO = missionService.findByUuid(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("L'id " + uuid + "de la mission n'est pas valide."));
-        try {
-            missionAssignmentService.assignVolunteersToMission(uuid, volunteerUuids, chiefUuid);
-            missionService.confirmMission(missionDTO);
-            redirectAttributes.addFlashAttribute("successMessage", "Mission confirmée avec succès.");
-        } catch (EntityNotFoundException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la confirmation de la mission.");
-        }
-
-        return "redirect:/missions";
-    }
-    @GetMapping("/edit/confirmed/{id}")
-    public String showConfirmedMissionForm(@PathVariable("id") UUID uuid, Model model){
-        MissionConfirmationDTO missionConfirmationDTO = new MissionConfirmationDTO();
-        MissionDTO missionDTO = missionService.findByUuid(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("L'id " + uuid + "de la mission n'est pas valide."));
-        missionConfirmationDTO.setMission(missionDTO);
-
-        List<VolunteerDTO> availableVolunteers = volunteerService.getAvailableUsersForMission(missionDTO.getStartDateTime(),
-                        missionDTO.getEndDateTime(),missionDTO.getMissionType().getUuid(), uuid)
-                .stream().limit(missionDTO.getRequiredVolunteerNumber()*2L).collect(Collectors.toList());
-        missionConfirmationDTO.setAvailableVolunteers(availableVolunteers);
 
         List<MissionAssignmentDTO> currentAssignments = missionAssignmentService.findAllCurrentMissionAssignment(uuid);
+
+        if (availableVolunteers.isEmpty() && currentAssignments.isEmpty()) {
+            redirectAttributes.addFlashAttribute("informationMessage", "Il n'y a pas de bénévoles disponibles pour la mission.");
+            return "redirect:/missions";
+        }
+
         missionConfirmationDTO.setCurrentAssignments(currentAssignments);
         List<UUID> assignedVolunteerUuids = currentAssignments.stream()
                 .map(assignment -> assignment.getVolunteer().getUuid())
@@ -213,9 +199,39 @@ public class MissionController {
         model.addAttribute("assignedVolunteerUuids", assignedVolunteerUuids);
         model.addAttribute("chiefUuid", chiefUuid);
         model.addAttribute("confirmation", missionConfirmationDTO);
-        model.addAttribute("missionTypes", missionTypeService.findAllDto());
-        return "missions/confirmed-mission/edit-confirmed-mission";
+
+        if (requestUri.contains("/edit/confirmed/")) {
+            model.addAttribute("missionTypes", missionTypeService.findAllDto());
+        }
+        return requestUri.contains("/confirm/") ? "missions/confirmed-mission/create-confirmed-mission" : "missions/confirmed-mission/edit-confirmed-mission";
     }
+
+    @PostMapping("/confirm/{id}")
+    public String confirmMission(@PathVariable("id") UUID uuid,
+                                 @RequestParam("volunteerUuids") List<UUID> volunteerUuids,
+                                 @RequestParam(value = "chiefUuid", required = false) UUID chiefUuid,
+                                 RedirectAttributes redirectAttributes){
+        MissionDTO missionDTO = missionService.findByUuid(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("L'id " + uuid + "de la mission n'est pas valide."));
+
+        try {
+            missionAssignmentService.assignVolunteersToMission(uuid, volunteerUuids, chiefUuid);
+            if (chiefUuid == null){
+                missionService.planMission(missionDTO);
+                redirectAttributes.addFlashAttribute("informationMessage",
+                        "Attention, la mise à jour c'est correctement effectuée mais la mission a été déplacée" +
+                                " dans les missions \"A confirmer\" car il n'y a pas de chef de mission désigné.");
+            } else {
+                missionService.confirmMission(missionDTO);
+                redirectAttributes.addFlashAttribute("successMessage", "Mission confirmée avec succès.");
+            }
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la confirmation de la mission.");
+        }
+
+        return "redirect:/missions";
+    }
+
 
     @PostMapping("/update/confirmed/{id}")
     public String updateConfirmMission(@PathVariable("id") UUID uuid,
@@ -235,12 +251,41 @@ public class MissionController {
         } else {
             try {
                 missionAssignmentService.assignVolunteersToMission(uuid, volunteerUuids, chiefUuid);
-                missionService.confirmMission(missionDTO);
-                redirectAttributes.addFlashAttribute("successMessage", "Mission confirmée mise à jour avec succès.");
+                if (chiefUuid == null){
+                    missionService.planMission(missionDTO);
+                    redirectAttributes.addFlashAttribute("informationMessage",
+                            "Attention, la mise à jour c'est correctement effectuée mais la mission a été déplacée" +
+                                    " dans les missions \"A confirmer\" car il n'y a pas de chef de mission désigné.");
+                } else {
+                    missionService.confirmMission(missionDTO);
+                    redirectAttributes.addFlashAttribute("successMessage", "Mission confirmée mise à jour avec succès.");
+                }
             } catch (EntityNotFoundException e) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la mise à jour de la confirmation " +
                         "de la mission.");
             }
+        }
+        return "redirect:/missions";
+    }
+
+    @GetMapping("/launch/{id}")
+    public String launchMissionManually(@PathVariable(name = "id") UUID uuid, RedirectAttributes redirectAttributes){
+        try {
+            missionService.launchMission(uuid);
+            redirectAttributes.addFlashAttribute("successMessage", "La mission a été lancée avec succès.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors du lancement de la mission.");
+        }
+        return "redirect:/missions";
+    }
+
+    @GetMapping("/end/{id}")
+    public String endMissionManually(@PathVariable(name = "id") UUID uuid, RedirectAttributes redirectAttributes){
+        try {
+            missionService.endMission(uuid);
+            redirectAttributes.addFlashAttribute("successMessage", "La mission a été terminée avec succès.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la fin de la mission.");
         }
         return "redirect:/missions";
     }

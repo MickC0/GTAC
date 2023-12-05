@@ -11,7 +11,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,19 +44,33 @@ public class MissionAssignmentServiceImpl implements MissionAssignmentService {
     public void assignVolunteersToMission(UUID uuid, List<UUID> volunteerUuids, UUID chiefUuid) {
         Mission mission = missionService.findMissionByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id: " + uuid + " n'existe pas"));
-        List<Volunteer> volunteers = volunteerService.findVolunteersByUuids(volunteerUuids);
-        List<MissionAssignment> assignments = volunteers.stream().map(volunteer -> {
-            MissionAssignment assignment = new MissionAssignment();
+
+        List<MissionAssignment> existingAssignments = missionAssignmentRepository.findByMissionUuid(uuid);
+        Map<UUID, MissionAssignment> existingAssignmentsMap = existingAssignments.stream()
+                .collect(Collectors.toMap(assignment -> assignment.getVolunteer().getUuid(), assignment -> assignment));
+
+        List<MissionAssignment> updatedAssignments = new ArrayList<>();
+        for (UUID volunteerUuid : volunteerUuids) {
+            Volunteer volunteer = volunteerService.findVolunteerByUuid(volunteerUuid)
+                    .orElseThrow(() -> new EntityNotFoundException("Le volontaire avec l'Id: " + volunteerUuid + " n'existe pas"));
+
+            MissionAssignment assignment = existingAssignmentsMap.getOrDefault(volunteerUuid, new MissionAssignment());
             assignment.setMission(mission);
             assignment.setVolunteer(volunteer);
             assignment.setAssignedFrom(mission.getStartDateTime());
             assignment.setAssignedUntil(mission.getEndDateTime());
-            assignment.setChief(volunteer.getUuid().equals(chiefUuid));
-            return assignment;
-        }).collect(Collectors.toList());
-        missionAssignmentRepository.saveAll(assignments);
+            assignment.setChief(volunteerUuid.equals(chiefUuid));
+            updatedAssignments.add(assignment);
+        }
 
+        missionAssignmentRepository.saveAll(updatedAssignments);
+
+        existingAssignments.stream()
+                .filter(assignment -> !volunteerUuids.contains(assignment.getVolunteer().getUuid()))
+                .forEach(missionAssignmentRepository::delete);
     }
+
+
 
     @Override
     @Transactional
