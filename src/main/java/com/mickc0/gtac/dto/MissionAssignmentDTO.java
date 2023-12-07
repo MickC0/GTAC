@@ -9,6 +9,7 @@ public class MissionAssignmentDTO {
     private boolean isChief;
     private LocalDateTime assignedFrom;
     private LocalDateTime assignedUntil;
+    private boolean hasParticiped;
 
     public UUID getUuid() {
         return uuid;
@@ -48,5 +49,13 @@ public class MissionAssignmentDTO {
 
     public void setAssignedUntil(LocalDateTime assignedUntil) {
         this.assignedUntil = assignedUntil;
+    }
+
+    public boolean hasParticiped() {
+        return hasParticiped;
+    }
+
+    public void setHasParticiped(boolean hasParticiped) {
+        this.hasParticiped = hasParticiped;
     }
 }

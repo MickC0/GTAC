@@ -11,10 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,5 +73,18 @@ public class MissionAssignmentServiceImpl implements MissionAssignmentService {
     @Transactional
     public void deleteAllAssignmentsForMission(UUID uuid) {
         missionAssignmentRepository.deleteAllAssignmentsByMissionUuid(uuid);
+    }
+
+    @Override
+    @Transactional
+    public void completeMissionReport(List<UUID> assignmentUuids , UUID missionUuid) {
+        List<MissionAssignment> assignments = missionAssignmentRepository.findByMissionUuid(missionUuid);
+        Set<UUID> assignmentUuidSet = new HashSet<>(assignmentUuids);
+        assignments.forEach(assignment -> {
+            boolean hasParticipated = assignmentUuidSet.contains(assignment.getUuid());
+            assignment.setHasParticipated(hasParticipated);
+        });
+
+        missionAssignmentRepository.saveAll(assignments);
     }
 }

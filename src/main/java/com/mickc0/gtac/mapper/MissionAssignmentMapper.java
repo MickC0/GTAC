@@ -21,6 +21,7 @@ public class MissionAssignmentMapper {
         missionAssignmentDTO.setAssignedFrom(missionAssignment.getAssignedFrom());
         missionAssignmentDTO.setAssignedUntil(missionAssignment.getAssignedUntil());
         missionAssignmentDTO.setChief(missionAssignment.isChief());
+        missionAssignmentDTO.setHasParticiped(missionAssignment.hasParticipated());
         return missionAssignmentDTO;
     }
 

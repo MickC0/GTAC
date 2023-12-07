@@ -34,4 +34,5 @@ public interface MissionService {
 
     void saveMission(Mission mission);
 
+    void completeMissionReport(UUID uuid);
 }

@@ -10,7 +10,6 @@
             <div class="col d-flex flex-column h-sm-100 col-sm-9">
                 <main class="row overflow-auto">
                     <div class="col pt-4">
-                        <!--<a class="btn btn-secondary" th:href="@{/}">Retour</a>-->
                         <h1 class="py-2">Types de mission</h1>
                         <hr />
                         <a class="btn btn-primary" th:href="@{/mission-types/create}">Ajouter un type</a>
@@ -45,10 +44,13 @@
                                             <!-- Editer -->
                                             <a class="btn btn-primary btn-sm" th:href="@{/mission-types/edit/{id}(id=${missionType.uuid})}"><i class="bi bi-pencil-square"></i></a>
                                             <!-- Désactiver -->
-                                            <button th:if="${missionType.active}" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deactivationMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-plug"></i></button>
-                                            <button th:unless="${missionType.active}" type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#activationMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-plug-fill"></i></button>
+                                            <button th:if="${missionType.active}" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#deactivationMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-plug"></i></button>
+                                            <button th:unless="${missionType.active}" type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#activationMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-plug-fill"></i></button>
                                             <!--Supprimer-->
-                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-trash"></i></button>
                                         </td>
                                     </tr>
                                     </tbody>

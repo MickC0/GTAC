@@ -194,6 +194,14 @@ public class MissionServiceImpl implements MissionService {
         missionRepository.save(mission);
     }
 
+    @Override
+    @Transactional
+    public void completeMissionReport(UUID uuid) {
+        Mission mission = missionRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("La mission avec l'id : " + uuid + " n'existe pas."));
+        mission.setReportDone(true);
+        missionRepository.save(mission);
+    }
 
 
     private void releaseUsersFromMission(Long missionId) {

@@ -59,7 +59,7 @@
             </div>
             <div class="card-footer">
                 <a class="btn btn-outline-secondary pb-2" th:href="@{/missions}">Annuler</a>
-                <button type="submit" form="confirmMissionForm" class="btn btn-primary">Planifier</button>
+                <button type="submit" form="confirmMissionForm" class="btn btn-primary">Confirmer</button>
             </div>
         </div>
     </div>
@@ -79,12 +79,12 @@
         let checkboxes = document.querySelectorAll('#confirmMissionForm input[type="checkbox"][name="volunteerUuids"]');
         if (checkboxes.length === 0) {
             alert("Il n'y a aucun volontaire à sélectionner.");
-            e.preventDefault(); // Empêcher la soumission du formulaire
+            e.preventDefault();
         } else {
             let checkedOne = Array.prototype.slice.call(checkboxes).some(x => x.checked);
             if (!checkedOne) {
                 alert("Veuillez sélectionner au moins un volontaire.");
-                e.preventDefault(); // Empêcher la soumission du formulaire
+                e.preventDefault();
             }
         }
     });

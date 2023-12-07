@@ -24,6 +24,9 @@ public class MissionAssignment {
     private Mission mission;
     @Column(name = "is_chief")
     private boolean isChief;
+    @Column(name = "has_participated")
+    private boolean hasParticipated = false;
+
     private LocalDateTime assignedFrom;
     private LocalDateTime assignedUntil;
 
@@ -81,5 +84,26 @@ public class MissionAssignment {
 
     public void setAssignedUntil(LocalDateTime assignedUntil) {
         this.assignedUntil = assignedUntil;
+    }
+    public boolean hasParticipated() {
+        return hasParticipated;
+    }
+
+    public void setHasParticipated(boolean hasParticipated) {
+        this.hasParticipated = hasParticipated;
+    }
+
+    @Override
+    public String toString() {
+        return "MissionAssignment{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", volunteer=" + volunteer +
+                ", mission=" + mission +
+                ", isChief=" + isChief +
+                ", hasParticipated=" + hasParticipated +
+                ", assignedFrom=" + assignedFrom +
+                ", assignedUntil=" + assignedUntil +
+                '}';
     }
 }

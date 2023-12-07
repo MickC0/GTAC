@@ -26,6 +26,7 @@ public class MissionMapper {
         missionDTO.setStartDateTime(mission.getStartDateTime());
         missionDTO.setEndDateTime(mission.getEndDateTime());
         missionDTO.setMissionType(missionTypeMapper.mapToMissionTypeDto(mission.getMissionType()));
+        missionDTO.setReportDone(mission.isReportDone());
         return missionDTO;
     }
 }

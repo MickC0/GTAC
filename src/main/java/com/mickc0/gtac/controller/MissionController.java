@@ -1,6 +1,7 @@
 package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.*;
+import com.mickc0.gtac.entity.MissionAssignment;
 import com.mickc0.gtac.entity.MissionStatus;
 import com.mickc0.gtac.service.MissionAssignmentService;
 import com.mickc0.gtac.service.MissionService;
@@ -300,4 +301,37 @@ public class MissionController {
         }
         return "redirect:/missions";
     }
+
+    @GetMapping("report/{id}")
+    public String showReportsList(@PathVariable(name = "id") UUID uuid, RedirectAttributes redirectAttributes, Model model){
+        MissionReportDTO missionReportDTO = new MissionReportDTO();
+        List<MissionAssignmentDTO> assignments = missionAssignmentService.findAllCurrentMissionAssignment(uuid);
+        MissionDTO missionDTO = missionService.findByUuid(uuid)
+                .orElseThrow(() -> new IllegalArgumentException("L'id " + uuid + "de la mission n'est pas valide."));
+        missionReportDTO.setMissionAssignments(assignments);
+        missionReportDTO.setMissionDTO(missionDTO);
+        model.addAttribute("missionReport", missionReportDTO);
+        return "missions/report-mission";
+    }
+
+    @PostMapping("/complete-report/{id}")
+    public String completeMissionReport(@PathVariable("id") UUID uuid,
+                                        @RequestParam(value = "assignmentUuids", required = false) List<UUID> assignmentUuids,
+                                        RedirectAttributes redirectAttributes) {
+        if (assignmentUuids == null || assignmentUuids.isEmpty()){
+            redirectAttributes.addFlashAttribute("informationMessage", "Abandon de la complétion du rapport de mission.");
+            return "redirect:/missions";
+        } else {
+
+            try {
+                missionService.completeMissionReport(uuid);
+                missionAssignmentService.completeMissionReport(assignmentUuids, uuid);
+                redirectAttributes.addFlashAttribute("successMessage", "Rapport de mission complété avec succès.");
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la complétion du rapport de mission.");
+            }
+            return "redirect:/missions";
+        }
+    }
+
 }

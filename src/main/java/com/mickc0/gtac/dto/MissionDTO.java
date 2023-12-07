@@ -17,6 +17,7 @@ public class MissionDTO {
     private int requiredVolunteerNumber;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
+    private boolean reportDone;
 
     public UUID getUuid() {
         return uuid;
@@ -90,4 +91,11 @@ public class MissionDTO {
         this.endDateTime = endDateTime;
     }
 
+    public boolean isReportDone() {
+        return reportDone;
+    }
+
+    public void setReportDone(boolean reportDone) {
+        this.reportDone = reportDone;
+    }
 }

@@ -46,6 +46,9 @@ public class Mission {
     @DateTimeFormat
     private LocalDateTime endDateTime;
 
+    @Column(name = "report_done")
+    private boolean reportDone = false;
+
 
     public Long getId() {
         return id;
@@ -127,4 +130,28 @@ public class Mission {
         this.endDateTime = endDateTime;
     }
 
+    public boolean isReportDone() {
+        return reportDone;
+    }
+
+    public void setReportDone(boolean reportDone) {
+        this.reportDone = reportDone;
+    }
+
+    @Override
+    public String toString() {
+        return "Mission{" +
+                "id=" + id +
+                ", uuid=" + uuid +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", comment='" + comment + '\'' +
+                ", missionType=" + missionType +
+                ", status=" + status +
+                ", requiredVolunteerNumber=" + requiredVolunteerNumber +
+                ", startDateTime=" + startDateTime +
+                ", endDateTime=" + endDateTime +
+                ", reportDone=" + reportDone +
+                '}';
+    }
 }

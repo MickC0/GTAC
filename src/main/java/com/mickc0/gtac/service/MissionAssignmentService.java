@@ -12,4 +12,6 @@ public interface MissionAssignmentService {
     void assignVolunteersToMission(UUID uuid, List<UUID> volunteerUuids, UUID chiefUuid);
 
     void deleteAllAssignmentsForMission(UUID uuid);
+
+    void completeMissionReport(List<UUID> assignmentUuids, UUID missionUuid);
 }
