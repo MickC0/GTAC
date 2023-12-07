@@ -14,12 +14,18 @@
                         <h1 class="py-2">Missions</h1>
                         <hr/>
                         <nav class="nav nav-pills flex-column flex-sm-row">
-                            <a class="flex-sm-fill text-sm-center nav-link active" aria-current="page" data-bs-toggle="pill" href="#new">A planifier</a>
-                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" href="#planned">A confirmer</a>
-                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" href="#confirmed">Confirmées</a>
-                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" href="#ongoing">En cours</a>
-                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" href="#completed">Terminées</a>
-                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" href="#cancelled">Annulées</a>
+                            <a class="flex-sm-fill text-sm-center nav-link active" aria-current="page" data-bs-toggle="pill" aria-selected="true"
+                               href="#new">A planifier</a>
+                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" aria-selected="false"
+                               href="#planned">A confirmer</a>
+                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" aria-selected="false"
+                               href="#confirmed">Confirmées</a>
+                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" aria-selected="false"
+                               href="#ongoing">En cours</a>
+                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" aria-selected="false"
+                               href="#completed">Terminées</a>
+                            <a class="flex-sm-fill text-sm-center nav-link" data-bs-toggle="pill" aria-selected="false"
+                               href="#cancelled">Annulées</a>
                         </nav>
                         <div class="tab-content">
                             <div th:replace="~{fragments/missions/new-missions :: new-missions}"></div>

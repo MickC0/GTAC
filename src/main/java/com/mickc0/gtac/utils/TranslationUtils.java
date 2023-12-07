@@ -24,7 +24,7 @@ public class TranslationUtils {
             case PLANNED -> "Planifié";
             case CONFIRMED -> "Confirmé";
             case ONGOING -> "En cours";
-            case DONE -> "Terminé";
+            case COMPLETED -> "Terminé";
             case CANCELLED -> "Annulé";
             default -> status.toString();
         };

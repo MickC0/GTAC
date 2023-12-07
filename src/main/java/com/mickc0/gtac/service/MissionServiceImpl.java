@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -146,7 +144,7 @@ public class MissionServiceImpl implements MissionService {
     public void endMission(UUID uuid) {
         Mission mission = missionRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("La mission avec l'id : " + uuid + " n'existe pas."));
-        mission.setStatus(MissionStatus.DONE);
+        mission.setStatus(MissionStatus.COMPLETED);
         missionRepository.save(mission);
     }
 
@@ -180,7 +178,7 @@ public class MissionServiceImpl implements MissionService {
         if (now.isEqual(mission.getStartDateTime()) || now.isAfter(mission.getStartDateTime()) && now.isBefore(mission.getEndDateTime())) {
             mission.setStatus(MissionStatus.ONGOING);
         } else if (now.isEqual(mission.getEndDateTime()) || now.isAfter(mission.getEndDateTime())) {
-            mission.setStatus(MissionStatus.DONE);
+            mission.setStatus(MissionStatus.COMPLETED);
             releaseUsersFromMission(missionId);
         }
 

@@ -1,7 +1,6 @@
 package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.*;
-import com.mickc0.gtac.entity.MissionAssignment;
 import com.mickc0.gtac.entity.MissionStatus;
 import com.mickc0.gtac.service.MissionAssignmentService;
 import com.mickc0.gtac.service.MissionService;
@@ -37,15 +36,16 @@ public class MissionController {
     }
 
     @GetMapping
-    public String listMissions(Model model) {
+    public String listMissions(Model model){
         model.addAttribute("newMissions", missionService.findByStatus(MissionStatus.NEW));
         model.addAttribute("plannedMissions", missionService.findByStatus(MissionStatus.PLANNED));
         model.addAttribute("ongoingMissions", missionService.findByStatus(MissionStatus.ONGOING));
         model.addAttribute("confirmedMissions", missionService.findByStatus(MissionStatus.CONFIRMED));
-        model.addAttribute("completedMissions", missionService.findByStatus(MissionStatus.DONE));
+        model.addAttribute("completedMissions", missionService.findByStatus(MissionStatus.COMPLETED));
         model.addAttribute("cancelledMissions", missionService.findByStatus(MissionStatus.CANCELLED));
         return "missions/missions";
     }
+
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
@@ -60,7 +60,8 @@ public class MissionController {
     }
 
     @PostMapping
-    public String createMission(@ModelAttribute(name = "mission") MissionDTO missionDTO, RedirectAttributes redirectAttributes) {
+    public String createMission(@ModelAttribute(name = "mission") MissionDTO missionDTO,
+                                RedirectAttributes redirectAttributes) {
         try {
             missionService.save(missionDTO);
             redirectAttributes.addFlashAttribute("successMessage", "Mission créée avec succès.");
@@ -71,7 +72,7 @@ public class MissionController {
     }
 
     @GetMapping("/edit/new/{id}")
-    public String showEditForm(@PathVariable(name = "id") UUID uuid, Model model) {
+    public String showEditForm(@PathVariable(name = "id") UUID uuid, Model model){
         MissionDTO missionDTO = missionService.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalArgumentException("L'id " + uuid + "de la mission n'est pas valide."));
         model.addAttribute("mission", missionDTO);
@@ -91,6 +92,7 @@ public class MissionController {
         return "redirect:/missions";
     }
 
+    // TODO DeleteMapping ?
     @GetMapping("/delete/{id}")
     public String deleteMission(@PathVariable(name = "id") UUID uuid, RedirectAttributes redirectAttributes) {
         try {
@@ -132,6 +134,7 @@ public class MissionController {
         } catch (EntityNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la planification de la mission.");
         }
+
         return "redirect:/missions";
     }
 
@@ -229,7 +232,6 @@ public class MissionController {
         } catch (EntityNotFoundException e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la confirmation de la mission.");
         }
-
         return "redirect:/missions";
     }
 
@@ -269,6 +271,7 @@ public class MissionController {
         return "redirect:/missions";
     }
 
+    // TODO  passer en Post ou Put ?
     @GetMapping("/launch/{id}")
     public String launchMissionManually(@PathVariable(name = "id") UUID uuid, RedirectAttributes redirectAttributes){
         try {
@@ -320,9 +323,7 @@ public class MissionController {
                                         RedirectAttributes redirectAttributes) {
         if (assignmentUuids == null || assignmentUuids.isEmpty()){
             redirectAttributes.addFlashAttribute("informationMessage", "Abandon de la complétion du rapport de mission.");
-            return "redirect:/missions";
         } else {
-
             try {
                 missionService.completeMissionReport(uuid);
                 missionAssignmentService.completeMissionReport(assignmentUuids, uuid);
@@ -330,8 +331,8 @@ public class MissionController {
             } catch (Exception e) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors de la complétion du rapport de mission.");
             }
-            return "redirect:/missions";
         }
+        return "redirect:/missions";
     }
 
 }
