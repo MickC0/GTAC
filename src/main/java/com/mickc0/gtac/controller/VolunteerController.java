@@ -1,12 +1,10 @@
 package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.*;
+import com.mickc0.gtac.exception.VolunteerInUseException;
 import com.mickc0.gtac.mapper.UnavailabilityMapper;
 import com.mickc0.gtac.mapper.VolunteerMapper;
-import com.mickc0.gtac.service.AvailabilityService;
-import com.mickc0.gtac.service.MissionTypeService;
-import com.mickc0.gtac.service.UnavailabilityService;
-import com.mickc0.gtac.service.VolunteerService;
+import com.mickc0.gtac.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,26 +19,27 @@ public class VolunteerController {
 
 
     private final VolunteerService volunteerService;
-    private final AvailabilityService availabilityService;
     private final MissionTypeService missionTypeService;
-    private final VolunteerMapper volunteerMapper;
-    private final UnavailabilityService unavailabilityService;
-    private final UnavailabilityMapper unavailabilityMapper;
+    private final MissionAssignmentService missionAssignmentService;
 
 
-
-    public VolunteerController(VolunteerService volunteerService, AvailabilityService availabilityService, MissionTypeService missionTypeService, VolunteerMapper volunteerMapper, UnavailabilityService unavailabilityService, UnavailabilityMapper unavailabilityMapper) {
+    public VolunteerController(VolunteerService volunteerService, MissionTypeService missionTypeService, MissionAssignmentService missionAssignmentService) {
         this.volunteerService = volunteerService;
-        this.availabilityService = availabilityService;
         this.missionTypeService = missionTypeService;
-        this.volunteerMapper = volunteerMapper;
-        this.unavailabilityService = unavailabilityService;
-        this.unavailabilityMapper = unavailabilityMapper;
+        this.missionAssignmentService = missionAssignmentService;
     }
 
     @GetMapping
     public String volunteers(Model model){
         List<VolunteerStatusDTO> volunteers = volunteerService.findAllVolunteersWithStatus();
+        List<UUID> volunteersInMission = missionAssignmentService.getVolunteersInMissionToday();
+
+        volunteers.forEach(volunteer -> {
+            if (volunteersInMission.contains(volunteer.getUuid())) {
+                volunteer.setStatus("En mission");
+            }
+        });
+
         model.addAttribute("volunteers", volunteers);
         return "/volunteers/volunteers";
     }
@@ -87,6 +86,9 @@ public class VolunteerController {
 
     @GetMapping("/delete/{id}")
     public String deleteVolunteer(@PathVariable (value = "id") UUID uuid){
+        if (missionAssignmentService.isVolunteerInUse(uuid)){
+            throw new VolunteerInUseException("Impossible de supprimer un bénévole qui a déjà participé à une mission.");
+        }
         volunteerService.deleteVolunteer(uuid);
         return "redirect:/volunteers";
     }

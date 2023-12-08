@@ -33,7 +33,6 @@
                                             <div class="d-flex justify-content-between">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" th:value="${volunteer.uuid}" th:name="volunteerUuids" th:id="${'volunteer' + volunteerStat.index}"
-                                                           required="required"
                                                            th:checked="${#lists.contains(assignedVolunteerUuids, volunteer.uuid)}">
                                                     <label class="form-check-label" th:for="${'volunteer' + volunteerStat.index}">
                                                         <strong th:text="${volunteer.lastName.toUpperCase()} + ' ' + ${volunteer.firstName}"></strong>

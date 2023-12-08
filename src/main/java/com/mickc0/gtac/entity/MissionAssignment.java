@@ -26,7 +26,6 @@ public class MissionAssignment {
     private boolean isChief;
     @Column(name = "has_participated")
     private boolean hasParticipated = false;
-
     private LocalDateTime assignedFrom;
     private LocalDateTime assignedUntil;
 

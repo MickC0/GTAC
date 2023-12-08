@@ -171,7 +171,6 @@
             availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
 
 
-            // Créer et ajouter le champ de sélection du jour
             let divColDay = document.createElement('div');
             divColDay.className = 'col-auto';
             let labelDay = document.createElement('label');
@@ -219,7 +218,6 @@
             divColDay.appendChild(selectDay);
             availabilityDiv.appendChild(divColDay);
 
-            // Créer et ajouter les champs de temps
             ['startTime', 'endTime'].forEach(time => {
                 let divColTime = document.createElement('div');
                 divColTime.className = 'col-auto';
@@ -236,7 +234,6 @@
                 availabilityDiv.appendChild(divColTime);
             });
 
-            // Créer et ajouter le bouton de suppression
             let removeButton = document.createElement('button');
             removeButton.type = 'button';
             removeButton.className = 'btn btn-sm btn-danger removeAvailability';
@@ -308,7 +305,6 @@
             let unavailabilityDiv = document.createElement('div');
             unavailabilityDiv.className = 'unavailabilityRow row gy-2 gx-3 align-items-center mb-2';
 
-            // Créer les éléments pour la date de début
             let colStartDate = document.createElement('div');
             colStartDate.className = 'col-auto';
             let labelStartDate = document.createElement('label');
@@ -324,7 +320,6 @@
             colStartDate.appendChild(labelStartDate);
             colStartDate.appendChild(inputStartDate);
 
-            // Créer les éléments pour la date de fin
             let colEndDate = document.createElement('div');
             colEndDate.className = 'col-auto';
             let labelEndDate = document.createElement('label');

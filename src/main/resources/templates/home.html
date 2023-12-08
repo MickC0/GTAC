@@ -8,19 +8,45 @@
             <div th:replace="~{fragments/sidebar :: sidebar}"></div>
             <div class="col d-flex flex-column h-sm-100 col-sm-9">
                 <main class="row overflow-auto ">
-                    <div class="col pt-4">
+                    <div class="col-md-12 pt-4">
                         <h1 class="py-2">Accueil</h1>
                         <hr />
                     </div>
-                    <div th:replace="~{fragments/footer :: footer}"></div>
+                    <div class="col-md-6">
+                        <div th:replace="~{fragments/missions/ongoing-today-home :: ongoing-today-home}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div th:replace="~{fragments/missions/confirmed-today-home :: confirmed-today-home}"></div>
+                    </div>
                 </main>
             </div>
         </div>
     </div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.searchBox').forEach(function(input) {
+                input.addEventListener('keyup', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const tableSelector = this.getAttribute('data-table');
+                    const tableRows = document.querySelectorAll(`${tableSelector} tbody tr`);
 
+                    tableRows.forEach(function(row) {
+                        const cells = row.getElementsByTagName('td');
+                        let found = false;
 
+                        for (let cell of cells) {
+                            if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        row.style.display = found ? '' : 'none';
+                    });
+                });
+            });
+        });
+    </script>
     <div th:replace="~{fragments/scripts :: scripts}"></div>
-
-
 </body>
 </html>

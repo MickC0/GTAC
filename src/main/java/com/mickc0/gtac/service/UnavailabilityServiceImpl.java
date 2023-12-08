@@ -88,5 +88,10 @@ public class UnavailabilityServiceImpl implements UnavailabilityService {
         unavailabilityRepository.deleteAllByVolunteerUuid(uuid);
     }
 
+    @Override
+    public boolean isVolunteerUnavailableOnDate(Volunteer volunteer, LocalDate date) {
+        return !unavailabilityRepository.findByVolunteerAndDate(volunteer, date).isEmpty();
+    }
+
 
 }

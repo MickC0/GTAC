@@ -9,17 +9,14 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <a class="btn btn-primary" th:href="@{/missions/create}">Ajouter une mission</a>
-                    <form class="d-flex" role="search" id="searchOngoingMission" th:action="@{/missions/search}">
-                        <input name="query" class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
-                        <button type="submit" form="searchOngoingMission" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-search"></i>
-                        </button>
+                    <form class="d-flex" role="search">
+                        <input type="text" placeholder="Rechercher" class="form-control-sm searchBox" data-table="#ongoingMissionTable">
                     </form>
                 </div>
             </div>
             <div class="card-body">
                 <p th:if="${ongoingMissions.isEmpty()}">Il n'y a pas de mission</p>
-                <table class="table-responsive table table-striped table-hover" th:unless="${ongoingMissions.isEmpty()}">
+                <table class="table-responsive table table-striped table-hover" th:unless="${ongoingMissions.isEmpty()}" id="ongoingMissionTable">
                     <thead>
                     <tr>
                         <th>Nom</th>
@@ -58,10 +55,6 @@
                     </tr>
                     </tbody>
                 </table>
-            </div>
-            <div class="card-footer">
-                Pagination
-
             </div>
         </div>
     </div>

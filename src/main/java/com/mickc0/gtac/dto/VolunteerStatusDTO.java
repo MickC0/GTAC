@@ -7,7 +7,6 @@ import java.util.UUID;
 
 public class VolunteerStatusDTO {
 
-    private Long id;
     private UUID uuid;
     private String lastName;
     private String firstName;
@@ -15,22 +14,13 @@ public class VolunteerStatusDTO {
     private String phoneNumber;
     private String status;
 
-    public VolunteerStatusDTO(Long id, UUID uuid, String lastName, String firstName, String email, String phoneNumber, String status) {
-        this.id = id;
+    public VolunteerStatusDTO(UUID uuid, String lastName, String firstName, String email, String phoneNumber, String status) {
         this.uuid = uuid;
         this.lastName = lastName;
         this.firstName = firstName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.status = status;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public UUID getUuid() {

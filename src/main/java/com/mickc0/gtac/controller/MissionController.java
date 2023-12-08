@@ -212,7 +212,7 @@ public class MissionController {
 
     @PostMapping("/confirm/{id}")
     public String confirmMission(@PathVariable("id") UUID uuid,
-                                 @RequestParam("volunteerUuids") List<UUID> volunteerUuids,
+                                 @RequestParam(value = "volunteerUuids", required = false) List<UUID> volunteerUuids,
                                  @RequestParam(value = "chiefUuid", required = false) UUID chiefUuid,
                                  RedirectAttributes redirectAttributes){
         MissionDTO missionDTO = missionService.findByUuid(uuid)

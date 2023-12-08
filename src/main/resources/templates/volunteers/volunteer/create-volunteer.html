@@ -85,7 +85,6 @@
         let availabilityDiv = document.createElement('div');
         availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
 
-        // Colonne Jour
         let colDay = document.createElement('div');
         colDay.className = 'col-auto';
         let labelDay = document.createElement('label');
@@ -133,7 +132,6 @@
         colDay.appendChild(labelDay);
         colDay.appendChild(selectDay);
 
-        // Colonne Heure de début
         let colStart = document.createElement('div');
         colStart.className = 'col-auto';
         let labelStart = document.createElement('label');
@@ -148,7 +146,6 @@
         colStart.appendChild(labelStart);
         colStart.appendChild(inputStart);
 
-        // Colonne Heure de fin
         let colEnd = document.createElement('div');
         colEnd.className = 'col-auto';
         let labelEnd = document.createElement('label');
@@ -163,7 +160,6 @@
         colEnd.appendChild(labelEnd);
         colEnd.appendChild(inputEnd);
 
-        // Bouton de suppression
         let removeButton = document.createElement('button');
         removeButton.type = 'button';
         removeButton.className = 'btn btn-sm btn-danger removeAvailability';
@@ -174,19 +170,15 @@
             availabilityDiv.remove();
             updateAvailabilityIndexes();
         });
-
-        // Ajout des colonnes au div principal
         availabilityDiv.appendChild(colDay);
         availabilityDiv.appendChild(colStart);
         availabilityDiv.appendChild(colEnd);
 
-        // Colonne pour le bouton
         let buttonCol = document.createElement('div');
         buttonCol.className = 'col-auto';
         buttonCol.appendChild(removeButton);
         availabilityDiv.appendChild(buttonCol);
 
-        // Ajout au DOM
         availabilitySection.appendChild(availabilityDiv);
     });
 
@@ -216,7 +208,6 @@
         let unavailabilityDiv = document.createElement('div');
         unavailabilityDiv.className = 'unavailabilityRow row gy-2 gx-3 align-items-center mb-2';
 
-        // Créer et ajouter le premier champ de date
         let divCol1 = document.createElement('div');
         divCol1.className = 'col-auto';
         let label1 = document.createElement('label');
@@ -233,7 +224,6 @@
         divCol1.appendChild(input1);
         unavailabilityDiv.appendChild(divCol1);
 
-        // Créer et ajouter le deuxième champ de date
         let divCol2 = document.createElement('div');
         divCol2.className = 'col-auto';
         let label2 = document.createElement('label');
@@ -250,7 +240,6 @@
         divCol2.appendChild(input2);
         unavailabilityDiv.appendChild(divCol2);
 
-        // Créer et ajouter le bouton de suppression
         let removeButton = document.createElement('button');
         removeButton.type = 'button';
         removeButton.className = 'btn btn-sm btn-danger removeUnavailability';
@@ -266,7 +255,6 @@
         buttonCol.appendChild(removeButton);
         unavailabilityDiv.appendChild(buttonCol);
 
-        // Ajouter le div complet à la section
         unavailabilitySection.appendChild(unavailabilityDiv);
     });
 

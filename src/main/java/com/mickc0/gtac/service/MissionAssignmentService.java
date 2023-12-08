@@ -1,7 +1,9 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.MissionAssignmentDTO;
+import com.mickc0.gtac.entity.Volunteer;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,4 +16,7 @@ public interface MissionAssignmentService {
     void deleteAllAssignmentsForMission(UUID uuid);
 
     void completeMissionReport(List<UUID> assignmentUuids, UUID missionUuid);
+
+    boolean isVolunteerInUse(UUID uuid);
+    List<UUID> getVolunteersInMissionToday();
 }

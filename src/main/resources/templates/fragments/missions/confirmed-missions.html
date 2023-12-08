@@ -9,18 +9,14 @@
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <a class="btn btn-primary" th:href="@{/missions/create}">Ajouter une mission</a>
-                    <form class="d-flex" role="search" id="searchConfirmedMission" th:action="@{/missions/search}">
-
-                        <input name="query" class="form-control-sm" type="text" placeholder="Rechercher" aria-label="Rechercher">
-                        <button type="submit" form="searchConfirmedMission" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-search"></i>
-                        </button>
+                    <form class="d-flex" role="search">
+                        <input type="text" placeholder="Rechercher" class="form-control-sm searchBox" data-table="#confirmedMissionTable">
                     </form>
                 </div>
             </div>
             <div class="card-body">
                 <p th:if="${confirmedMissions.isEmpty()}">Il n'y a pas de mission</p>
-                <table class="table-responsive table table-striped table-hover" th:unless="${confirmedMissions.isEmpty()}">
+                <table class="table-responsive table table-striped table-hover" th:unless="${confirmedMissions.isEmpty()}" id="confirmedMissionTable">
                     <thead>
                     <tr>
                         <th>Nom</th>
@@ -47,7 +43,7 @@
                             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
                                     data-bs-target="#cancelMissionModal"
                                     th:attr="data-mission-id=${confirmedMission.uuid}">
-                                <i class="bi bi-trash"></i>
+                                <i class="bi bi-x-square"></i>
                             </button>
                             <!-- Voir -->
                             <a class="btn btn-info btn-sm" th:href="@{/missions/{id}(id=${confirmedMission.uuid})}"><i class="bi bi-eye"></i></a>
@@ -61,22 +57,6 @@
                     </tr>
                     </tbody>
                 </table>
-            </div>
-            <div class="card-footer">
-                Pagination
-                <!--<nav aria-label="Page navigation volunteer">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item">
-                            <a class="page-link" th:href="@{/index(page=${previousPage})}">Previous</a>
-                        </li>
-                        <li class="page-item" th:class="${currentPage==status.index?'active':''}" th:each="page, status:${pages}">
-                            <a class="page-link"  th:text="${status.index}" th:href="@{/index(page=${status.index},keyword=${keyword})}"></a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" th:href="@{/index(page=${nextPage})}">Next</a>
-                        </li>
-                    </ul>
-                </nav>-->
             </div>
         </div>
     </div>

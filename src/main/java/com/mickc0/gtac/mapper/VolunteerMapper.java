@@ -14,14 +14,11 @@ import java.time.LocalDateTime;
 @Component
 public class VolunteerMapper {
 
-    private final MissionAssignmentRepository missionAssignmentRepository;
-    private final UnavailabilityRepository unavailabilityRepository;
+
     private final AvailabilityMapper availabilityMapper;
     private final UnavailabilityMapper unavailabilityMapper;
     private final MissionTypeMapper missionTypeMapper;
-    public VolunteerMapper(MissionAssignmentRepository missionAssignmentRepository, UnavailabilityRepository unavailabilityRepository, AvailabilityMapper availabilityMapper, UnavailabilityMapper unavailabilityMapper, MissionTypeMapper missionTypeMapper) {
-        this.missionAssignmentRepository = missionAssignmentRepository;
-        this.unavailabilityRepository = unavailabilityRepository;
+    public VolunteerMapper(AvailabilityMapper availabilityMapper, UnavailabilityMapper unavailabilityMapper, MissionTypeMapper missionTypeMapper) {
         this.availabilityMapper = availabilityMapper;
         this.unavailabilityMapper = unavailabilityMapper;
         this.missionTypeMapper = missionTypeMapper;
@@ -29,21 +26,8 @@ public class VolunteerMapper {
 
 
     //TODO A refactorer dans le service
-    public VolunteerStatusDTO mapToStatusDTO(Volunteer volunteer, LocalDateTime now) {
-        boolean isInMission = missionAssignmentRepository
-                .findByVolunteerAndAssignedFromBeforeAndAssignedUntilAfter(volunteer, now, now)
-                .stream()
-                .anyMatch(ma -> ma.getMission().getStatus() == MissionStatus.ONGOING);
-        boolean isAbsent = !unavailabilityRepository.findByVolunteerAndDate(volunteer, now.toLocalDate()).isEmpty();
-        String status;
-        if (isInMission) {
-            status = "En mission";
-        } else if (isAbsent) {
-            status = "Absent";
-        } else {
-            status = "Disponible";
-        }
-        return new VolunteerStatusDTO(volunteer.getId(), volunteer.getUuid(),
+    public VolunteerStatusDTO mapToStatusDTO(Volunteer volunteer, String status) {
+        return new VolunteerStatusDTO(volunteer.getUuid(),
                 volunteer.getLastName(), volunteer.getFirstName(),
                 volunteer.getEmail(), volunteer.getPhoneNumber(), status);
     }

@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UnavailabilityRepository extends JpaRepository<Unavailability, Long> {
-    List<Unavailability> findByVolunteerId(Long volunteerId);
 
     Optional<Unavailability> findByUuid(UUID uuid);
 

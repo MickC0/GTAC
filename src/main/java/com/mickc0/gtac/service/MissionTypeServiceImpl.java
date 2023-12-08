@@ -2,8 +2,8 @@ package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.MissionTypeDTO;
 import com.mickc0.gtac.entity.MissionType;
-import com.mickc0.gtac.entity.Volunteer;
-import com.mickc0.gtac.exception.CustomDuplicateEntryException;
+import com.mickc0.gtac.exception.DuplicateEntryException;
+import com.mickc0.gtac.exception.MissionTypeInUseException;
 import com.mickc0.gtac.mapper.MissionTypeMapper;
 import com.mickc0.gtac.repository.MissionTypeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,7 +33,7 @@ public class MissionTypeServiceImpl implements MissionTypeService{
 
     @Override
     @Transactional
-    public void save(MissionTypeDTO missionTypeDTO) throws CustomDuplicateEntryException {
+    public void save(MissionTypeDTO missionTypeDTO) throws DuplicateEntryException {
         MissionType missionType;
         if (missionTypeDTO.getUuid() != null && missionTypeRepository.findByUuid(missionTypeDTO.getUuid()).isPresent()) {
             missionType = missionTypeRepository.findByUuid(missionTypeDTO.getUuid())
@@ -53,7 +53,7 @@ public class MissionTypeServiceImpl implements MissionTypeService{
                 .filter(mt -> normalizeString(mt.getName()).equalsIgnoreCase(normalizedNewName))
                 .findFirst();
         if (existingMissionType.isPresent()) {
-            throw new CustomDuplicateEntryException("Un type de mission avec le nom '" + missionType.getName() + "' existe déjà.");
+            throw new DuplicateEntryException("Un type de mission avec le nom '" + missionType.getName() + "' existe déjà.");
         }
         missionTypeRepository.save(missionType);
     }
@@ -86,19 +86,26 @@ public class MissionTypeServiceImpl implements MissionTypeService{
     @Override
     @Transactional
     public void deleteByUuid(UUID uuid) {
+        MissionType missionType = missionTypeRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Le type de mission avec id " + uuid + " n'existe pas."));
+
+        if (!missionType.getMissions().isEmpty()) {
+            throw new MissionTypeInUseException("Impossible de supprimer un type de mission déjà utilisé.");
+        }
+
         missionTypeRepository.deleteByUuid(uuid);
     }
 
     @Override
     public Optional<MissionTypeDTO> findMissionTypeDTOByUuid(UUID uuid) {
         return Optional.ofNullable(missionTypeMapper.mapToMissionTypeDto(missionTypeRepository.findByUuid(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + uuid))));
+                .orElseThrow(() -> new IllegalArgumentException("Le type de mission avec id " + uuid + " n'existe pas."))));
     }
 
     @Override
     public Optional<MissionType> findMissionTypeByUuid(UUID uuid) {
         return Optional.ofNullable(missionTypeRepository.findByUuid(uuid)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid mission type Id:" + uuid)));
+                .orElseThrow(() -> new IllegalArgumentException("Le type de mission avec id " + uuid + " n'existe pas.")));
     }
 
     @Override

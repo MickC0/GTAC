@@ -4,6 +4,8 @@ import com.mickc0.gtac.dto.UnavailabilityDTO;
 import com.mickc0.gtac.entity.Unavailability;
 import com.mickc0.gtac.entity.Volunteer;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,4 +23,6 @@ public interface UnavailabilityService {
     void deleteAllByVolunteer(Volunteer volunteer);
 
     void deleteAllByVolunteerUuid(UUID uuid);
+
+    boolean isVolunteerUnavailableOnDate(Volunteer volunteer, LocalDate localDate);
 }

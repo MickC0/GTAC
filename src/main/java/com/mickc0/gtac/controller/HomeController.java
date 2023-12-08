@@ -15,7 +15,7 @@ public class HomeController {
         this.missionService = missionService;
     }
 
-    @GetMapping("/")
+    @GetMapping({"","/","/home"})
     public String home(Model model){
         model.addAttribute("ongoingMissions", missionService.findByStatus(MissionStatus.ONGOING));
         model.addAttribute("confirmedMissions", missionService.findByStatus(MissionStatus.CONFIRMED));

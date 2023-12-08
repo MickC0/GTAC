@@ -1,11 +1,11 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.*;
-import com.mickc0.gtac.entity.Availability;
-import com.mickc0.gtac.entity.MissionType;
-import com.mickc0.gtac.entity.Unavailability;
-import com.mickc0.gtac.entity.Volunteer;
+import com.mickc0.gtac.entity.*;
+import com.mickc0.gtac.exception.VolunteerInUseException;
 import com.mickc0.gtac.mapper.VolunteerMapper;
+import com.mickc0.gtac.repository.MissionAssignmentRepository;
+import com.mickc0.gtac.repository.UnavailabilityRepository;
 import com.mickc0.gtac.repository.VolunteerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -195,9 +195,22 @@ public class VolunteerServiceImpl implements VolunteerService{
         List<Volunteer> volunteers = volunteerRepository.findAll();
         LocalDateTime now = LocalDateTime.now();
         return volunteers.stream()
-                .map(volunteer -> volunteerMapper.mapToStatusDTO(volunteer, now))
+                .map(volunteer -> volunteerMapper.mapToStatusDTO(volunteer, determineVolunteerStatus(volunteer, now)))
                 .collect(Collectors.toList());
     }
+
+    private String determineVolunteerStatus(Volunteer volunteer, LocalDateTime now) {
+        if (isVolunteerAbsent(volunteer, now)) {
+            return "Absent";
+        } else {
+            return "Disponible";
+        }
+    }
+
+    private boolean isVolunteerAbsent(Volunteer volunteer, LocalDateTime now) {
+        return unavailabilityService.isVolunteerUnavailableOnDate(volunteer, now.toLocalDate());
+    }
+
 
     @Override
     public List<VolunteerDTO> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, UUID missionTypeUuid, UUID currentMissionUuid) {

@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -87,4 +88,20 @@ public class MissionAssignmentServiceImpl implements MissionAssignmentService {
 
         missionAssignmentRepository.saveAll(assignments);
     }
+
+    @Override
+    public boolean isVolunteerInUse(UUID uuid) {
+        return missionAssignmentRepository.existsByVolunteerUuid(uuid);
+    }
+
+    @Override
+    public List<UUID> getVolunteersInMissionToday() {
+        LocalDateTime now = LocalDateTime.now();
+        return missionAssignmentRepository.findVolunteersInMissionOnDate(now)
+                .stream()
+                .map(MissionAssignment::getVolunteer)
+                .map(Volunteer::getUuid)
+                .collect(Collectors.toList());
+    }
+
 }
