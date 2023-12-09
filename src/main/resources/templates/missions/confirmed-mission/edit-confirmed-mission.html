@@ -2,135 +2,107 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <div th:replace="~{fragments/head :: head}"></div>
 <body>
-<div class="container">
-    <div class="row">
-        <div class="card col-md-12 justify-content-center container py-4">
-            <div class="card-header">
-                <h1>Mise à jour</h1>
-            </div>
-            <div class="card-body">
-                <form th:action="@{/missions/update/confirmed/{id}(id=${confirmation.mission.uuid})}" method="post" id="editConfirmMissionForm" th:object="${confirmation}">
+    <div class="container">
+        <div class="row">
+            <div class="card col-md-12 justify-content-center container py-4">
+                <div class="card-header">
+                    <h1>Mise à jour confirmation</h1>
+                </div>
+                <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <input type="hidden" name="uuid" id="uuid" th:field="*{mission.uuid}">
-                            <input type="hidden" name="status" id="status" th:field="*{mission.status}">
-                            <div class="form-group">
-                                <label for="name" class="col-form-label">Nom de la Mission :</label>
-                                <input th:field="*{mission.title}" type="text" id="name" class="form-control" required="required">
-                            </div>
-                            <div class="form-group">
-                                <label for="description" class="col-form-label">Description :</label>
-                                <textarea th:field="*{mission.description}" id="description" class="form-control" rows="4"></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="comment" class="col-form-label">Commentaire :</label>
-                                <textarea th:field="*{mission.comment}" id="comment" class="form-control" rows="4"></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="missionType" class="col-form-label">Type de mission :</label>
-                                <select class="form-select" th:field="*{mission.missionType.uuid}" id="missionType" name="missionType" required="required">
-                                    <option th:each="missionType : ${missionTypes}" th:value="${missionType.uuid}" th:text="${missionType.name}"></option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="requiredVolunteerNumber" class="col-form-label">Nombre de Bénévoles Requis:</label>
-                                <input th:field="*{mission.requiredVolunteerNumber}" type="number" id="requiredVolunteerNumber" class="form-control" required="required" min="0">
-                            </div>
-
-                            <div id="dateAlert" class="alert alert-danger d-none" role="alert">
-                                La date de début doit être antérieure à la date de fin.
-                            </div>
-                            <div class="form-group">
-                                <label for="startDateTime" class="col-form-label">Date de Début:</label>
-                                <input th:value="*{mission.startDateTime}" id="startDateTime" name="startDateTime" type="datetime-local" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="endDateTime" class="col-form-label">Date de Fin:</label>
-                                <input th:value="*{mission.endDateTime}" type="datetime-local" id="endDateTime" name="endDateTime" class="form-control">
-                            </div>
+                            <h3>Informations</h3>
+                            <hr>
+                            <p>Titre : <span th:text="${confirmation.mission.title}"></span></p>
+                            <p>Type de mission : <span th:text="${confirmation.mission.missionType.name}"></span></p>
+                            <p>Statut : <span th:text="${@translationUtils.translateMissionStatus(confirmation.mission.status)}"></span></p>
+                            <p>Description : <span th:text="${confirmation.mission.description}"></span></p>
+                            <p>Commentaire : <span th:text="${confirmation.mission.comment}"></span></p>
+                            <p>Nombre de bénévoles requis : <span th:text="${confirmation.mission.requiredVolunteerNumber}"></span></p>
+                            <p>Date de début : <span th:text="${#temporals.format(confirmation.mission.startDateTime, 'dd/MM/yyyy HH:mm')}"></span></p>
+                            <p>Date de fin : <span th:text="${#temporals.format(confirmation.mission.endDateTime, 'dd/MM/yyyy HH:mm')}"></span></p>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group mt-3">
-                                <h3>Sélection des Volontaires</h3>
-                                <ul class="list-group">
-                                    <li th:each="volunteer, volunteerStat : ${confirmation.availableVolunteers}" class="list-group-item">
-                                        <div class="d-flex flex-column">
-                                            <div class="d-flex justify-content-between">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" th:value="${volunteer.uuid}" th:name="volunteerUuids" th:id="${'volunteer' + volunteerStat.index}"
-                                                           th:checked="${#lists.contains(assignedVolunteerUuids, volunteer.uuid)}">
-                                                    <label class="form-check-label" th:for="${'volunteer' + volunteerStat.index}">
-                                                        <strong th:text="${volunteer.lastName.toUpperCase()} + ' ' + ${volunteer.firstName}"></strong>
-                                                    </label>
+                            <h3>Sélection des volontaires</h3>
+                            <hr>
+                            <form th:action="@{/missions/update/confirmed/{id}(id=${confirmation.mission.uuid})}" method="post" id="editConfirmMissionForm" th:object="${confirmation}">
+                                <div class="form-group">
+                                    <ul class="list-group">
+                                        <li th:each="volunteer, volunteerStat : ${confirmation.availableVolunteers}" class="list-group-item">
+                                            <div class="d-flex flex-column">
+                                                <div class="d-flex justify-content-between">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" th:value="${volunteer.uuid}" th:name="volunteerUuids" th:id="${'volunteer' + volunteerStat.index}"
+                                                               th:checked="${#lists.contains(assignedVolunteerUuids, volunteer.uuid)}">
+                                                        <label class="form-check-label" th:for="${'volunteer' + volunteerStat.index}">
+                                                            <strong th:text="${volunteer.lastName.toUpperCase()} + ' ' + ${volunteer.firstName}"></strong>
+                                                        </label>
+                                                    </div>
+                                                    <div>
+                                                        <input type="radio" autocomplete="off" class="btn-check" th:name="chiefUuid" th:value="${volunteer.uuid}" th:id="${'chief' + volunteerStat.index}"
+                                                               th:checked="${volunteer.uuid.equals(chiefUuid)}">
+                                                        <label class="btn btn-outline-secondary" th:for="${'chief' + volunteerStat.index}">Chef de mission</label>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <input type="radio" autocomplete="off" class="btn-check" th:name="chiefUuid" th:value="${volunteer.uuid}" th:id="${'chief' + volunteerStat.index}"
-                                                           th:checked="${volunteer.uuid.equals(chiefUuid)}">
-                                                    <label class="btn btn-outline-secondary" th:for="${'chief' + volunteerStat.index}">Chef de mission</label>
+                                                <div class="mt-2">
+                                                    <span th:text="${volunteer.email}"></span>,
+                                                    <span th:text="${volunteer.phoneNumber}"></span>
                                                 </div>
                                             </div>
-                                            <div class="mt-2">
-                                                <span th:text="${volunteer.email}"></span>,
-                                                <span th:text="${volunteer.phoneNumber}"></span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                </form>
-            </div>
-            <div class="card-footer">
-                <a class="btn btn-outline-secondary pb-2" th:href="@{/missions}">Annuler</a>
-                <button type="submit" form="editConfirmMissionForm" class="btn btn-primary">Mettre à jour</button>
+                    <div class="card-footer">
+                        <a class="btn btn-outline-secondary pb-2" th:href="@{/missions}">Annuler</a>
+                        <button type="submit" form="editConfirmMissionForm" class="btn btn-primary">Mettre à jour</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.getElementById('editConfirmMissionForm').addEventListener('submit', function(e) {
-        let startDateTime = document.getElementById('startDateTime').value;
-        let endDateTime = document.getElementById('endDateTime').value;
-        let dateAlert = document.getElementById('dateAlert');
+    <script>
+        document.getElementById('editConfirmMissionForm').addEventListener('submit', function(e) {
+            let startDateTime = document.getElementById('startDateTime').value;
+            let endDateTime = document.getElementById('endDateTime').value;
+            let dateAlert = document.getElementById('dateAlert');
 
-        if (startDateTime > endDateTime) {
-            dateAlert.classList.remove('d-none');
-            e.preventDefault();
-        } else {
-            dateAlert.classList.add('d-none');
-        }
-    });
-    document.querySelectorAll('[name="chiefUuid"]').forEach(radio => {
-        radio.addEventListener('click', (e) => {
-            if (e.target.dataset.checked === 'true') {
-                e.target.checked = false;
-                e.target.dataset.checked = 'false';
+            if (startDateTime > endDateTime) {
+                dateAlert.classList.remove('d-none');
+                e.preventDefault();
             } else {
-                e.target.dataset.checked = 'true';
+                dateAlert.classList.add('d-none');
             }
         });
-    });
-    document.getElementById('editConfirmMissionForm').addEventListener('submit', function(e) {
-        let checkboxes = document.querySelectorAll('#editConfirmMissionForm input[type="checkbox"][name="volunteerUuids"]');
-        if (checkboxes.length === 0) {
-            alert("Il n'y a aucun volontaire à sélectionner.");
-            e.preventDefault();
-        } else {
-            let checkedOne = Array.prototype.slice.call(checkboxes).some(x => x.checked);
-            if (!checkedOne) {
-                alert("Veuillez sélectionner au moins un volontaire.");
+        document.querySelectorAll('[name="chiefUuid"]').forEach(radio => {
+            radio.addEventListener('click', (e) => {
+                if (e.target.dataset.checked === 'true') {
+                    e.target.checked = false;
+                    e.target.dataset.checked = 'false';
+                } else {
+                    e.target.dataset.checked = 'true';
+                }
+            });
+        });
+        document.getElementById('editConfirmMissionForm').addEventListener('submit', function(e) {
+            let checkboxes = document.querySelectorAll('#editConfirmMissionForm input[type="checkbox"][name="volunteerUuids"]');
+            if (checkboxes.length === 0) {
+                alert("Il n'y a aucun volontaire à sélectionner.");
                 e.preventDefault();
+            } else {
+                let checkedOne = Array.prototype.slice.call(checkboxes).some(x => x.checked);
+                if (!checkedOne) {
+                    alert("Veuillez sélectionner au moins un volontaire.");
+                    e.preventDefault();
+                }
             }
-        }
-    });
-</script>
+        });
+    </script>
 
-<div th:replace="~{fragments/scripts :: scripts}"></div>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
 
 </body>
 </html>

@@ -141,6 +141,7 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
+    @Transactional
     public void endMission(UUID uuid) {
         Mission mission = missionRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("La mission avec l'id : " + uuid + " n'existe pas."));
@@ -158,12 +159,13 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
+    @Transactional
     public List<Mission> findMissionsToUpdateStatus(LocalDateTime now) {
 
-        List<Mission> missionsToStart = missionRepository.findByStatusAndStartDateTimeLessThanEqual(MissionStatus.PLANNED, now);
-        List<Mission> missionsToUpdate = new ArrayList<>(missionsToStart);
-
-        List<Mission> missionsToEnd = missionRepository.findByStatusAndEndDateTimeLessThanEqual(MissionStatus.ONGOING, now);
+        List<Mission> missionsToUpdate = new ArrayList<>();
+        List<Mission> missionsToStart = missionRepository.findConfirmedMissionsToStart(MissionStatus.CONFIRMED, now);
+        List<Mission> missionsToEnd = missionRepository.findOngoingMissionsToEnd(MissionStatus.ONGOING, now);
+        missionsToUpdate.addAll(missionsToStart);
         missionsToUpdate.addAll(missionsToEnd);
 
         return missionsToUpdate;
@@ -173,19 +175,14 @@ public class MissionServiceImpl implements MissionService {
     @Transactional
     public void updateMissionStatus(Long missionId, LocalDateTime now) {
         Mission mission = missionRepository.findById(missionId)
-                .orElseThrow(() -> new RuntimeException("Mission not found"));
+                .orElseThrow(() -> new EntityNotFoundException("La mission avec l'id : " + missionId + " n'existe pas."));
 
         if (now.isEqual(mission.getStartDateTime()) || now.isAfter(mission.getStartDateTime()) && now.isBefore(mission.getEndDateTime())) {
-            mission.setStatus(MissionStatus.ONGOING);
+            launchMission(mission.getUuid());
         } else if (now.isEqual(mission.getEndDateTime()) || now.isAfter(mission.getEndDateTime())) {
-            mission.setStatus(MissionStatus.COMPLETED);
-            releaseUsersFromMission(missionId);
+            endMission(mission.getUuid());
         }
-
-        missionRepository.save(mission);
     }
-
-
 
     @Override
     public void saveMission(Mission mission) {
@@ -202,10 +199,6 @@ public class MissionServiceImpl implements MissionService {
     }
 
 
-    private void releaseUsersFromMission(Long missionId) {
-        List<MissionAssignment> assignments = missionAssignmentRepository.findByMissionId(missionId);
-        missionAssignmentRepository.deleteAll(assignments);
-    }
 
 
 }

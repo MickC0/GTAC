@@ -62,7 +62,6 @@ public class MissionAssignmentServiceImpl implements MissionAssignmentService {
         }
 
         missionAssignmentRepository.saveAll(updatedAssignments);
-
         existingAssignments.stream()
                 .filter(assignment -> !volunteerUuids.contains(assignment.getVolunteer().getUuid()))
                 .forEach(missionAssignmentRepository::delete);

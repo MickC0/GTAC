@@ -22,7 +22,7 @@
                         <p>Date de fin : <span th:text="${#temporals.format(confirmation.mission.endDateTime, 'dd/MM/yyyy HH:mm')}"></span></p>
                     </div>
                     <div class="col-md-6">
-                        <h3>Ajouter des volontaires</h3>
+                        <h3>Sélection des volontaires</h3>
                         <hr>
                         <form th:action="@{/missions/confirm/{id}(id=${confirmation.mission.uuid})}" method="post" id="confirmMissionForm" th:object="${confirmation}">
                             <div class="form-group">

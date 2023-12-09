@@ -271,7 +271,6 @@ public class MissionController {
         return "redirect:/missions";
     }
 
-    // TODO  passer en Post ou Put ?
     @GetMapping("/launch/{id}")
     public String launchMissionManually(@PathVariable(name = "id") UUID uuid, RedirectAttributes redirectAttributes){
         try {

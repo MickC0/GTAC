@@ -23,7 +23,7 @@ public class MissionScheduler {
     }
 
 
-    @Scheduled(cron = "0 0 * * * *") // À la minute 0 de chaque heure
+    @Scheduled(cron = "0 0 * * * *")
     public void updateMissionStatuses() {
         LocalDateTime now = LocalDateTime.now();
         List<Mission> missionsToUpdate = missionService.findMissionsToUpdateStatus(now);
