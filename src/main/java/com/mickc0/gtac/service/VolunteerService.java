@@ -1,8 +1,10 @@
 package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.VolunteerDTO;
+import com.mickc0.gtac.dto.VolunteerDetailsDTO;
 import com.mickc0.gtac.dto.VolunteerProfilDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
+import com.mickc0.gtac.entity.RoleName;
 import com.mickc0.gtac.entity.Volunteer;
 
 import java.time.LocalDateTime;
@@ -27,4 +29,6 @@ public interface VolunteerService {
     List<Volunteer> findVolunteersByUuids(List<UUID> volunteerUuids);
 
     Optional<Volunteer> findVolunteerByUuid(UUID volunteerUuid);
+
+    List<VolunteerDetailsDTO> findAllVolunteerByRole(RoleName roleName);
 }

@@ -34,10 +34,12 @@ public class SecurityConfiguration {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
                         .requestMatchers("/", "/home").permitAll()
                         .requestMatchers("/missions/**").hasAnyRole("MISSION", "ADMIN")
                         .requestMatchers("/mission-types/**").hasAnyRole("MISSION", "ADMIN")
                         .requestMatchers("/volunteers/**").hasAnyRole("VOLUNTEER", "ADMIN")
+                        .requestMatchers("/administration/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
 
                 )

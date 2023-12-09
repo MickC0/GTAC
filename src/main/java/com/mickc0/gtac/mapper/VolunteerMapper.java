@@ -1,15 +1,18 @@
 package com.mickc0.gtac.mapper;
 
 import com.mickc0.gtac.dto.VolunteerDTO;
+import com.mickc0.gtac.dto.VolunteerDetailsDTO;
 import com.mickc0.gtac.dto.VolunteerProfilDTO;
 import com.mickc0.gtac.dto.VolunteerStatusDTO;
 import com.mickc0.gtac.entity.MissionStatus;
+import com.mickc0.gtac.entity.Role;
 import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.repository.MissionAssignmentRepository;
 import com.mickc0.gtac.repository.UnavailabilityRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Component
 public class VolunteerMapper {
@@ -24,22 +27,12 @@ public class VolunteerMapper {
         this.missionTypeMapper = missionTypeMapper;
     }
 
-
-    //TODO A refactorer dans le service
     public VolunteerStatusDTO mapToStatusDTO(Volunteer volunteer, String status) {
         return new VolunteerStatusDTO(volunteer.getUuid(),
                 volunteer.getLastName(), volunteer.getFirstName(),
                 volunteer.getEmail(), volunteer.getPhoneNumber(), status);
     }
 
-    public Volunteer mapToEntityLowDetail(VolunteerDTO volunteerDTO){
-        Volunteer volunteer = new Volunteer();
-        volunteer.setLastName(volunteerDTO.getLastName());
-        volunteer.setFirstName(volunteerDTO.getFirstName());
-        volunteer.setEmail(volunteerDTO.getEmail());
-        volunteer.setPhoneNumber(volunteerDTO.getPhoneNumber());
-        return volunteer;
-    }
 
     public VolunteerDTO mapToDto(Volunteer volunteer){
         VolunteerDTO volunteerDTO = new VolunteerDTO();
@@ -76,5 +69,17 @@ public class VolunteerMapper {
         volunteerDTO.setPhoneNumber(volunteer.getPhoneNumber());
         return volunteerDTO;
     }
+    public VolunteerDetailsDTO mapToDetailsDto(Volunteer volunteer){
+        VolunteerDetailsDTO volunteerDTO = new VolunteerDetailsDTO();
+        volunteerDTO.setUuid(volunteer.getUuid());
+        volunteerDTO.setLastName(volunteer.getLastName());
+        volunteerDTO.setFirstName(volunteer.getFirstName());
+        volunteerDTO.setEmail(volunteer.getEmail());
+        volunteerDTO.setPhoneNumber(volunteer.getPhoneNumber());
+        volunteerDTO.setPassword(volunteer.getPassword());
+        volunteerDTO.setRoles(volunteer.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+        return volunteerDTO;
+    }
+
 
 }

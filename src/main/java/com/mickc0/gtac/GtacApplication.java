@@ -35,14 +35,20 @@ public class GtacApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        Role role = new Role();
-        role.setName(String.valueOf(RoleName.ROLE_ADMIN));
-        roleRepository.save(role);
+        Role adminRole = new Role();
+        adminRole.setName(String.valueOf(RoleName.ROLE_ADMIN));
+        roleRepository.save(adminRole);
+        Role missionRole = new Role();
+        missionRole.setName(String.valueOf(RoleName.ROLE_MISSION));
+        roleRepository.save(missionRole);
+        Role volunteerRole = new Role();
+        volunteerRole.setName(String.valueOf(RoleName.ROLE_VOLUNTEER));
+        roleRepository.save(volunteerRole);
 
         Volunteer volunteer = new Volunteer();
         volunteer.setEmail("admin@gmail.com");
         volunteer.setPassword(passwordEncoder.encode("admin"));
-        volunteer.setRoles(List.of(role));
+        volunteer.setRoles(List.of(adminRole));
         volunteerRepository.save(volunteer);
 
 

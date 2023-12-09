@@ -23,22 +23,17 @@ public class VolunteerDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Volunteer volunteer = volunteerRepository.findByEmail(email);
-        System.out.println("email : " + email);
-        System.out.println(volunteer.toString());
         if (volunteer == null) {
-            System.out.println("là");
             throw new UsernameNotFoundException("Utilisateur non trouvé : " + email);
         } else {
-            System.out.println("ici");
-            User authenticateUser = new User(
+
+            return new User(
                     volunteer.getEmail(),
                     volunteer.getPassword(),
                     volunteer.getRoles().stream()
                             .map(role -> new SimpleGrantedAuthority(role.getName()))
                             .collect(Collectors.toList())
             );
-
-            return authenticateUser;
         }
     }
 }

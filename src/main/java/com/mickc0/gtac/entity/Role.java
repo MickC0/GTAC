@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "role")
@@ -12,7 +13,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
     private Long id;
-    @Column(nullable = false, unique = false)
+    @Column(name = "name", nullable = false, unique = false)
     private String name;
     @ManyToMany(mappedBy = "roles")
     private List<Volunteer> volunteers = new ArrayList<>();

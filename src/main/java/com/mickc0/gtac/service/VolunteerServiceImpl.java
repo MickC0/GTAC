@@ -240,5 +240,13 @@ public class VolunteerServiceImpl implements VolunteerService{
         return volunteerRepository.findByUuid(uuid);
     }
 
+    @Override
+    public List<VolunteerDetailsDTO> findAllVolunteerByRole(RoleName roleName) {
+        List<Volunteer> volunteers = volunteerRepository.findByRole(roleName.name());
+        return volunteers.stream()
+                .map(volunteerMapper::mapToDetailsDto)
+                .collect(Collectors.toList());
+    }
+
 
 }

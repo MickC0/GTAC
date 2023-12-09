@@ -5,6 +5,7 @@ import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.entity.Volunteer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import javax.swing.text.html.Option;
 import java.time.DayOfWeek;
@@ -30,4 +31,7 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
     List<Volunteer> findAllByUuidIn(List<UUID> volunteerUuids);
 
     Volunteer findByEmail(String email);
+
+    @Query("SELECT v FROM Volunteer v JOIN v.roles r WHERE r.name = :roleName")
+    List<Volunteer> findByRole(@Param("roleName") String roleName);
 }
