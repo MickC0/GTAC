@@ -14,17 +14,30 @@ public class Role {
     private Long id;
     @Column(nullable = false, unique = false)
     private String name;
-    @ManyToMany(mappedBy = "role")
+    @ManyToMany(mappedBy = "roles")
     private List<Volunteer> volunteers = new ArrayList<>();
 
-
-
+    public Long getId() {
+        return id;
+    }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getId() {
-        return id;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Volunteer> getVolunteers() {
+        return volunteers;
+    }
+
+    public void setVolunteers(List<Volunteer> volunteers) {
+        this.volunteers = volunteers;
     }
 }

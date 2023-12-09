@@ -8,7 +8,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "volunteer")
-public class Volunteer implements UserDetails {
+public class Volunteer {
 
     @Id
     @Column(name = "volunteer_id")
@@ -47,6 +47,7 @@ public class Volunteer implements UserDetails {
             inverseJoinColumns = {@JoinColumn(name = "role_id")}
     )
     private List<Role> roles = new ArrayList<>();
+
 
     public Long getId() {
         return id;
@@ -88,38 +89,8 @@ public class Volunteer implements UserDetails {
         this.email = email;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
     }
 
     public void setPassword(String password) {
@@ -150,13 +121,20 @@ public class Volunteer implements UserDetails {
         this.unavailabilities = unavailabilities;
     }
 
-
     public Set<MissionType> getMissionTypes() {
         return missionTypes;
     }
 
-    public void setMissionTypes(Set<MissionType> preferredMissionTypes) {
-        this.missionTypes = preferredMissionTypes;
+    public void setMissionTypes(Set<MissionType> missionTypes) {
+        this.missionTypes = missionTypes;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
     @Override
@@ -167,8 +145,8 @@ public class Volunteer implements UserDetails {
                 ", lastName='" + lastName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", missionTypes=" + missionTypes +
                 '}';
     }
 }

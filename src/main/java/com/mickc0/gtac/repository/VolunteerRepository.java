@@ -1,5 +1,6 @@
 package com.mickc0.gtac.repository;
 
+import com.mickc0.gtac.dto.VolunteerLoginDTO;
 import com.mickc0.gtac.entity.MissionType;
 import com.mickc0.gtac.entity.Volunteer;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,5 +29,5 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
 
     List<Volunteer> findAllByUuidIn(List<UUID> volunteerUuids);
 
-    Optional<Volunteer> findByEmail(String username);
+    Volunteer findByEmail(String email);
 }
