@@ -1,12 +1,14 @@
 package com.mickc0.gtac.entity;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
 @Entity
 @Table(name = "volunteer")
-public class Volunteer {
+public class Volunteer implements UserDetails {
 
     @Id
     @Column(name = "volunteer_id")
@@ -38,6 +40,13 @@ public class Volunteer {
             inverseJoinColumns = @JoinColumn(name = "mission_type_id")
     )
     private Set<MissionType> missionTypes;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "volunteer_role",
+            joinColumns = {@JoinColumn(name = "volunteer_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")}
+    )
+    private List<Role> roles = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -79,8 +88,38 @@ public class Volunteer {
         this.email = email;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 
     public void setPassword(String password) {
