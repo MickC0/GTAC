@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface VolunteerService {
+    void saveDetails(VolunteerDetailsDTO volunteerDetailsDTO);
     Volunteer saveAndReturn(Volunteer volunteer);
     void saveOrUpdate(VolunteerDTO volunteerDTO);
     Optional<Volunteer> findById(Long id);

@@ -57,7 +57,7 @@ public class VolunteerController {
                                 RedirectAttributes redirectAttributes) {
         volunteerDTO.setMissionTypes(missionTypeUuids);
         volunteerService.saveOrUpdate(volunteerDTO);
-        redirectAttributes.addFlashAttribute("successMessage", "Volontaire enregistré avec succès.");
+        redirectAttributes.addFlashAttribute("successMessage", "Bénévole enregistré avec succès.");
         return "redirect:/volunteers";
     }
 

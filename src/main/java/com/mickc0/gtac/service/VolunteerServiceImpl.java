@@ -9,6 +9,7 @@ import com.mickc0.gtac.repository.UnavailabilityRepository;
 import com.mickc0.gtac.repository.VolunteerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,17 +27,43 @@ public class VolunteerServiceImpl implements VolunteerService{
     private final MissionTypeService missionTypeService;
     private final AvailabilityService availabilityService;
     private final UnavailabilityService unavailabilityService;
+    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public VolunteerServiceImpl(VolunteerRepository volunteerRepository, VolunteerMapper volunteerMapper,
                                 MissionTypeService missionTypeService,
                                 AvailabilityService availabilityService,
-                                UnavailabilityService unavailabilityService) {
+                                UnavailabilityService unavailabilityService, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.volunteerRepository = volunteerRepository;
         this.volunteerMapper = volunteerMapper;
         this.missionTypeService = missionTypeService;
         this.availabilityService = availabilityService;
         this.unavailabilityService = unavailabilityService;
+        this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public void saveDetails(VolunteerDetailsDTO volunteerDetailsDTO) {
+        Volunteer volunteer;
+        if (volunteerDetailsDTO.getUuid() != null && volunteerRepository.findByUuid(volunteerDetailsDTO.getUuid()).isPresent()) {
+            volunteer = volunteerRepository.findByUuid(volunteerDetailsDTO.getUuid())
+                    .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + volunteerDetailsDTO.getUuid() + " n'existe pas"));
+        } else {
+            volunteer = new Volunteer();
+        }
+        List<Role> roles = new ArrayList<>(volunteerDetailsDTO.getRoles().stream()
+                .map(roleService::findByName).toList());
+        Role role = roleService.findByName(String.valueOf(RoleName.ROLE_GUEST));
+        roles.add(role);
+        volunteer.setLastName(volunteerDetailsDTO.getLastName());
+        volunteer.setFirstName(volunteerDetailsDTO.getFirstName());
+        volunteer.setEmail(volunteerDetailsDTO.getEmail());
+        volunteer.setPhoneNumber(volunteerDetailsDTO.getPhoneNumber());
+        volunteer.setPassword(passwordEncoder.encode(volunteerDetailsDTO.getPassword()));
+        volunteer.setRoles(roles);
+        volunteerRepository.save(volunteer);
     }
 
     @Override
@@ -56,11 +83,14 @@ public class VolunteerServiceImpl implements VolunteerService{
         } else {
             volunteer = new Volunteer();
         }
-
+        Role role = roleService.findByName(String.valueOf(RoleName.ROLE_GUEST));
         volunteer.setLastName(volunteerDTO.getLastName());
         volunteer.setFirstName(volunteerDTO.getFirstName());
         volunteer.setEmail(volunteerDTO.getEmail());
         volunteer.setPhoneNumber(volunteerDTO.getPhoneNumber());
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        volunteer.setRoles(roles);
         volunteer = saveAndReturn(volunteer);
 
         handleMissionTypes(volunteerDTO, volunteer);

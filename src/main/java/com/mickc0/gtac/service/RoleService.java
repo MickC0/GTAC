@@ -8,4 +8,6 @@ import java.util.List;
 public interface RoleService {
 
     List<RoleDTO> findAllRoles();
+
+    Role findByName(String name);
 }

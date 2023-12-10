@@ -41,4 +41,12 @@ public class Role {
     public void setVolunteers(List<Volunteer> volunteers) {
         this.volunteers = volunteers;
     }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

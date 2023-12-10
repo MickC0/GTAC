@@ -11,7 +11,9 @@ import com.mickc0.gtac.service.VolunteerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -57,9 +59,14 @@ public class HomeController {
     }
 
     @PostMapping("/administration/volunteer")
-    public String createVolunteerWithRole(Model model, RedirectAttributes redirectAttributes){
-
+    public String createVolunteerWithRole(@ModelAttribute("newVolunteer") VolunteerDetailsDTO volunteerDetailsDTO,
+                                          RedirectAttributes redirectAttributes,
+                                          @RequestParam("roleNames") List<String> roleNames){
+        volunteerDetailsDTO.setRoles(roleNames);
+        volunteerService.saveDetails(volunteerDetailsDTO);
+        redirectAttributes.addFlashAttribute("successMessage", "Bénévole enregistré avec succès.");
         return "redirect:/administration";
     }
+
 
 }
