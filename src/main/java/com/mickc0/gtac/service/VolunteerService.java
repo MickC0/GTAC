@@ -1,9 +1,6 @@
 package com.mickc0.gtac.service;
 
-import com.mickc0.gtac.dto.VolunteerDTO;
-import com.mickc0.gtac.dto.VolunteerDetailsDTO;
-import com.mickc0.gtac.dto.VolunteerProfilDTO;
-import com.mickc0.gtac.dto.VolunteerStatusDTO;
+import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.entity.RoleName;
 import com.mickc0.gtac.entity.Volunteer;
 
@@ -13,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface VolunteerService {
-    void saveDetails(VolunteerDetailsDTO volunteerDetailsDTO);
+    void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, boolean resetPassword);
     Volunteer saveAndReturn(Volunteer volunteer);
     void saveOrUpdate(VolunteerDTO volunteerDTO);
     Optional<Volunteer> findById(Long id);
@@ -25,11 +22,17 @@ public interface VolunteerService {
     List<VolunteerDTO> getAvailableUsersForMission(LocalDateTime start, LocalDateTime end, UUID missionTypeUuid, UUID currentMissionUuid);
 
 
-    VolunteerProfilDTO findVolunteerProfilDTOByUuid(UUID uuid);
+    VolunteerGuestProfilDTO findVolunteerProfilDTOByUuid(UUID uuid);
 
     List<Volunteer> findVolunteersByUuids(List<UUID> volunteerUuids);
 
     Optional<Volunteer> findVolunteerByUuid(UUID volunteerUuid);
 
     List<VolunteerDetailsDTO> findAllVolunteerByRole(RoleName roleName);
+
+    VolunteerDetailsDTO findVolunteerDetailsByUuid(UUID uuid);
+
+    VolunteerRoleProfilDTO findVolunteerRoleProfilByEmail(String email);
+    VolunteerRoleProfilDTO findVolunteerRoleProfilByUuid(UUID uuid);
+
 }

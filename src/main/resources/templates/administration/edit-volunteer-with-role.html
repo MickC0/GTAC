@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div th:replace="~{fragments/head :: head}"></div>
 <body>
     <div class="container">
         <div class="row">
             <div class="card col-lg-12 col-md-9 justify-content-center container py-4">
                 <div class="card-header">
-                    <h1>Nouveau bénévole</h1>
+                    <h1>Éditer bénévole</h1>
                 </div>
                 <div class="card-body">
 
-                    <form th:action="@{/administration/volunteer}" method="post" id="newVolunteerWithRoleForm" th:object="${newVolunteer}">
+                    <form th:action="@{/administration/volunteer/edit}" method="post" id="editVolunteerWithRoleForm" th:object="${volunteer}">
                         <div class="row">
                             <div class="col-md-5 col-sm-12 mb-4">
                                 <div class="form-group">
@@ -43,8 +43,8 @@
                                                type="checkbox"
                                                class="btn-check" th:classappend="${role.name == 'ROLE_ADMIN' ? 'role-admin' : (role.name == 'ROLE_MISSION' ? 'role-mission' : 'role-volunteer')}"
                                                autocomplete="off"
-                                               th:checked="${newVolunteer.roles != null and #lists.contains(newVolunteer.roles, role.name)}"
-                                               th:disabled="${role.name == 'ROLE_ADMIN' and newVolunteer.roles != null and (#lists.contains(newVolunteer.roles, 'ROLE_VOLUNTEER') or #lists.contains(newVolunteer.roles, 'ROLE_MISSION'))}">
+                                               th:checked="${volunteer.roles != null and #lists.contains(volunteer.roles, role.name)}"
+                                               th:disabled="${role.name == 'ROLE_ADMIN' and volunteer.roles != null and (#lists.contains(volunteer.roles, 'ROLE_VOLUNTEER') or #lists.contains(volunteer.roles, 'ROLE_MISSION'))}">
                                         <label class="btn btn-outline-secondary"
                                                th:for="${'btn-check-outlined' + role.name}"
                                                th:text="${@translationUtils.translateRole(role.name)}"></label><br>
@@ -55,8 +55,16 @@
                     </form>
                 </div>
                 <div class="card-footer">
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="resetPassword" name="resetPassword">
+                            <label class="form-check-label" for="resetPassword">
+                                Réinitialiser le mot de passe à la valeur par défaut
+                            </label>
+                        </div>
+                    </div>
                     <a class="btn btn-outline-secondary me-2" th:href="@{/administration}">Annuler</a>
-                    <button type="submit" form="newVolunteerWithRoleForm" class="btn btn-primary">Enregistrer</button>
+                    <button type="submit" form="editVolunteerWithRoleForm" class="btn btn-primary">Mettre à jour</button>
                 </div>
             </div>
         </div>
@@ -74,8 +82,6 @@
             });
         });
     </script>
-
     <div th:replace="~{fragments/scripts :: scripts}"></div>
-
 </body>
- </html>
+</html>

@@ -30,4 +30,14 @@ public class TranslationUtils {
         };
     }
 
+    public static String translateRole(String roleName){
+        return switch (roleName) {
+            case "ROLE_ADMIN" -> "Administrateur";
+            case "ROLE_MISSION" -> "Gestionnaire de missions";
+            case "ROLE_VOLUNTEER" -> "Gestionnaire de bénévoles";
+            case "ROLE_GUEST" -> "Bénévole";
+            default -> "Inconnu";
+        };
+    }
+
 }

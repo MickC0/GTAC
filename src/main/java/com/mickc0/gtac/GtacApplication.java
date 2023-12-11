@@ -49,6 +49,8 @@ public class GtacApplication implements CommandLineRunner {
         roleRepository.save(guestRole);
 
         Volunteer volunteer = new Volunteer();
+        volunteer.setLastName("admin");
+        volunteer.setFirstName("admin");
         volunteer.setEmail("admin@gmail.com");
         volunteer.setPassword(passwordEncoder.encode("admin"));
         volunteer.setRoles(List.of(adminRole));

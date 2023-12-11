@@ -48,6 +48,10 @@ public class Volunteer {
     )
     private List<Role> roles = new ArrayList<>();
 
+    @Column(name = "must_change_password")
+    private boolean mustChangePassword = true;
+
+
 
     public Long getId() {
         return id;

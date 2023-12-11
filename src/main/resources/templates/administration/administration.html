@@ -22,13 +22,16 @@
                                 </div>
                                 <div class="card-body">
                                     <ul class="list-group" >
-                                        <li class="list-group-item" th:each="volunteerManager : ${volunteerManagers}">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center" th:each="volunteerManager : ${volunteerManagers}">
                                             <div class="ms-2 me-auto">
                                                 <span th:text="${volunteerManager.lastName.toUpperCase()} + ' ' + ${volunteerManager.firstName}"></span>
                                             </div>
                                             <div class="ms-2 me-auto">
                                                 <small th:text="${volunteerManager.email}"></small><br>
                                                 <small th:text="${volunteerManager.phoneNumber}"></small>
+                                            </div>
+                                            <div>
+                                                <a class="btn btn-primary btn-sm" th:href="@{/administration/volunteer/edit/{id}(id=${volunteerManager.uuid})}">Éditer</a>
                                             </div>
                                         </li>
                                     </ul>
@@ -45,13 +48,42 @@
                                 </div>
                                 <div class="card-body">
                                     <ul class="list-group" >
-                                        <li class="list-group-item" th:each="missionManager : ${missionManagers}">
+                                        <li class="list-group-item  d-flex justify-content-between align-items-center" th:each="missionManager : ${missionManagers}">
                                             <div class="ms-2 me-auto">
                                                 <span th:text="${missionManager.lastName.toUpperCase()} + ' ' + ${missionManager.firstName}"></span>
                                             </div>
                                             <div class="ms-2 me-auto">
                                                 <small th:text="${missionManager.email}"></small><br>
                                                 <small th:text="${missionManager.phoneNumber}"></small>
+                                            </div>
+                                            <div>
+                                                <a class="btn btn-primary btn-sm" th:href="@{/administration/volunteer/edit/{id}(id=${volunteerManager.uuid})}">Éditer</a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-footer">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3>Administrateurs</h3>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group" >
+                                        <li class="list-group-item  d-flex justify-content-between align-items-center" th:each="admin : ${administrators}">
+                                            <div class="ms-2 me-auto">
+                                                <span th:text="${admin.lastName.toUpperCase()} + ' ' + ${admin.firstName}"></span>
+                                            </div>
+                                            <div class="ms-2 me-auto">
+                                                <small th:text="${admin.email}"></small><br>
+                                                <small th:text="${admin.phoneNumber}"></small>
+                                            </div>
+                                            <div>
+                                                <a class="btn btn-primary btn-sm" th:href="@{/administration/volunteer/edit/{id}(id=${volunteerManager.uuid})}">Éditer</a>
                                             </div>
                                         </li>
                                     </ul>

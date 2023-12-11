@@ -1,17 +1,10 @@
 package com.mickc0.gtac.mapper;
 
-import com.mickc0.gtac.dto.VolunteerDTO;
-import com.mickc0.gtac.dto.VolunteerDetailsDTO;
-import com.mickc0.gtac.dto.VolunteerProfilDTO;
-import com.mickc0.gtac.dto.VolunteerStatusDTO;
-import com.mickc0.gtac.entity.MissionStatus;
+import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.entity.Role;
 import com.mickc0.gtac.entity.Volunteer;
-import com.mickc0.gtac.repository.MissionAssignmentRepository;
-import com.mickc0.gtac.repository.UnavailabilityRepository;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Component
@@ -47,8 +40,8 @@ public class VolunteerMapper {
         return volunteerDTO;
     }
 
-    public VolunteerProfilDTO mapToProfilDto(Volunteer volunteer){
-        VolunteerProfilDTO volunteerDTO = new VolunteerProfilDTO();
+    public VolunteerGuestProfilDTO mapToProfilDto(Volunteer volunteer){
+        VolunteerGuestProfilDTO volunteerDTO = new VolunteerGuestProfilDTO();
         volunteerDTO.setUuid(volunteer.getUuid());
         volunteerDTO.setLastName(volunteer.getLastName());
         volunteerDTO.setFirstName(volunteer.getFirstName());
@@ -77,6 +70,20 @@ public class VolunteerMapper {
         volunteerDTO.setEmail(volunteer.getEmail());
         volunteerDTO.setPhoneNumber(volunteer.getPhoneNumber());
         volunteerDTO.setPassword(volunteer.getPassword());
+        volunteerDTO.setRoles(volunteer.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+        return volunteerDTO;
+    }
+
+    public VolunteerRoleProfilDTO mapToFullDetailsDto(Volunteer volunteer){
+        VolunteerRoleProfilDTO volunteerDTO = new VolunteerRoleProfilDTO();
+        volunteerDTO.setUuid(volunteer.getUuid());
+        volunteerDTO.setLastName(volunteer.getLastName());
+        volunteerDTO.setFirstName(volunteer.getFirstName());
+        volunteerDTO.setEmail(volunteer.getEmail());
+        volunteerDTO.setPhoneNumber(volunteer.getPhoneNumber());
+        volunteerDTO.setMissionTypes(missionTypeMapper.mapToMissionTypeDtoListForVolunteerProfilDto(volunteer.getMissionTypes()));
+        volunteerDTO.setAvailabilities(availabilityMapper.mapToAvailabilityDtoListForVolunteerEditDto(volunteer.getAvailabilities()));
+        volunteerDTO.setUnavailabilities(unavailabilityMapper.mapToUnavailabilityDtoListForVolunteerEditDto(volunteer.getUnavailabilities()));
         volunteerDTO.setRoles(volunteer.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
         return volunteerDTO;
     }

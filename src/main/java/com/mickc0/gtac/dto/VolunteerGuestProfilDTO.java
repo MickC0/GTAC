@@ -3,7 +3,7 @@ package com.mickc0.gtac.dto;
 import java.util.List;
 import java.util.UUID;
 
-public class VolunteerProfilDTO {
+public class VolunteerGuestProfilDTO {
 
     private UUID uuid;
     private String lastName;

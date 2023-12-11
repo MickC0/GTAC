@@ -2,13 +2,13 @@ package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.entity.*;
-import com.mickc0.gtac.exception.VolunteerInUseException;
 import com.mickc0.gtac.mapper.VolunteerMapper;
-import com.mickc0.gtac.repository.MissionAssignmentRepository;
-import com.mickc0.gtac.repository.UnavailabilityRepository;
 import com.mickc0.gtac.repository.VolunteerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,26 +45,65 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
-    public void saveDetails(VolunteerDetailsDTO volunteerDetailsDTO) {
+    public void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, boolean resetPassword) {
         Volunteer volunteer;
-        if (volunteerDetailsDTO.getUuid() != null && volunteerRepository.findByUuid(volunteerDetailsDTO.getUuid()).isPresent()) {
+        boolean isNewVolunteer = volunteerDetailsDTO.getUuid() == null;
+        if (!isNewVolunteer) {
             volunteer = volunteerRepository.findByUuid(volunteerDetailsDTO.getUuid())
                     .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + volunteerDetailsDTO.getUuid() + " n'existe pas"));
         } else {
             volunteer = new Volunteer();
         }
-        List<Role> roles = new ArrayList<>(volunteerDetailsDTO.getRoles().stream()
-                .map(roleService::findByName).toList());
-        Role role = roleService.findByName(String.valueOf(RoleName.ROLE_GUEST));
-        roles.add(role);
+
+        List<Role> roles = getRoles(volunteerDetailsDTO, isNewVolunteer);
+        volunteer.setRoles(roles);
         volunteer.setLastName(volunteerDetailsDTO.getLastName());
         volunteer.setFirstName(volunteerDetailsDTO.getFirstName());
         volunteer.setEmail(volunteerDetailsDTO.getEmail());
         volunteer.setPhoneNumber(volunteerDetailsDTO.getPhoneNumber());
-        volunteer.setPassword(passwordEncoder.encode(volunteerDetailsDTO.getPassword()));
-        volunteer.setRoles(roles);
+
+        if (resetPassword || isNewVolunteer) {
+            String defaultPassword = getDefaultPasswordForRoles(roles);
+            volunteer.setPassword(passwordEncoder.encode(defaultPassword));
+        }
+
         volunteerRepository.save(volunteer);
     }
+    private String getDefaultPasswordForRoles(List<Role> roles) {
+        boolean isAdmin = roles.stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN.name()));
+        boolean isVolunteer = roles.stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_VOLUNTEER.name()));
+        boolean isMission = roles.stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_MISSION.name()));
+        if (isAdmin) {
+            return "admin";
+        } else if (isVolunteer && isMission) {
+            return "volunteermission";
+        } else if (isVolunteer) {
+            return "volunteer";
+        } else if (isMission) {
+            return "mission";
+        }
+        return "defaultPassword";
+    }
+
+    private List<Role> getRoles(VolunteerDetailsDTO volunteerDetailsDTO, boolean isNewVolunteer) {
+        List<Role> roles;
+        if (volunteerDetailsDTO.getRoles() == null || volunteerDetailsDTO.getRoles().isEmpty()) {
+            roles = new ArrayList<>();
+            Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
+            roles.add(guestRole);
+        } else {
+            roles = volunteerDetailsDTO.getRoles().stream()
+                    .map(roleService::findByName).collect(Collectors.toList());
+            boolean hasGuestRole = roles.stream()
+                    .anyMatch(role -> role.getName().equals(RoleName.ROLE_GUEST.name()));
+            if (!hasGuestRole) {
+                Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
+                roles.add(guestRole);
+            }
+        }
+        return roles;
+    }
+
 
     @Override
     @Transactional
@@ -75,21 +114,33 @@ public class VolunteerServiceImpl implements VolunteerService{
     @Override
     @Transactional
     public void saveOrUpdate(VolunteerDTO volunteerDTO) {
-
         Volunteer volunteer;
-        if (volunteerDTO.getUuid() != null && volunteerRepository.findByUuid(volunteerDTO.getUuid()).isPresent()) {
+        boolean isNewVolunteer = volunteerDTO.getUuid() == null;
+        if (!isNewVolunteer) {
             volunteer = volunteerRepository.findByUuid(volunteerDTO.getUuid())
                     .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + volunteerDTO.getUuid() + " n'existe pas"));
         } else {
             volunteer = new Volunteer();
         }
-        Role role = roleService.findByName(String.valueOf(RoleName.ROLE_GUEST));
         volunteer.setLastName(volunteerDTO.getLastName());
         volunteer.setFirstName(volunteerDTO.getFirstName());
         volunteer.setEmail(volunteerDTO.getEmail());
         volunteer.setPhoneNumber(volunteerDTO.getPhoneNumber());
-        List<Role> roles = new ArrayList<>();
-        roles.add(role);
+
+        List<Role> roles;
+        if (volunteerDTO.getUuid() == null || volunteer.getRoles().isEmpty()) {
+            roles = new ArrayList<>();
+            Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
+            roles.add(guestRole);
+        } else {
+            roles = new ArrayList<>(volunteer.getRoles());
+            boolean hasGuestRole = roles.stream()
+                    .anyMatch(role -> role.getName().equals(RoleName.ROLE_GUEST.name()));
+            if (!hasGuestRole) {
+                Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
+                roles.add(guestRole);
+            }
+        }
         volunteer.setRoles(roles);
         volunteer = saveAndReturn(volunteer);
 
@@ -254,7 +305,7 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
-    public VolunteerProfilDTO findVolunteerProfilDTOByUuid(UUID uuid) {
+    public VolunteerGuestProfilDTO findVolunteerProfilDTOByUuid(UUID uuid) {
         return volunteerMapper.mapToProfilDto(volunteerRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + uuid + " n'existe pas")));
     }
@@ -276,6 +327,28 @@ public class VolunteerServiceImpl implements VolunteerService{
         return volunteers.stream()
                 .map(volunteerMapper::mapToDetailsDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public VolunteerDetailsDTO findVolunteerDetailsByUuid(UUID uuid) {
+        return volunteerMapper.mapToDetailsDto(volunteerRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + uuid + " n'existe pas")));
+    }
+
+    @Override
+    public VolunteerRoleProfilDTO findVolunteerRoleProfilByEmail(String email) {
+        Volunteer volunteer = volunteerRepository.findByEmail(email);
+        if (volunteer == null) {
+            throw new UsernameNotFoundException("Utilisateur non trouvé : " + email);
+        } else {
+            return volunteerMapper.mapToFullDetailsDto(volunteer);
+        }
+    }
+
+    @Override
+    public VolunteerRoleProfilDTO findVolunteerRoleProfilByUuid(UUID uuid) {
+        return volunteerMapper.mapToFullDetailsDto(volunteerRepository.findByUuid(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + uuid + " n'existe pas")));
     }
 
 

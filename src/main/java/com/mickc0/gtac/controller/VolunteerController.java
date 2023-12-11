@@ -2,8 +2,6 @@ package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.exception.VolunteerInUseException;
-import com.mickc0.gtac.mapper.UnavailabilityMapper;
-import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/volunteers")
@@ -62,7 +59,8 @@ public class VolunteerController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editVolunteerForm(@PathVariable(value = "id") UUID uuid, Model model){
+    public String editVolunteerForm(@PathVariable(value = "id") UUID uuid, Model model,
+                                    @RequestParam(name = "source", defaultValue = "volunteers") String sourcePage){
         VolunteerDTO volunteerDTO = volunteerService.findVolunteerDTOByUuid(uuid);
         List<MissionTypeDTO> allMissionTypes = missionTypeService.findAllDto();
 
@@ -72,16 +70,22 @@ public class VolunteerController {
         }
         model.addAttribute("volunteer", volunteerDTO);
         model.addAttribute("allMissionTypes", allMissionTypes);
+        model.addAttribute("sourcePage", sourcePage);
         return "/volunteers/volunteer/edit-volunteer";
     }
 
     @PostMapping("/update/{id}")
     public String updateVolunteer(@PathVariable(name = "id") UUID uuid,
                                   @ModelAttribute ("volunteer") VolunteerDTO volunteer,
+                                  @RequestParam(name = "source", defaultValue = "volunteers") String sourcePage,
                                   RedirectAttributes redirectAttributes){
         volunteerService.saveOrUpdate(volunteer);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole modifié avec succès.");
-        return "redirect:/volunteers";
+        String redirectPath = "/volunteers";
+        if (sourcePage.equals("profil")) {
+            redirectPath = "/administration/profil";
+        }
+        return "redirect:" + redirectPath;
     }
 
     @GetMapping("/delete/{id}")
@@ -98,7 +102,7 @@ public class VolunteerController {
                                 Model model,
                                 RedirectAttributes redirectAttributes){
         try {
-            VolunteerProfilDTO volunteer = volunteerService.findVolunteerProfilDTOByUuid(uuid);
+            VolunteerGuestProfilDTO volunteer = volunteerService.findVolunteerProfilDTOByUuid(uuid);
             model.addAttribute("volunteer", volunteer);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e);
@@ -107,15 +111,4 @@ public class VolunteerController {
 
         return "volunteers/volunteer/view-volunteer";
     }
-
-    @GetMapping("/search")
-    public String searchMissions(@RequestParam(value = "query") String query, Model model){
-        //List<Volunteer> volunteers = volunteerService.searchVolunteers(query);
-        //model.addAttribute("volunteers", volunteers);
-        return "volunteers/volunteers";
-    }
-
-
-
-
 }
