@@ -57,7 +57,7 @@
                                                 <small th:text="${missionManager.phoneNumber}"></small>
                                             </div>
                                             <div>
-                                                <a class="btn btn-primary btn-sm" th:href="@{/administration/volunteer/edit/{id}(id=${volunteerManager.uuid})}">Éditer</a>
+                                                <a class="btn btn-primary btn-sm" th:href="@{/administration/volunteer/edit/{id}(id=${missionManager.uuid})}">Éditer</a>
                                             </div>
                                         </li>
                                     </ul>
@@ -83,7 +83,7 @@
                                                 <small th:text="${admin.phoneNumber}"></small>
                                             </div>
                                             <div>
-                                                <a class="btn btn-primary btn-sm" th:href="@{/administration/volunteer/edit/{id}(id=${volunteerManager.uuid})}">Éditer</a>
+                                                <a class="btn btn-primary btn-sm" th:href="@{/administration/volunteer/edit/{id}(id=${admin.uuid})}">Éditer</a>
                                             </div>
                                         </li>
                                     </ul>

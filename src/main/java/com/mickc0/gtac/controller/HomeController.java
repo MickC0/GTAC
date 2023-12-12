@@ -30,13 +30,11 @@ public class HomeController {
     private final MissionService missionService;
     private final VolunteerService volunteerService;
     private final RoleService roleService;
-    private final MissionTypeService missionTypeService;
 
-    public HomeController(MissionService missionService, VolunteerService volunteerService, RoleService roleService, MissionTypeService missionTypeService) {
+    public HomeController(MissionService missionService, VolunteerService volunteerService, RoleService roleService) {
         this.missionService = missionService;
         this.volunteerService = volunteerService;
         this.roleService = roleService;
-        this.missionTypeService = missionTypeService;
     }
 
     @GetMapping({"","/","/home"})
@@ -71,25 +69,32 @@ public class HomeController {
     @PostMapping("/administration/volunteer")
     public String createVolunteerWithRole(@ModelAttribute("newVolunteer") VolunteerDetailsDTO volunteerDetailsDTO,
                                           RedirectAttributes redirectAttributes,
-                                          @RequestParam("roleNames") List<String> roleNames){
+                                          @RequestParam("roleNames") List<String> roleNames,
+                                          Authentication authentication){
         volunteerDetailsDTO.setRoles(roleNames);
-        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, false);
+        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, false, authentication);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole enregistré avec succès.");
         return "redirect:/administration";
     }
 
     @GetMapping("/administration/volunteer/edit/{id}")
-    public String showEditVolunteerWithRoleForm(@PathVariable(value = "id") UUID uuid,  Model model){
+    public String showEditVolunteerWithRoleForm(@PathVariable(value = "id") UUID uuid,
+                                                Model model,
+                                                Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String currentUserEmail = userDetails.getUsername();
         model.addAttribute("volunteer", volunteerService.findVolunteerDetailsByUuid(uuid));
         model.addAttribute("allRoles", roleService.findAllRoles());
+        model.addAttribute("currentUserEmail", currentUserEmail);
         return "administration/edit-volunteer-with-role";
     }
 
     @PostMapping("/administration/volunteer/edit")
     public String updateVolunteer(@ModelAttribute("volunteer") VolunteerDetailsDTO volunteerDetailsDTO,
                                   RedirectAttributes redirectAttributes,
-                                  @RequestParam(required = false, defaultValue = "false") boolean resetPassword) {
-        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, resetPassword);
+                                  @RequestParam(required = false, defaultValue = "false") boolean resetPassword,
+                                  Authentication authentication) {
+        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, resetPassword, authentication);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole mis à jour avec succès.");
         return "redirect:/administration";
     }
@@ -101,6 +106,30 @@ public class HomeController {
         VolunteerRoleProfilDTO volunteerRoleProfilDTO = volunteerService.findVolunteerRoleProfilByEmail(email);
         model.addAttribute("volunteer", volunteerRoleProfilDTO);
         return "/administration/profil";
+    }
+
+    @PostMapping("/administration/profil/changePassword")
+    public String changePassword(@RequestParam("oldPassword") String oldPassword,
+                                 @RequestParam("newPassword") String newPassword,
+                                 @RequestParam("confirmNewPassword") String confirmNewPassword,
+                                 Authentication authentication,
+                                 RedirectAttributes redirectAttributes) {
+        if (!newPassword.equals(confirmNewPassword)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Les mots de passe ne correspondent pas.");
+            return "redirect:/administration/profil/changePassword";
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+
+        boolean passwordChanged = volunteerService.changePassword(email, oldPassword, newPassword);
+        if (!passwordChanged) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Ancien mot de passe incorrect.");
+            return "redirect:/administration/profil/changePassword";
+        }
+
+        redirectAttributes.addFlashAttribute("successMessage", "Mot de passe mis à jour avec succès.");
+        return "redirect:/administration/profil";
     }
 
 

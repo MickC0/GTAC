@@ -6,13 +6,16 @@ import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.repository.VolunteerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -45,9 +48,10 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
-    public void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, boolean resetPassword) {
+    public void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, boolean resetPassword, Authentication authentication) {
         Volunteer volunteer;
         boolean isNewVolunteer = volunteerDetailsDTO.getUuid() == null;
+
         if (!isNewVolunteer) {
             volunteer = volunteerRepository.findByUuid(volunteerDetailsDTO.getUuid())
                     .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + volunteerDetailsDTO.getUuid() + " n'existe pas"));
@@ -55,20 +59,36 @@ public class VolunteerServiceImpl implements VolunteerService{
             volunteer = new Volunteer();
         }
 
-        List<Role> roles = getRoles(volunteerDetailsDTO, isNewVolunteer);
-        volunteer.setRoles(roles);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String loggedInUserEmail = userDetails.getUsername();
+        boolean isSelfEdit = volunteer.getEmail() != null && volunteer.getEmail().equals(loggedInUserEmail);
+
+        if (isSelfEdit) {
+            Set<Role> existingRoles = new HashSet<>(volunteer.getRoles());
+            List<Role> newRoles = getRoles(volunteerDetailsDTO, isNewVolunteer);
+            existingRoles.addAll(newRoles);
+            volunteer.setRoles(new ArrayList<>(existingRoles));
+        } else {
+            List<Role> roles = getRoles(volunteerDetailsDTO, isNewVolunteer);
+            volunteer.setRoles(roles);
+        }
+
         volunteer.setLastName(volunteerDetailsDTO.getLastName());
         volunteer.setFirstName(volunteerDetailsDTO.getFirstName());
         volunteer.setEmail(volunteerDetailsDTO.getEmail());
         volunteer.setPhoneNumber(volunteerDetailsDTO.getPhoneNumber());
 
         if (resetPassword || isNewVolunteer) {
-            String defaultPassword = getDefaultPasswordForRoles(roles);
+            String defaultPassword = getDefaultPasswordForRoles(volunteer.getRoles());
             volunteer.setPassword(passwordEncoder.encode(defaultPassword));
         }
 
         volunteerRepository.save(volunteer);
     }
+
+
+
+
     private String getDefaultPasswordForRoles(List<Role> roles) {
         boolean isAdmin = roles.stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN.name()));
         boolean isVolunteer = roles.stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_VOLUNTEER.name()));
@@ -86,14 +106,16 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     private List<Role> getRoles(VolunteerDetailsDTO volunteerDetailsDTO, boolean isNewVolunteer) {
-        List<Role> roles;
-        if (volunteerDetailsDTO.getRoles() == null || volunteerDetailsDTO.getRoles().isEmpty()) {
+        List<Role> roles = new ArrayList<>();
+        if (isNewVolunteer) {
             roles = new ArrayList<>();
             Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
             roles.add(guestRole);
         } else {
-            roles = volunteerDetailsDTO.getRoles().stream()
-                    .map(roleService::findByName).collect(Collectors.toList());
+            if (volunteerDetailsDTO.getRoles() != null && !volunteerDetailsDTO.getRoles().isEmpty()) {
+                roles = volunteerDetailsDTO.getRoles().stream()
+                        .map(roleService::findByName).collect(Collectors.toList());
+            }
             boolean hasGuestRole = roles.stream()
                     .anyMatch(role -> role.getName().equals(RoleName.ROLE_GUEST.name()));
             if (!hasGuestRole) {
@@ -349,6 +371,22 @@ public class VolunteerServiceImpl implements VolunteerService{
     public VolunteerRoleProfilDTO findVolunteerRoleProfilByUuid(UUID uuid) {
         return volunteerMapper.mapToFullDetailsDto(volunteerRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + uuid + " n'existe pas")));
+    }
+
+    @Override
+    @Transactional
+    public boolean changePassword(String email, String oldPassword, String newPassword) {
+        Volunteer volunteer = volunteerRepository.findByEmail(email);
+        if (volunteer == null) {
+            throw new UsernameNotFoundException("Utilisateur non trouvé : " + email);
+        } else {
+            if (!passwordEncoder.matches(oldPassword, volunteer.getPassword())) {
+                return false;
+            }
+            volunteer.setPassword(passwordEncoder.encode(newPassword));
+            volunteerRepository.save(volunteer);
+            return true;
+        }
     }
 
 

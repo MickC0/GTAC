@@ -3,14 +3,16 @@ package com.mickc0.gtac.service;
 import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.entity.RoleName;
 import com.mickc0.gtac.entity.Volunteer;
+import org.springframework.security.core.Authentication;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface VolunteerService {
-    void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, boolean resetPassword);
+    void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, boolean resetPassword, Authentication authentication);
     Volunteer saveAndReturn(Volunteer volunteer);
     void saveOrUpdate(VolunteerDTO volunteerDTO);
     Optional<Volunteer> findById(Long id);
@@ -35,4 +37,5 @@ public interface VolunteerService {
     VolunteerRoleProfilDTO findVolunteerRoleProfilByEmail(String email);
     VolunteerRoleProfilDTO findVolunteerRoleProfilByUuid(UUID uuid);
 
+    boolean changePassword(String email, String oldPassword, String newPassword);
 }
