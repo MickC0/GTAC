@@ -16,6 +16,7 @@ public interface VolunteerService {
     Volunteer saveAndReturn(Volunteer volunteer);
     void saveOrUpdate(VolunteerDTO volunteerDTO);
     Optional<Volunteer> findById(Long id);
+    Optional<Volunteer> findByEmail(String email);
     VolunteerDTO findVolunteerDTOByUuid(UUID uuid);
     List<Volunteer> findAll();
     void deleteVolunteer(UUID uuid);

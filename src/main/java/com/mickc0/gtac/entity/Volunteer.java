@@ -141,6 +141,14 @@ public class Volunteer {
         this.roles = roles;
     }
 
+    public boolean isMustChangePassword() {
+        return mustChangePassword;
+    }
+
+    public void setMustChangePassword(boolean mustChangePassword) {
+        this.mustChangePassword = mustChangePassword;
+    }
+
     @Override
     public String toString() {
         return "Volunteer{" +

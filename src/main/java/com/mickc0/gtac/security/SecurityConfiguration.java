@@ -1,6 +1,8 @@
 package com.mickc0.gtac.security;
 
+import com.mickc0.gtac.controller.CustomAuthenticationSuccessHandler;
 import com.mickc0.gtac.service.VolunteerDetailsService;
+import com.mickc0.gtac.service.VolunteerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,9 +22,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfiguration {
     private final VolunteerDetailsService volunteerDetailsService;
+    private final VolunteerService volunteerService;
 
-    public SecurityConfiguration(VolunteerDetailsService volunteerDetailsService) {
+    public SecurityConfiguration(VolunteerDetailsService volunteerDetailsService, VolunteerService volunteerService) {
         this.volunteerDetailsService = volunteerDetailsService;
+        this.volunteerService = volunteerService;
     }
 
     @Bean
@@ -46,7 +50,7 @@ public class SecurityConfiguration {
                 .formLogin((form) -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/home")
+                        .successHandler(new CustomAuthenticationSuccessHandler(volunteerService))
                         .permitAll()
                 )
                 .logout(logout -> logout

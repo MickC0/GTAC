@@ -275,6 +275,11 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
+    public Optional<Volunteer> findByEmail(String email) {
+        return Optional.ofNullable(volunteerRepository.findByEmail(email));
+    }
+
+    @Override
     public VolunteerDTO findVolunteerDTOByUuid(UUID uuid) {
         return volunteerMapper.mapToDto(volunteerRepository.findByUuid(uuid)
                 .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + uuid + " n'existe pas")));

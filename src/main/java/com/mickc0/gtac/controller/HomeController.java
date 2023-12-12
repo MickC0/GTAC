@@ -113,7 +113,8 @@ public class HomeController {
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmNewPassword") String confirmNewPassword,
                                  Authentication authentication,
-                                 RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes,
+                                 @RequestParam(name = "source", defaultValue = "administration/profil") String sourcePage) {
         if (!newPassword.equals(confirmNewPassword)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Les mots de passe ne correspondent pas.");
             return "redirect:/administration/profil/changePassword";
@@ -127,12 +128,24 @@ public class HomeController {
             redirectAttributes.addFlashAttribute("errorMessage", "Ancien mot de passe incorrect.");
             return "redirect:/administration/profil/changePassword";
         }
-
         redirectAttributes.addFlashAttribute("successMessage", "Mot de passe mis à jour avec succès.");
-        return "redirect:/administration/profil";
+        String redirectPath = "/administration/profil";
+        if (sourcePage.equals("change-password")) {
+            redirectPath = "/home";
+        }
+        return "redirect:" + redirectPath;
     }
 
-
+    @GetMapping("/change-password")
+    public String showChangePasswordForm(Model model, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        VolunteerRoleProfilDTO volunteerRoleProfilDTO = volunteerService.findVolunteerRoleProfilByEmail(email);
+        model.addAttribute("volunteer", volunteerRoleProfilDTO);
+        String sourcePage = "change-password";
+        model.addAttribute("sourcePage", sourcePage);
+        return "/administration/change-password";
+    }
 
 
 
