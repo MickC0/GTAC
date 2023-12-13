@@ -385,6 +385,7 @@ public class VolunteerServiceImpl implements VolunteerService{
         if (volunteer == null) {
             throw new UsernameNotFoundException("Utilisateur non trouvé : " + email);
         } else {
+            volunteer.setMustChangePassword(false);
             if (!passwordEncoder.matches(oldPassword, volunteer.getPassword())) {
                 return false;
             }

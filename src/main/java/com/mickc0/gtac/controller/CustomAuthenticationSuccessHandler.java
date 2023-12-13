@@ -22,7 +22,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof UserDetails) {
@@ -31,7 +31,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                     .orElseThrow(()-> new EntityNotFoundException("Le bénévole avec l'email : " + username + " n'existe pas."));
 
             if (volunteer.isMustChangePassword()) {
-                response.sendRedirect("/change-password");
+                response.sendRedirect("/administration/profil/change-password");
             } else {
                 response.sendRedirect("/home");
             }

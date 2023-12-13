@@ -108,16 +108,26 @@ public class HomeController {
         return "/administration/profil";
     }
 
-    @PostMapping("/administration/profil/changePassword")
+    @GetMapping("/administration/profil/change-password")
+    public String showChangePasswordForm(Model model, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        VolunteerRoleProfilDTO volunteerRoleProfilDTO = volunteerService.findVolunteerRoleProfilByEmail(email);
+        System.out.println("avant " + volunteerRoleProfilDTO.isMustChangePassword());
+        model.addAttribute("volunteer", volunteerRoleProfilDTO);
+        return "/administration/change-password";
+    }
+
+    @PostMapping("/administration/profil/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmNewPassword") String confirmNewPassword,
+                                 @RequestParam("mustChangePassword") boolean mustChangePassword,
                                  Authentication authentication,
-                                 RedirectAttributes redirectAttributes,
-                                 @RequestParam(name = "source", defaultValue = "administration/profil") String sourcePage) {
+                                 RedirectAttributes redirectAttributes) {
         if (!newPassword.equals(confirmNewPassword)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Les mots de passe ne correspondent pas.");
-            return "redirect:/administration/profil/changePassword";
+            return "redirect:/administration/profil/change-password";
         }
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -126,26 +136,18 @@ public class HomeController {
         boolean passwordChanged = volunteerService.changePassword(email, oldPassword, newPassword);
         if (!passwordChanged) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ancien mot de passe incorrect.");
-            return "redirect:/administration/profil/changePassword";
+            return "redirect:/administration/profil/change-password";
         }
         redirectAttributes.addFlashAttribute("successMessage", "Mot de passe mis à jour avec succès.");
         String redirectPath = "/administration/profil";
-        if (sourcePage.equals("change-password")) {
+        if (mustChangePassword) {
             redirectPath = "/home";
         }
+        System.out.println(mustChangePassword);
         return "redirect:" + redirectPath;
     }
 
-    @GetMapping("/change-password")
-    public String showChangePasswordForm(Model model, Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-        VolunteerRoleProfilDTO volunteerRoleProfilDTO = volunteerService.findVolunteerRoleProfilByEmail(email);
-        model.addAttribute("volunteer", volunteerRoleProfilDTO);
-        String sourcePage = "change-password";
-        model.addAttribute("sourcePage", sourcePage);
-        return "/administration/change-password";
-    }
+
 
 
 
