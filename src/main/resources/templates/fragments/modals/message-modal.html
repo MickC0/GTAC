@@ -5,15 +5,10 @@
 
 <div th:fragment="message-modal">
   <script th:inline="javascript">
-
-
     document.addEventListener('DOMContentLoaded', function () {
       let hasErrorMessage = [[${not #strings.isEmpty(errorMessage)}]];
       let hasSuccessMessage = [[${not #strings.isEmpty(successMessage)}]];
       let hasInformationMessage = [[${not #strings.isEmpty(informationMessage)}]];
-      console.log("Erreur: " + hasErrorMessage);
-      console.log("Succès: " + hasSuccessMessage);
-      console.log("Information: " + hasInformationMessage);
 
       if (hasErrorMessage || hasSuccessMessage || hasInformationMessage) {
         let messageModal = new bootstrap.Modal(document.getElementById('messageModal'));

@@ -3,6 +3,7 @@ package com.mickc0.gtac.controller;
 import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.exception.VolunteerInUseException;
 import com.mickc0.gtac.service.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,6 @@ public class VolunteerController {
                 volunteer.setStatus("En mission");
             }
         });
-
         model.addAttribute("volunteers", volunteers);
         return "/volunteers/volunteers";
     }

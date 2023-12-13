@@ -29,9 +29,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             String username = ((UserDetails)principal).getUsername();
             Volunteer volunteer = volunteerService.findByEmail(username)
                     .orElseThrow(()-> new EntityNotFoundException("Le bénévole avec l'email : " + username + " n'existe pas."));
-
             if (volunteer.isMustChangePassword()) {
-                response.sendRedirect("/administration/profil/change-password");
+                response.sendRedirect("/profil/change-password");
             } else {
                 response.sendRedirect("/home");
             }

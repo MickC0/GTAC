@@ -1,15 +1,13 @@
 package com.mickc0.gtac.controller;
 
-import com.mickc0.gtac.dto.MissionTypeDTO;
-import com.mickc0.gtac.dto.VolunteerDTO;
 import com.mickc0.gtac.dto.VolunteerDetailsDTO;
 import com.mickc0.gtac.dto.VolunteerRoleProfilDTO;
 import com.mickc0.gtac.entity.MissionStatus;
 import com.mickc0.gtac.entity.RoleName;
 import com.mickc0.gtac.service.MissionService;
-import com.mickc0.gtac.service.MissionTypeService;
 import com.mickc0.gtac.service.RoleService;
 import com.mickc0.gtac.service.VolunteerService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -17,12 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.security.Principal;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Controller
 public class HomeController {
@@ -38,9 +32,12 @@ public class HomeController {
     }
 
     @GetMapping({"","/","/home"})
-    public String home(Model model){
+    public String home(Model model, HttpSession session){
         model.addAttribute("ongoingMissions", missionService.findByStatus(MissionStatus.ONGOING));
         model.addAttribute("confirmedMissions", missionService.findByStatus(MissionStatus.CONFIRMED));
+        String errorMessage = (String) session.getAttribute("errorMessage");
+        model.addAttribute("errorMessage", errorMessage);
+        session.removeAttribute("errorMessage");
         return "home";
     }
     @GetMapping("/login")
@@ -99,26 +96,25 @@ public class HomeController {
         return "redirect:/administration";
     }
 
-    @GetMapping("/administration/profil")
+    @GetMapping("/profil")
     public String showProfil(Model model, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
         VolunteerRoleProfilDTO volunteerRoleProfilDTO = volunteerService.findVolunteerRoleProfilByEmail(email);
         model.addAttribute("volunteer", volunteerRoleProfilDTO);
-        return "/administration/profil";
+        return "/profil/profil";
     }
 
-    @GetMapping("/administration/profil/change-password")
+    @GetMapping("/profil/change-password")
     public String showChangePasswordForm(Model model, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
         VolunteerRoleProfilDTO volunteerRoleProfilDTO = volunteerService.findVolunteerRoleProfilByEmail(email);
-        System.out.println("avant " + volunteerRoleProfilDTO.isMustChangePassword());
         model.addAttribute("volunteer", volunteerRoleProfilDTO);
-        return "/administration/change-password";
+        return "/profil/change-password";
     }
 
-    @PostMapping("/administration/profil/change-password")
+    @PostMapping("/profil/change-password")
     public String changePassword(@RequestParam("oldPassword") String oldPassword,
                                  @RequestParam("newPassword") String newPassword,
                                  @RequestParam("confirmNewPassword") String confirmNewPassword,
@@ -127,7 +123,7 @@ public class HomeController {
                                  RedirectAttributes redirectAttributes) {
         if (!newPassword.equals(confirmNewPassword)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Les mots de passe ne correspondent pas.");
-            return "redirect:/administration/profil/change-password";
+            return "redirect:/profil/change-password";
         }
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -136,14 +132,13 @@ public class HomeController {
         boolean passwordChanged = volunteerService.changePassword(email, oldPassword, newPassword);
         if (!passwordChanged) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ancien mot de passe incorrect.");
-            return "redirect:/administration/profil/change-password";
+            return "redirect:/profil/change-password";
         }
         redirectAttributes.addFlashAttribute("successMessage", "Mot de passe mis à jour avec succès.");
-        String redirectPath = "/administration/profil";
+        String redirectPath = "/profil";
         if (mustChangePassword) {
             redirectPath = "/home";
         }
-        System.out.println(mustChangePassword);
         return "redirect:" + redirectPath;
     }
 

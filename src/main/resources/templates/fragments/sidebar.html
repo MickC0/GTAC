@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <div th:replace="~{fragments/head :: head}"></div>
 <body>
 
@@ -39,8 +40,8 @@
                 <span class="d-none d-sm-inline mx-1" th:text="${#authentication?.name}"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                <li><a class="dropdown-item" th:href="@{/administration}">Administration</a></li>
-                <li><a class="dropdown-item" th:href="@{/administration/profil}">Profil</a></li>
+                <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/administration}">Administration</a></li>
+                <li><a class="dropdown-item" th:href="@{/profil}">Profil</a></li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>

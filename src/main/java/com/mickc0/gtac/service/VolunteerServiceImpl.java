@@ -65,11 +65,11 @@ public class VolunteerServiceImpl implements VolunteerService{
 
         if (isSelfEdit) {
             Set<Role> existingRoles = new HashSet<>(volunteer.getRoles());
-            List<Role> newRoles = getRoles(volunteerDetailsDTO, isNewVolunteer);
+            List<Role> newRoles = getRoles(volunteerDetailsDTO);
             existingRoles.addAll(newRoles);
             volunteer.setRoles(new ArrayList<>(existingRoles));
         } else {
-            List<Role> roles = getRoles(volunteerDetailsDTO, isNewVolunteer);
+            List<Role> roles = getRoles(volunteerDetailsDTO);
             volunteer.setRoles(roles);
         }
 
@@ -105,23 +105,17 @@ public class VolunteerServiceImpl implements VolunteerService{
         return "defaultPassword";
     }
 
-    private List<Role> getRoles(VolunteerDetailsDTO volunteerDetailsDTO, boolean isNewVolunteer) {
+    private List<Role> getRoles(VolunteerDetailsDTO volunteerDetailsDTO) {
         List<Role> roles = new ArrayList<>();
-        if (isNewVolunteer) {
-            roles = new ArrayList<>();
+        if (volunteerDetailsDTO.getRoles() != null && !volunteerDetailsDTO.getRoles().isEmpty()) {
+            roles = volunteerDetailsDTO.getRoles().stream()
+                    .map(roleService::findByName).collect(Collectors.toList());
+        }
+        boolean hasGuestRole = roles.stream()
+                .anyMatch(role -> role.getName().equals(RoleName.ROLE_GUEST.name()));
+        if (!hasGuestRole) {
             Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
             roles.add(guestRole);
-        } else {
-            if (volunteerDetailsDTO.getRoles() != null && !volunteerDetailsDTO.getRoles().isEmpty()) {
-                roles = volunteerDetailsDTO.getRoles().stream()
-                        .map(roleService::findByName).collect(Collectors.toList());
-            }
-            boolean hasGuestRole = roles.stream()
-                    .anyMatch(role -> role.getName().equals(RoleName.ROLE_GUEST.name()));
-            if (!hasGuestRole) {
-                Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
-                roles.add(guestRole);
-            }
         }
         return roles;
     }
@@ -385,10 +379,11 @@ public class VolunteerServiceImpl implements VolunteerService{
         if (volunteer == null) {
             throw new UsernameNotFoundException("Utilisateur non trouvé : " + email);
         } else {
-            volunteer.setMustChangePassword(false);
             if (!passwordEncoder.matches(oldPassword, volunteer.getPassword())) {
+                volunteer.setMustChangePassword(true);
                 return false;
             }
+            volunteer.setMustChangePassword(false);
             volunteer.setPassword(passwordEncoder.encode(newPassword));
             volunteerRepository.save(volunteer);
             return true;
