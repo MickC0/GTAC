@@ -1,6 +1,7 @@
 package com.mickc0.gtac.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class Mission {
     private UUID uuid = UUID.randomUUID();
 
     @Column(name = "title")
+    @Size(min = 3, max = 20)
     private String title;
 
     @Column(name = "description")

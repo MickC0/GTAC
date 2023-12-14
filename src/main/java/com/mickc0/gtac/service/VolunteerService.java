@@ -15,7 +15,7 @@ public interface VolunteerService {
     void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, boolean resetPassword, Authentication authentication);
     Volunteer saveAndReturn(Volunteer volunteer);
     void saveOrUpdate(VolunteerDTO volunteerDTO);
-    Optional<Volunteer> findById(Long id);
+
     Optional<Volunteer> findByEmail(String email);
     VolunteerDTO findVolunteerDTOByUuid(UUID uuid);
     List<Volunteer> findAll();
@@ -27,8 +27,6 @@ public interface VolunteerService {
 
     VolunteerGuestProfilDTO findVolunteerProfilDTOByUuid(UUID uuid);
 
-    List<Volunteer> findVolunteersByUuids(List<UUID> volunteerUuids);
-
     Optional<Volunteer> findVolunteerByUuid(UUID volunteerUuid);
 
     List<VolunteerDetailsDTO> findAllVolunteerByRole(RoleName roleName);
@@ -36,7 +34,6 @@ public interface VolunteerService {
     VolunteerDetailsDTO findVolunteerDetailsByUuid(UUID uuid);
 
     VolunteerRoleProfilDTO findVolunteerRoleProfilByEmail(String email);
-    VolunteerRoleProfilDTO findVolunteerRoleProfilByUuid(UUID uuid);
 
     boolean changePassword(String email, String oldPassword, String newPassword);
 }

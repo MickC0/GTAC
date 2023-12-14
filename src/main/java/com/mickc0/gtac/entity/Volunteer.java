@@ -1,6 +1,8 @@
 package com.mickc0.gtac.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -17,10 +19,13 @@ public class Volunteer {
     @Column(name = "uuid",updatable = false, nullable = false)
     private UUID uuid = UUID.randomUUID();
     @Column(name = "last_name")
+    @Size(min = 3, max = 20)
     private String lastName;
     @Column(name = "first_name")
+    @Size(min = 3, max = 20)
     private String firstName;
     @Column(name = "email")
+    @Email(message = "Merci de renseigner une adresse mail valide")
     private String email;
     @Column(name = "password")
     private String password;

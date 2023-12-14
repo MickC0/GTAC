@@ -1,6 +1,7 @@
 package com.mickc0.gtac.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import java.util.*;
 
@@ -18,6 +19,7 @@ public class MissionType {
     private UUID uuid = UUID.randomUUID();
 
     @Column(name = "name")
+    @Size(min = 3, max = 20)
     private String name;
     @Column(name = "description")
     private String description;

@@ -1,6 +1,7 @@
 package com.mickc0.gtac.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class Role {
     @Column(name = "role_id")
     private Long id;
     @Column(name = "name", nullable = false, unique = false)
+    @Size(min = 3, max = 20)
     private String name;
     @ManyToMany(mappedBy = "roles")
     private List<Volunteer> volunteers = new ArrayList<>();

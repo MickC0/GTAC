@@ -62,7 +62,6 @@ public class VolunteerServiceImpl implements VolunteerService{
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String loggedInUserEmail = userDetails.getUsername();
         boolean isSelfEdit = volunteer.getEmail() != null && volunteer.getEmail().equals(loggedInUserEmail);
-
         if (isSelfEdit) {
             Set<Role> existingRoles = new HashSet<>(volunteer.getRoles());
             List<Role> newRoles = getRoles(volunteerDetailsDTO);
@@ -85,9 +84,6 @@ public class VolunteerServiceImpl implements VolunteerService{
 
         volunteerRepository.save(volunteer);
     }
-
-
-
 
     private String getDefaultPasswordForRoles(List<Role> roles) {
         boolean isAdmin = roles.stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN.name()));
@@ -124,6 +120,9 @@ public class VolunteerServiceImpl implements VolunteerService{
     @Override
     @Transactional
     public Volunteer saveAndReturn(Volunteer volunteer) {
+        if (volunteer == null) {
+            throw new IllegalArgumentException("Le bénévole ne peut pas être null");
+        }
         return volunteerRepository.save(volunteer);
     }
 
@@ -247,7 +246,6 @@ public class VolunteerServiceImpl implements VolunteerService{
 
         }
         volunteer.setAvailabilities(availabilities);
-
     }
 
     @Transactional
@@ -263,10 +261,6 @@ public class VolunteerServiceImpl implements VolunteerService{
         volunteer.setMissionTypes(missionTypes);
     }
 
-    @Override
-    public Optional<Volunteer> findById(Long id) {
-        return volunteerRepository.findById(id);
-    }
 
     @Override
     public Optional<Volunteer> findByEmail(String email) {
@@ -332,12 +326,6 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
-    public List<Volunteer> findVolunteersByUuids(List<UUID> volunteerUuids) {
-        return volunteerRepository.findAllByUuidIn(volunteerUuids);
-
-    }
-
-    @Override
     public Optional<Volunteer> findVolunteerByUuid(UUID uuid) {
         return volunteerRepository.findByUuid(uuid);
     }
@@ -366,11 +354,6 @@ public class VolunteerServiceImpl implements VolunteerService{
         }
     }
 
-    @Override
-    public VolunteerRoleProfilDTO findVolunteerRoleProfilByUuid(UUID uuid) {
-        return volunteerMapper.mapToFullDetailsDto(volunteerRepository.findByUuid(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + uuid + " n'existe pas")));
-    }
 
     @Override
     @Transactional
@@ -389,6 +372,4 @@ public class VolunteerServiceImpl implements VolunteerService{
             return true;
         }
     }
-
-
 }

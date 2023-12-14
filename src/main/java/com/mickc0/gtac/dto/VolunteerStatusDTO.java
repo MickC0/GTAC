@@ -14,14 +14,6 @@ public class VolunteerStatusDTO {
     private String phoneNumber;
     private String status;
 
-    public VolunteerStatusDTO(UUID uuid, String lastName, String firstName, String email, String phoneNumber, String status) {
-        this.uuid = uuid;
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.status = status;
-    }
 
     public UUID getUuid() {
         return uuid;

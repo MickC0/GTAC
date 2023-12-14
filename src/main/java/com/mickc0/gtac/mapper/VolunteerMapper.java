@@ -21,9 +21,14 @@ public class VolunteerMapper {
     }
 
     public VolunteerStatusDTO mapToStatusDTO(Volunteer volunteer, String status) {
-        return new VolunteerStatusDTO(volunteer.getUuid(),
-                volunteer.getLastName(), volunteer.getFirstName(),
-                volunteer.getEmail(), volunteer.getPhoneNumber(), status);
+        VolunteerStatusDTO volunteerStatusDTO = new VolunteerStatusDTO();
+        volunteerStatusDTO.setUuid(volunteer.getUuid());
+        volunteerStatusDTO.setEmail(volunteer.getEmail());
+        volunteerStatusDTO.setLastName(volunteer.getLastName());
+        volunteerStatusDTO.setFirstName(volunteer.getFirstName());
+        volunteerStatusDTO.setPhoneNumber(volunteer.getPhoneNumber());
+        volunteerStatusDTO.setStatus(status);
+        return volunteerStatusDTO;
     }
 
 

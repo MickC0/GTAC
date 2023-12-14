@@ -22,14 +22,12 @@ public class MissionServiceImpl implements MissionService {
     private final MissionRepository missionRepository;
     private final MissionMapper missionMapper;
     private final MissionTypeService missionTypeService;
-    private final MissionAssignmentRepository missionAssignmentRepository;
 
     @Autowired
-    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper, MissionTypeService missionTypeService, MissionAssignmentRepository missionAssignmentRepository) {
+    public MissionServiceImpl(MissionRepository missionRepository, MissionMapper missionMapper, MissionTypeService missionTypeService) {
         this.missionRepository = missionRepository;
         this.missionMapper = missionMapper;
         this.missionTypeService = missionTypeService;
-        this.missionAssignmentRepository = missionAssignmentRepository;
     }
 
     @Override
@@ -37,7 +35,6 @@ public class MissionServiceImpl implements MissionService {
     public void save(MissionDTO missionDTO) {
         Mission mission = getMission(missionDTO);
         setMissionBaseAttributes(missionDTO, mission);
-
         mission.setStatus(missionDTO.getStatus() != null ? missionDTO.getStatus() : MissionStatus.NEW);
         missionRepository.save(mission);
     }
