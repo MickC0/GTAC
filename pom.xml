@@ -120,6 +120,13 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>com/mickc0/gtac/controller/*.class</exclude>
+                                <exclude>com/mickc0/gtac/mapper/*.class</exclude>
+                                <exclude>com/mickc0/gtac/dto/*.class</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
