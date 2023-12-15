@@ -94,9 +94,8 @@ public class MissionAssignmentServiceImpl implements MissionAssignmentService {
     }
 
     @Override
-    public List<UUID> getVolunteersInMissionToday() {
-        LocalDateTime now = LocalDateTime.now();
-        return missionAssignmentRepository.findVolunteersInMissionOnDate(now)
+    public List<UUID> getVolunteersInMissionByLocalDateTime(LocalDateTime localDateTime) {
+                return missionAssignmentRepository.findVolunteersInMissionOnDate(localDateTime)
                 .stream()
                 .map(MissionAssignment::getVolunteer)
                 .map(Volunteer::getUuid)

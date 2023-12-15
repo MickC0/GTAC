@@ -33,16 +33,42 @@ public class MissionServiceImpl implements MissionService {
     @Override
     @Transactional
     public void save(MissionDTO missionDTO) {
-        Mission mission = getMission(missionDTO);
-        setMissionBaseAttributes(missionDTO, mission);
+        Mission mission;
+        boolean isNewMission = missionDTO.getUuid() == null;
+        if(!isNewMission){
+            mission = missionRepository.findByUuid(missionDTO.getUuid())
+                    .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id : "+ missionDTO.getUuid() + " n'existe pas."));
+        } else {
+            mission = new Mission();
+        }
+
+        mission.setTitle(missionDTO.getTitle());
+        mission.setDescription(missionDTO.getDescription());
+        mission.setComment(missionDTO.getComment());
+        mission.setMissionType(missionTypeService.findMissionTypeByUuid(missionDTO.getMissionType().getUuid())
+                .orElseThrow(() -> new EntityNotFoundException("Le type de mission avec l'Id : "+ missionDTO.getMissionType().getUuid() + " n'existe pas.")));
+        mission.setRequiredVolunteerNumber(missionDTO.getRequiredVolunteerNumber());
         mission.setStatus(missionDTO.getStatus() != null ? missionDTO.getStatus() : MissionStatus.NEW);
         missionRepository.save(mission);
     }
 
     @Override
     public void planMission(MissionDTO missionDTO) {
-        Mission mission = getMission(missionDTO);
-        setMissionBaseAttributes(missionDTO, mission);
+        Mission mission;
+        boolean isNewMission = missionDTO.getUuid() == null;
+        if(!isNewMission){
+            mission = missionRepository.findByUuid(missionDTO.getUuid())
+                    .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id : "+ missionDTO.getUuid() + " n'existe pas."));
+        } else {
+            mission = new Mission();
+        }
+
+        mission.setTitle(missionDTO.getTitle());
+        mission.setDescription(missionDTO.getDescription());
+        mission.setComment(missionDTO.getComment());
+        mission.setMissionType(missionTypeService.findMissionTypeByUuid(missionDTO.getMissionType().getUuid())
+                .orElseThrow(() -> new EntityNotFoundException("Le type de mission avec l'Id : "+ missionDTO.getMissionType().getUuid() + " n'existe pas.")));
+        mission.setRequiredVolunteerNumber(missionDTO.getRequiredVolunteerNumber());
 
         if (missionDTO.getStartDateTime() != null && missionDTO.getEndDateTime() != null) {
             mission.setStartDateTime(missionDTO.getStartDateTime());
@@ -59,29 +85,22 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     public void confirmMission(MissionDTO missionDTO) {
-        Mission mission = getMission(missionDTO);
-        setMissionBaseAttributes(missionDTO, mission);
-        mission.setStatus(MissionStatus.CONFIRMED);
-        missionRepository.save(mission);
-    }
-
-    private void setMissionBaseAttributes(MissionDTO missionDTO, Mission mission) {
+        Mission mission;
+        boolean isNewMission = missionDTO.getUuid() == null;
+        if(!isNewMission){
+            mission = missionRepository.findByUuid(missionDTO.getUuid())
+                    .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id : "+ missionDTO.getUuid() + " n'existe pas."));
+        } else {
+            mission = new Mission();
+        }
         mission.setTitle(missionDTO.getTitle());
         mission.setDescription(missionDTO.getDescription());
         mission.setComment(missionDTO.getComment());
         mission.setMissionType(missionTypeService.findMissionTypeByUuid(missionDTO.getMissionType().getUuid())
                 .orElseThrow(() -> new EntityNotFoundException("Le type de mission avec l'Id : "+ missionDTO.getMissionType().getUuid() + " n'existe pas.")));
         mission.setRequiredVolunteerNumber(missionDTO.getRequiredVolunteerNumber());
-    }
-    private Mission getMission(MissionDTO missionDTO) {
-        Mission mission;
-        if(missionDTO.getUuid() != null && missionRepository.findByUuid(missionDTO.getUuid()).isPresent()){
-            mission = missionRepository.findByUuid(missionDTO.getUuid())
-                    .orElseThrow(() -> new EntityNotFoundException("La mission avec l'Id : "+ missionDTO.getUuid() + " n'existe pas."));
-        } else {
-            mission = new Mission();
-        }
-        return mission;
+        mission.setStatus(MissionStatus.CONFIRMED);
+        missionRepository.save(mission);
     }
 
     @Override

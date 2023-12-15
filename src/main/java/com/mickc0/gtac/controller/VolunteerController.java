@@ -3,12 +3,12 @@ package com.mickc0.gtac.controller;
 import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.exception.VolunteerInUseException;
 import com.mickc0.gtac.service.*;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -30,7 +30,7 @@ public class VolunteerController {
     @GetMapping
     public String volunteers(Model model){
         List<VolunteerStatusDTO> volunteers = volunteerService.findAllVolunteersWithStatus();
-        List<UUID> volunteersInMission = missionAssignmentService.getVolunteersInMissionToday();
+        List<UUID> volunteersInMission = missionAssignmentService.getVolunteersInMissionByLocalDateTime(LocalDateTime.now());
 
         volunteers.forEach(volunteer -> {
             if (volunteersInMission.contains(volunteer.getUuid())) {
