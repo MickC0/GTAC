@@ -1,9 +1,12 @@
 package com.mickc0.gtac.dto;
 
+import jakarta.validation.constraints.Size;
+
 import java.util.UUID;
 
 public class MissionTypeDTO {
     private UUID uuid;
+    @Size(min = 3, max = 20)
     private String name;
     private String description;
     private boolean selected;

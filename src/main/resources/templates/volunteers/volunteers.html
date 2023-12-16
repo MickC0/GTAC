@@ -27,7 +27,6 @@
                                         <th>Prénom</th>
                                         <th>Email</th>
                                         <th>Téléphone</th>
-                                        <th>Statut</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -37,19 +36,20 @@
                                         <td th:text="${v.firstName}"></td>
                                         <td th:text="${v.email}"></td>
                                         <td th:text="${v.phoneNumber}"></td>
-                                        <td th:text="${v.status}"></td>
                                         <td>
                                             <!-- Editer -->
                                             <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.uuid})}">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                             <!-- Supprimer -->
-                                            <button type="button" class="btn btn-sm btn-danger"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#deleteVolunteerModal"
-                                                    th:attr="data-volunteer-id=${v.uuid}">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            <div th:if="${v.email != #authentication.name}" class="d-inline-block">
+                                                <button type="button" class="btn btn-sm btn-danger"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteVolunteerModal"
+                                                        th:attr="data-volunteer-id=${v.uuid}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
                                             <!-- Voir -->
                                             <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.uuid})}">
                                                 <i class="bi bi-eye"></i>
@@ -66,7 +66,31 @@
     </div>
     <div th:replace="~{fragments/modals/message-modal :: message-modal}"></div>
     <div th:replace="~{fragments/modals/delete-volunteer-modal :: delete-volunteer-modal}"></div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.searchBox').forEach(function(input) {
+                input.addEventListener('keyup', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const tableSelector = this.getAttribute('data-table');
+                    const tableRows = document.querySelectorAll(`${tableSelector} tbody tr`);
 
+                    tableRows.forEach(function(row) {
+                        const cells = row.getElementsByTagName('td');
+                        let found = false;
+
+                        for (let cell of cells) {
+                            if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        row.style.display = found ? '' : 'none';
+                    });
+                });
+            });
+        });
+    </script>
     <div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>

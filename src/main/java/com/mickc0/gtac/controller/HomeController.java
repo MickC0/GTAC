@@ -8,10 +8,12 @@ import com.mickc0.gtac.service.MissionService;
 import com.mickc0.gtac.service.RoleService;
 import com.mickc0.gtac.service.VolunteerService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -64,12 +66,21 @@ public class HomeController {
     }
 
     @PostMapping("/administration/volunteer")
-    public String createVolunteerWithRole(@ModelAttribute("newVolunteer") VolunteerDetailsDTO volunteerDetailsDTO,
+    public String createVolunteerWithRole(@Valid @ModelAttribute("newVolunteer") VolunteerDetailsDTO volunteerDetailsDTO,
+                                          BindingResult result,
+                                          Model model,
                                           RedirectAttributes redirectAttributes,
                                           @RequestParam("roleNames") List<String> roleNames,
                                           Authentication authentication){
+        if (result.hasErrors()){
+            model.addAttribute("newVolunteer", volunteerDetailsDTO);
+            return "administration/create-volunteer-with-role";
+        }
         volunteerDetailsDTO.setRoles(roleNames);
-        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, false, authentication);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, authentication);
+        volunteerService.resetPassword(false, email);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole enregistré avec succès.");
         return "redirect:/administration";
     }
@@ -87,11 +98,22 @@ public class HomeController {
     }
 
     @PostMapping("/administration/volunteer/edit")
-    public String updateVolunteer(@ModelAttribute("volunteer") VolunteerDetailsDTO volunteerDetailsDTO,
+    public String updateVolunteer(@Valid @ModelAttribute("volunteer") VolunteerDetailsDTO volunteerDetailsDTO,
+                                  BindingResult result,
+                                  Model model,
+                                  @RequestParam("roleNames") List<String> roleNames,
                                   RedirectAttributes redirectAttributes,
                                   @RequestParam(required = false, defaultValue = "false") boolean resetPassword,
                                   Authentication authentication) {
-        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, resetPassword, authentication);
+        if (result.hasErrors()){
+            model.addAttribute("volunteer", volunteerDetailsDTO);
+            return "administration/edit-volunteer-with-role";
+        }
+        volunteerDetailsDTO.setRoles(roleNames);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, authentication);
+        volunteerService.resetPassword(resetPassword,email);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole mis à jour avec succès.");
         return "redirect:/administration";
     }
@@ -141,6 +163,7 @@ public class HomeController {
         }
         return "redirect:" + redirectPath;
     }
+
 
 
 

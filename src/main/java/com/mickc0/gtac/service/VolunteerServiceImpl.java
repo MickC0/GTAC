@@ -2,6 +2,7 @@ package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.entity.*;
+import com.mickc0.gtac.exception.DeleteAdminException;
 import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.repository.VolunteerRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -48,10 +49,9 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
     @Override
-    public void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, boolean resetPassword, Authentication authentication) {
+    public void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, Authentication authentication) {
         Volunteer volunteer;
         boolean isNewVolunteer = volunteerDetailsDTO.getUuid() == null;
-
         if (!isNewVolunteer) {
             volunteer = volunteerRepository.findByUuid(volunteerDetailsDTO.getUuid())
                     .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + volunteerDetailsDTO.getUuid() + " n'existe pas"));
@@ -59,61 +59,95 @@ public class VolunteerServiceImpl implements VolunteerService{
             volunteer = new Volunteer();
         }
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String loggedInUserEmail = userDetails.getUsername();
-        boolean isSelfEdit = volunteer.getEmail() != null && volunteer.getEmail().equals(loggedInUserEmail);
-        if (isSelfEdit) {
-            Set<Role> existingRoles = new HashSet<>(volunteer.getRoles());
-            List<Role> newRoles = getRoles(volunteerDetailsDTO);
-            existingRoles.addAll(newRoles);
-            volunteer.setRoles(new ArrayList<>(existingRoles));
-        } else {
-            List<Role> roles = getRoles(volunteerDetailsDTO);
-            volunteer.setRoles(roles);
+        String loggedInUserEmail = null;
+        boolean isSelfEdit = false;
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            loggedInUserEmail = userDetails.getUsername();
+            isSelfEdit = volunteer.getEmail() != null && volunteer.getEmail().equals(loggedInUserEmail);
         }
 
+        if (isSelfEdit) {
+            Set<Role> existingRoles = new HashSet<>(volunteer.getRoles());
+            List<Role> newRoles = volunteerDetailsDTO.getRoles().stream()
+                    .map(roleService::findByName)
+                    .collect(Collectors.toList());;
+
+            boolean hasAdminRole = existingRoles.stream()
+                    .anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN.name()));
+
+            if (hasAdminRole) {
+                newRoles.removeIf(role -> role.getName().equals(RoleName.ROLE_MISSION.name())
+                       || role.getName().equals(RoleName.ROLE_VOLUNTEER.name()));
+
+                if (newRoles.stream().noneMatch(role -> role.getName().equals(RoleName.ROLE_GUEST.name()))) {
+                    Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
+                    newRoles.add(guestRole);
+                }
+            }
+            existingRoles.addAll(newRoles);
+            volunteer.setRoles(new ArrayList<>(existingRoles));
+        }
+        if (isNewVolunteer) {
+            List<Role> newRoles = volunteerDetailsDTO.getRoles().stream()
+                    .map(roleService::findByName)
+                    .collect(Collectors.toList());
+
+            boolean hasAdminRole = newRoles.stream()
+                    .anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN.name()));
+
+            if (hasAdminRole) {
+                newRoles.removeIf(role -> role.getName().equals(RoleName.ROLE_MISSION.name())
+                        || role.getName().equals(RoleName.ROLE_VOLUNTEER.name()));
+            }
+            boolean hasGuestRole = newRoles.stream()
+                    .anyMatch(role -> role.getName().equals(RoleName.ROLE_GUEST.name()));
+            if (!hasGuestRole) {
+                Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
+                newRoles.add(guestRole);
+            }
+
+            volunteer.setRoles(newRoles);
+        } else {
+            Set<Role> existingRoles = new HashSet<>(volunteer.getRoles());
+            List<Role> newRoles = volunteerDetailsDTO.getRoles().stream()
+                    .map(roleService::findByName).collect(Collectors.toList());
+
+            boolean hasAdminRole = existingRoles.stream()
+                    .anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN.name()));
+            boolean hasAdminRoleInNewRoles = newRoles.stream()
+                    .anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN.name()));
+
+            if (hasAdminRole) {
+                long adminCount = volunteerRepository.countByRoleName("ROLE_ADMIN");
+
+                if (adminCount <= 1 && !hasAdminRoleInNewRoles) {
+                    newRoles.add(roleService.findByName(RoleName.ROLE_ADMIN.name()));
+                } else if (!hasAdminRoleInNewRoles) {
+                    existingRoles.removeIf(role -> role.getName().equals(RoleName.ROLE_ADMIN.name()));
+                }
+
+                newRoles.removeIf(role -> role.getName().equals(RoleName.ROLE_MISSION.name())
+                        || role.getName().equals(RoleName.ROLE_VOLUNTEER.name()));
+            }
+
+            existingRoles.addAll(newRoles);
+
+            boolean hasGuestRole = existingRoles.stream()
+                    .anyMatch(role -> role.getName().equals(RoleName.ROLE_GUEST.name()));
+            if (!hasGuestRole) {
+                Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
+                existingRoles.add(guestRole);
+            }
+
+            volunteer.setRoles(new ArrayList<>(existingRoles));
+        }
         volunteer.setLastName(volunteerDetailsDTO.getLastName());
         volunteer.setFirstName(volunteerDetailsDTO.getFirstName());
         volunteer.setEmail(volunteerDetailsDTO.getEmail());
         volunteer.setPhoneNumber(volunteerDetailsDTO.getPhoneNumber());
 
-        if (resetPassword || isNewVolunteer) {
-            String defaultPassword = getDefaultPasswordForRoles(volunteer.getRoles());
-            volunteer.setPassword(passwordEncoder.encode(defaultPassword));
-        }
-
         volunteerRepository.save(volunteer);
-    }
-
-    private String getDefaultPasswordForRoles(List<Role> roles) {
-        boolean isAdmin = roles.stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN.name()));
-        boolean isVolunteer = roles.stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_VOLUNTEER.name()));
-        boolean isMission = roles.stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_MISSION.name()));
-        if (isAdmin) {
-            return "admin";
-        } else if (isVolunteer && isMission) {
-            return "volunteermission";
-        } else if (isVolunteer) {
-            return "volunteer";
-        } else if (isMission) {
-            return "mission";
-        }
-        return "defaultPassword";
-    }
-
-    private List<Role> getRoles(VolunteerDetailsDTO volunteerDetailsDTO) {
-        List<Role> roles = new ArrayList<>();
-        if (volunteerDetailsDTO.getRoles() != null && !volunteerDetailsDTO.getRoles().isEmpty()) {
-            roles = volunteerDetailsDTO.getRoles().stream()
-                    .map(roleService::findByName).collect(Collectors.toList());
-        }
-        boolean hasGuestRole = roles.stream()
-                .anyMatch(role -> role.getName().equals(RoleName.ROLE_GUEST.name()));
-        if (!hasGuestRole) {
-            Role guestRole = roleService.findByName(RoleName.ROLE_GUEST.name());
-            roles.add(guestRole);
-        }
-        return roles;
     }
 
 
@@ -156,14 +190,8 @@ public class VolunteerServiceImpl implements VolunteerService{
                 roles.add(guestRole);
             }
         }
+
         volunteer.setRoles(roles);
-        volunteer = saveAndReturn(volunteer);
-
-        handleMissionTypes(volunteerDTO, volunteer);
-
-        handleAvailabilities(volunteerDTO, volunteer);
-
-        handleUnavailabilities(volunteerDTO, volunteer);
 
         volunteerRepository.save(volunteer);
     }
@@ -205,7 +233,7 @@ public class VolunteerServiceImpl implements VolunteerService{
 
         }
         volunteer.setUnavailabilities(unavailabilities);
-
+        volunteerRepository.save(volunteer);
     }
 
     @Transactional
@@ -246,6 +274,7 @@ public class VolunteerServiceImpl implements VolunteerService{
 
         }
         volunteer.setAvailabilities(availabilities);
+        volunteerRepository.save(volunteer);
     }
 
     @Transactional
@@ -259,6 +288,7 @@ public class VolunteerServiceImpl implements VolunteerService{
                 .map(Optional::get)
                 .collect(Collectors.toSet());
         volunteer.setMissionTypes(missionTypes);
+        volunteerRepository.save(volunteer);
     }
 
 
@@ -281,9 +311,26 @@ public class VolunteerServiceImpl implements VolunteerService{
     @Override
     @Transactional
     public void deleteVolunteer(UUID uuid) {
-        availabilityService.deleteAllByVolunteerUuid(uuid);
-        unavailabilityService.deleteAllByVolunteerUuid(uuid);
-        volunteerRepository.deleteByUuid(uuid);
+        Volunteer volunteerToDelete = volunteerRepository.findByUuid(uuid)
+                        .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'Id: " + uuid + " n'existe pas"));
+        boolean isAdmin = volunteerToDelete.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            long adminCount = volunteerRepository.countByRoleName("ROLE_ADMIN");
+
+            if (adminCount > 1) {
+                availabilityService.deleteAllByVolunteerUuid(uuid);
+                unavailabilityService.deleteAllByVolunteerUuid(uuid);
+                volunteerRepository.deleteByUuid(uuid);
+            } else {
+                throw new DeleteAdminException("Impossible de supprimer le seul administrateur.");
+            }
+        } else {
+            availabilityService.deleteAllByVolunteerUuid(uuid);
+            unavailabilityService.deleteAllByVolunteerUuid(uuid);
+            volunteerRepository.deleteByUuid(uuid);
+        }
     }
 
     @Override
@@ -371,5 +418,43 @@ public class VolunteerServiceImpl implements VolunteerService{
             volunteerRepository.save(volunteer);
             return true;
         }
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(boolean resetPassword, String email) {
+        Volunteer volunteer = volunteerRepository.findByEmail(email);
+        boolean containsRelevantRole = volunteer.getRoles().stream()
+                .anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN.name())
+                        || role.getName().equals(RoleName.ROLE_MISSION.name())
+                        || role.getName().equals(RoleName.ROLE_VOLUNTEER.name()));
+        if (resetPassword || containsRelevantRole) {
+            String defaultPassword;
+            boolean isAdmin = false, isVolunteer = false, isMission = false;
+            for (Role role : volunteer.getRoles()) {
+                if (role != null) {
+                    if (role.getName().equals(RoleName.ROLE_ADMIN.name())) {
+                        isAdmin = true;
+                    } else if (role.getName().equals(RoleName.ROLE_VOLUNTEER.name())) {
+                        isVolunteer = true;
+                    } else if (role.getName().equals(RoleName.ROLE_MISSION.name())) {
+                        isMission = true;
+                    }
+                }
+            }
+            if (isAdmin) {
+                defaultPassword = "admin";
+            } else if (isVolunteer && isMission) {
+                defaultPassword =  "volunteermission";
+            } else if (isVolunteer) {
+                defaultPassword =  "volunteer";
+            } else if (isMission) {
+                defaultPassword =  "mission";
+            } else {
+                defaultPassword = "defaultPassword";
+            }
+            volunteer.setPassword(passwordEncoder.encode(defaultPassword));
+        }
+        volunteerRepository.save(volunteer);
     }
 }

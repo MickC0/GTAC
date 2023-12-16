@@ -3,13 +3,14 @@ package com.mickc0.gtac.service;
 
 import com.mickc0.gtac.dto.*;
 import com.mickc0.gtac.entity.*;
+import com.mickc0.gtac.exception.DeleteAdminException;
 import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.repository.VolunteerRepository;
-import com.mickc0.gtac.service.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
@@ -70,12 +71,285 @@ public class VolunteerServiceImplTest {
         when(userDetails.getUsername()).thenReturn("jean.dupont@gmail.com");
 
         when(roleService.findByName(anyString())).thenReturn(mockRole);
-        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
-        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, false, authentication);
+        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, authentication);
 
         verify(volunteerRepository).save(any(Volunteer.class));
     }
+
+    @Test
+    public void testSaveNewVolunteer() {
+        Role role = new Role();
+        role.setId(1L);
+        role.setName(RoleName.ROLE_VOLUNTEER.name());
+        VolunteerDetailsDTO volunteerDetailsDTO = new VolunteerDetailsDTO();
+        volunteerDetailsDTO.setUuid(null);
+        volunteerDetailsDTO.setLastName("DUPONT");
+        volunteerDetailsDTO.setFirstName("JEAN");
+        volunteerDetailsDTO.setEmail("jean.dupont@gmail.com");
+        volunteerDetailsDTO.setPhoneNumber("0606060606");
+        volunteerDetailsDTO.setRoles(List.of(role.getName()));
+
+        when(roleService.findByName(RoleName.ROLE_VOLUNTEER.name())).thenReturn(role);
+        when(volunteerRepository.save(any(Volunteer.class))).thenReturn(new Volunteer());
+
+        volunteerService.saveOrUpdateVolunteerDetails(volunteerDetailsDTO, mock(Authentication.class));
+
+        ArgumentCaptor<Volunteer> volunteerCaptor = ArgumentCaptor.forClass(Volunteer.class);
+        verify(volunteerRepository).save(volunteerCaptor.capture());
+        Volunteer savedVolunteer = volunteerCaptor.getValue();
+
+        assertNotNull(savedVolunteer);
+
+    }
+
+    @Test
+    public void testUpdateExistingVolunteer() {
+        UUID existingVolunteerUuid = UUID.randomUUID();
+        Role roleMission = new Role();
+        roleMission.setId(1L);
+        roleMission.setName(RoleName.ROLE_MISSION.name());
+        Role volunteerRole = new Role();
+        volunteerRole.setId(2L);
+        volunteerRole.setName(RoleName.ROLE_VOLUNTEER.name());
+
+        VolunteerDetailsDTO dto = new VolunteerDetailsDTO();
+        dto.setUuid(existingVolunteerUuid);
+        dto.setLastName("Updated");
+        dto.setFirstName("User");
+        dto.setEmail("updated@example.com");
+        dto.setPhoneNumber("0123456789");
+        dto.setRoles(List.of(RoleName.ROLE_VOLUNTEER.name()));
+
+        Volunteer existingVolunteer = new Volunteer();
+        existingVolunteer.setUuid(existingVolunteerUuid);
+        existingVolunteer.setLastName("Original");
+        existingVolunteer.setFirstName("User");
+        existingVolunteer.setEmail("original@example.com");
+        existingVolunteer.setPhoneNumber("9876543210");
+        existingVolunteer.setRoles(List.of(roleMission));
+
+        when(volunteerRepository.findByUuid(existingVolunteerUuid)).thenReturn(Optional.of(existingVolunteer));
+        when(roleService.findByName(anyString())).thenReturn(volunteerRole);
+
+        Authentication authentication = mock(Authentication.class);
+        UserDetails userDetails = mock(UserDetails.class);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(userDetails.getUsername()).thenReturn("original@example.com");
+
+        volunteerService.saveOrUpdateVolunteerDetails(dto, authentication);
+
+        ArgumentCaptor<Volunteer> volunteerCaptor = ArgumentCaptor.forClass(Volunteer.class);
+
+        verify(volunteerRepository).save(volunteerCaptor.capture());
+        Volunteer savedVolunteer = volunteerCaptor.getValue();
+
+        assertEquals("Updated", savedVolunteer.getLastName());
+        assertEquals("updated@example.com", savedVolunteer.getEmail());
+        assertEquals("0123456789", savedVolunteer.getPhoneNumber());
+        assertTrue(savedVolunteer.getRoles().stream()
+                .anyMatch(role -> role.getName().equals("ROLE_VOLUNTEER")));
+    }
+    @Test
+    public void testSelfEditVolunteer() {
+        UUID existingVolunteerUuid = UUID.randomUUID();
+        String authenticatedUserEmail = "authenticated@example.com";
+        Role missionRole = new Role();
+        missionRole.setId(1L);
+        missionRole.setName(RoleName.ROLE_MISSION.name());
+        Role volunteerRole = new Role();
+        volunteerRole.setId(2L);
+        volunteerRole.setName(RoleName.ROLE_VOLUNTEER.name());
+        Role adminRole = new Role();
+        adminRole.setName(RoleName.ROLE_ADMIN.name());
+        adminRole.setId(3L);
+        Role guestRole = new Role();
+        guestRole.setName(RoleName.ROLE_GUEST.name());
+        guestRole.setId(4L);
+
+        VolunteerDetailsDTO dto = new VolunteerDetailsDTO();
+        dto.setUuid(existingVolunteerUuid);
+        dto.setLastName("Self");
+        dto.setFirstName("Edit");
+        dto.setEmail(authenticatedUserEmail);
+        dto.setPhoneNumber("1234567890");
+        dto.setRoles(List.of(RoleName.ROLE_MISSION.name(),RoleName.ROLE_VOLUNTEER.name()));
+
+        Volunteer existingVolunteer = new Volunteer();
+        existingVolunteer.setUuid(existingVolunteerUuid);
+        existingVolunteer.setEmail(authenticatedUserEmail);
+        existingVolunteer.setFirstName("Origin");
+        existingVolunteer.setLastName("Self");
+        existingVolunteer.setRoles(new ArrayList<>(List.of(volunteerRole, guestRole)));
+
+        Authentication authentication = mock(Authentication.class);
+        UserDetails principal = mock(UserDetails.class);
+        when(authentication.getPrincipal()).thenReturn(principal);
+        when(principal.getUsername()).thenReturn(authenticatedUserEmail);
+
+        when(roleService.findByName(RoleName.ROLE_VOLUNTEER.name())).thenReturn(volunteerRole);
+        when(roleService.findByName(RoleName.ROLE_MISSION.name())).thenReturn(missionRole);
+
+        when(volunteerRepository.findByUuid(existingVolunteerUuid)).thenReturn(Optional.of(existingVolunteer));
+
+        volunteerService.saveOrUpdateVolunteerDetails(dto, authentication);
+
+        ArgumentCaptor<Volunteer> volunteerCaptor = ArgumentCaptor.forClass(Volunteer.class);
+        verify(volunteerRepository).save(volunteerCaptor.capture());
+        Volunteer savedVolunteer = volunteerCaptor.getValue();
+
+
+        assertEquals("Self", savedVolunteer.getLastName());
+        assertEquals("Edit", savedVolunteer.getFirstName());
+        assertEquals(authenticatedUserEmail, savedVolunteer.getEmail());
+
+
+        assertTrue(savedVolunteer.getRoles().stream()
+                .anyMatch(role -> role.getName().equals(RoleName.ROLE_VOLUNTEER.name())));
+        assertTrue(savedVolunteer.getRoles().stream()
+                .anyMatch(role -> role.getName().equals(RoleName.ROLE_MISSION.name())));
+    }
+    @Test
+    public void testAddAdminRoleToVolunteer() {
+        UUID existingVolunteerUuid = UUID.randomUUID();
+        Role missionRole = new Role();
+        missionRole.setId(1L);
+        missionRole.setName(RoleName.ROLE_MISSION.name());
+        Role volunteerRole = new Role();
+        volunteerRole.setId(2L);
+        volunteerRole.setName(RoleName.ROLE_VOLUNTEER.name());
+        Role adminRole = new Role();
+        adminRole.setName(RoleName.ROLE_ADMIN.name());
+        adminRole.setId(3L);
+
+        VolunteerDetailsDTO dto = new VolunteerDetailsDTO();
+        dto.setUuid(existingVolunteerUuid);
+        dto.setRoles(List.of(RoleName.ROLE_ADMIN.name()));
+
+        Volunteer existingVolunteer = new Volunteer();
+        existingVolunteer.setUuid(existingVolunteerUuid);
+        existingVolunteer.setRoles(Arrays.asList(missionRole,volunteerRole));
+
+        when(volunteerRepository.findByUuid(existingVolunteerUuid)).thenReturn(Optional.of(existingVolunteer));
+
+        when(roleService.findByName(RoleName.ROLE_ADMIN.name())).thenReturn(adminRole);
+
+        when(volunteerRepository.save(any(Volunteer.class))).thenReturn(existingVolunteer);
+
+        volunteerService.saveOrUpdateVolunteerDetails(dto, mock(Authentication.class));
+
+        ArgumentCaptor<Volunteer> volunteerCaptor = ArgumentCaptor.forClass(Volunteer.class);
+        verify(volunteerRepository).save(volunteerCaptor.capture());
+        Volunteer savedVolunteer = volunteerCaptor.getValue();
+
+        assertTrue(savedVolunteer.getRoles().contains(adminRole));
+    }
+    @Test
+    public void testResetPassword() {
+        String email = "test@example.com";
+        boolean resetPassword = true;
+        Role adminRole = new Role();
+        adminRole.setName(RoleName.ROLE_ADMIN.name());
+        adminRole.setId(3L);
+
+        Volunteer volunteer = new Volunteer();
+        volunteer.setEmail(email);
+        volunteer.setRoles(List.of(adminRole));
+
+        when(volunteerRepository.findByEmail(email)).thenReturn(volunteer);
+        when(passwordEncoder.encode(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        volunteerService.resetPassword(resetPassword, email);
+
+        ArgumentCaptor<Volunteer> volunteerCaptor = ArgumentCaptor.forClass(Volunteer.class);
+        verify(volunteerRepository).save(volunteerCaptor.capture());
+        Volunteer updatedVolunteer = volunteerCaptor.getValue();
+
+        assertNotNull(updatedVolunteer.getPassword());
+        assertEquals("admin", updatedVolunteer.getPassword());
+    }
+    @Test
+    public void testUpdateAdminVolunteer() {
+        UUID existingVolunteerUuid = UUID.randomUUID();
+        Role missionRole = new Role();
+        missionRole.setId(1L);
+        missionRole.setName(RoleName.ROLE_MISSION.name());
+        Role volunteerRole = new Role();
+        volunteerRole.setId(2L);
+        volunteerRole.setName(RoleName.ROLE_VOLUNTEER.name());
+        Role adminRole = new Role();
+        adminRole.setName(RoleName.ROLE_ADMIN.name());
+        adminRole.setId(3L);
+        Role guestRole = new Role();
+        guestRole.setName(RoleName.ROLE_GUEST.name());
+        guestRole.setId(4L);
+
+        VolunteerDetailsDTO dto = new VolunteerDetailsDTO();
+        dto.setUuid(existingVolunteerUuid);
+        dto.setRoles(List.of(RoleName.ROLE_ADMIN.name(), RoleName.ROLE_MISSION.name(), RoleName.ROLE_VOLUNTEER.name()));
+
+        Volunteer existingVolunteer = new Volunteer();
+        existingVolunteer.setUuid(existingVolunteerUuid);
+        existingVolunteer.setRoles(List.of(adminRole));
+
+        when(volunteerRepository.findByUuid(existingVolunteerUuid)).thenReturn(Optional.of(existingVolunteer));
+        when(roleService.findByName(RoleName.ROLE_ADMIN.name())).thenReturn(adminRole);
+        when(roleService.findByName(RoleName.ROLE_MISSION.name())).thenReturn(missionRole);
+        when(roleService.findByName(RoleName.ROLE_VOLUNTEER.name())).thenReturn(volunteerRole);
+        when(roleService.findByName(RoleName.ROLE_GUEST.name())).thenReturn(guestRole);
+        when(volunteerRepository.save(any(Volunteer.class))).thenReturn(existingVolunteer);
+
+        volunteerService.saveOrUpdateVolunteerDetails(dto, mock(Authentication.class));
+
+        ArgumentCaptor<Volunteer> volunteerCaptor = ArgumentCaptor.forClass(Volunteer.class);
+        verify(volunteerRepository).save(volunteerCaptor.capture());
+        Volunteer savedVolunteer = volunteerCaptor.getValue();
+
+        assertTrue(savedVolunteer.getRoles().contains(adminRole));
+        assertFalse(savedVolunteer.getRoles().contains(missionRole));
+        assertFalse(savedVolunteer.getRoles().contains(volunteerRole));
+        assertTrue(savedVolunteer.getRoles().contains(guestRole));
+    }
+    @Test
+    public void testSaveOrUpdateNewVolunteer() {
+
+        VolunteerDTO volunteerDTO = new VolunteerDTO();
+        volunteerDTO.setLastName("NewLastName");
+        volunteerDTO.setFirstName("NewFirstName");
+        volunteerDTO.setEmail("new@example.com");
+        volunteerDTO.setPhoneNumber("1234567890");
+        volunteerDTO.setAvailabilities(Collections.emptyList());
+        volunteerDTO.setUnavailabilities(Collections.emptyList());
+        volunteerDTO.setMissionTypes(Collections.emptyList());
+        Volunteer volunteer = new Volunteer();
+        volunteer.setId(1L);
+        volunteer.setUuid(UUID.randomUUID());
+        volunteer.setLastName("NewLastName");
+        volunteer.setFirstName("NewFirstName");
+        volunteer.setEmail("new@example.com");
+        volunteer.setPhoneNumber("1234567890");
+
+
+        Role guestRole = new Role();
+        guestRole.setId(1L);
+        guestRole.setName(RoleName.ROLE_GUEST.name());
+        when(roleService.findByName(RoleName.ROLE_GUEST.name())).thenReturn(guestRole);
+        when(volunteerRepository.save(any(Volunteer.class))).thenReturn(volunteer);
+
+        volunteerService.saveOrUpdate(volunteerDTO);
+        verify(volunteerRepository).save(any(Volunteer.class));
+
+        ArgumentCaptor<Volunteer> volunteerCaptor = ArgumentCaptor.forClass(Volunteer.class);
+        verify(volunteerRepository).save(volunteerCaptor.capture());
+        Volunteer savedVolunteer = volunteerCaptor.getValue();
+
+        assertEquals("NewLastName", savedVolunteer.getLastName());
+        assertEquals("NewFirstName", savedVolunteer.getFirstName());
+        assertEquals("new@example.com", savedVolunteer.getEmail());
+        assertEquals("1234567890", savedVolunteer.getPhoneNumber());
+        assertTrue(savedVolunteer.getRoles().contains(guestRole));
+    }
+
 
     @Test
     void saveAndReturnNewVolunteer(){
@@ -243,9 +517,7 @@ public class VolunteerServiceImplTest {
 
         when(volunteerRepository.findByUuid(uuid)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> {
-            volunteerService.findVolunteerDTOByUuid(uuid);
-        });
+        assertThrows(EntityNotFoundException.class, () -> volunteerService.findVolunteerDTOByUuid(uuid));
     }
 
     @Test
@@ -262,14 +534,60 @@ public class VolunteerServiceImplTest {
         verify(volunteerRepository).findAll();
     }
     @Test
-    void deleteVolunteer() {
+    public void deleteNonAdminVolunteer() {
         UUID uuid = UUID.randomUUID();
+        Role volunteerRole = new Role();
+        volunteerRole.setId(1L);
+        volunteerRole.setName(RoleName.ROLE_VOLUNTEER.name());
+        Volunteer volunteer = mock(Volunteer.class);
+        when(volunteerRepository.findByUuid(uuid)).thenReturn(Optional.of(volunteer));
+        when(volunteer.getRoles()).thenReturn(Collections.singletonList(volunteerRole));
 
         volunteerService.deleteVolunteer(uuid);
 
+        verify(volunteerRepository).deleteByUuid(uuid);
         verify(availabilityService).deleteAllByVolunteerUuid(uuid);
         verify(unavailabilityService).deleteAllByVolunteerUuid(uuid);
+    }
+
+    @Test
+    public void deleteAdminVolunteerWithMultipleAdmins() {
+        UUID uuid = UUID.randomUUID();
+        Role adminRole = new Role();
+        adminRole.setId(1L);
+        adminRole.setName(RoleName.ROLE_ADMIN.name());
+        Volunteer volunteer = mock(Volunteer.class);
+        when(volunteerRepository.findByUuid(uuid)).thenReturn(Optional.of(volunteer));
+        when(volunteer.getRoles()).thenReturn(Collections.singletonList(adminRole));
+        when(volunteerRepository.countByRoleName("ROLE_ADMIN")).thenReturn(2L);
+
+        volunteerService.deleteVolunteer(uuid);
+
         verify(volunteerRepository).deleteByUuid(uuid);
+        verify(availabilityService).deleteAllByVolunteerUuid(uuid);
+        verify(unavailabilityService).deleteAllByVolunteerUuid(uuid);
+    }
+
+    @Test
+    public void throwExceptionWhenDeletingOnlyAdmin() {
+        UUID uuid = UUID.randomUUID();
+        Role adminRole = new Role();
+        adminRole.setId(1L);
+        adminRole.setName(RoleName.ROLE_ADMIN.name());
+        Volunteer volunteer = mock(Volunteer.class);
+        when(volunteerRepository.findByUuid(uuid)).thenReturn(Optional.of(volunteer));
+        when(volunteer.getRoles()).thenReturn(Collections.singletonList(adminRole));
+        when(volunteerRepository.countByRoleName("ROLE_ADMIN")).thenReturn(1L);
+
+        assertThrows(DeleteAdminException.class, () -> volunteerService.deleteVolunteer(uuid));
+    }
+
+    @Test
+    public void throwExceptionWhenVolunteerDoesNotExist() {
+        UUID uuid = UUID.randomUUID();
+        when(volunteerRepository.findByUuid(uuid)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> volunteerService.deleteVolunteer(uuid));
     }
 
     @Test
@@ -362,9 +680,7 @@ public class VolunteerServiceImplTest {
 
         when(volunteerRepository.findByUuid(uuid)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> {
-            volunteerService.findVolunteerProfilDTOByUuid(uuid);
-        });
+        assertThrows(EntityNotFoundException.class, () -> volunteerService.findVolunteerProfilDTOByUuid(uuid));
     }
 
     @Test
@@ -432,9 +748,7 @@ public class VolunteerServiceImplTest {
 
         when(volunteerRepository.findByUuid(uuid)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> {
-            volunteerService.findVolunteerDetailsByUuid(uuid);
-        });
+        assertThrows(EntityNotFoundException.class, () -> volunteerService.findVolunteerDetailsByUuid(uuid));
     }
     @Test
     void findVolunteerRoleProfilByEmail_WhenVolunteerExists() {
@@ -457,9 +771,7 @@ public class VolunteerServiceImplTest {
 
         when(volunteerRepository.findByEmail(email)).thenReturn(null);
 
-        assertThrows(UsernameNotFoundException.class, () -> {
-            volunteerService.findVolunteerRoleProfilByEmail(email);
-        });
+        assertThrows(UsernameNotFoundException.class, () -> volunteerService.findVolunteerRoleProfilByEmail(email));
     }
     @Test
     void changePassword_VolunteerNotFound() {
@@ -467,9 +779,7 @@ public class VolunteerServiceImplTest {
 
         when(volunteerRepository.findByEmail(email)).thenReturn(null);
 
-        assertThrows(UsernameNotFoundException.class, () -> {
-            volunteerService.changePassword(email, "oldPassword", "newPassword");
-        });
+        assertThrows(UsernameNotFoundException.class, () -> volunteerService.changePassword(email, "oldPassword", "newPassword"));
     }
 
     @Test

@@ -1,13 +1,20 @@
 package com.mickc0.gtac.controller;
 
 import com.mickc0.gtac.dto.*;
+import com.mickc0.gtac.entity.Volunteer;
 import com.mickc0.gtac.exception.VolunteerInUseException;
 import com.mickc0.gtac.service.*;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.naming.Binding;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -49,11 +56,18 @@ public class VolunteerController {
     }
 
     @PostMapping
-    public String saveVolunteer(@ModelAttribute("volunteer") VolunteerDTO volunteerDTO,
+    public String saveVolunteer(@Valid @ModelAttribute("volunteer") VolunteerDTO volunteerDTO, BindingResult result,
+                                Model model,
                                 @RequestParam(name = "missionTypeUuids", required = false) List<String> missionTypeUuids,
                                 RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()){
+            model.addAttribute("volunteer", volunteerDTO);
+            model.addAttribute("allMissionTypes", missionTypeService.findAllDto());
+            return "volunteers/volunteer/create-volunteer";
+        }
         volunteerDTO.setMissionTypes(missionTypeUuids);
         volunteerService.saveOrUpdate(volunteerDTO);
+
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole enregistré avec succès.");
         return "redirect:/volunteers";
     }
@@ -76,9 +90,16 @@ public class VolunteerController {
 
     @PostMapping("/update/{id}")
     public String updateVolunteer(@PathVariable(name = "id") UUID uuid,
-                                  @ModelAttribute ("volunteer") VolunteerDTO volunteer,
+                                  @Valid @ModelAttribute ("volunteer") VolunteerDTO volunteer,
+                                  BindingResult result,
+                                  Model model,
                                   @RequestParam(name = "source", defaultValue = "volunteers") String sourcePage,
                                   RedirectAttributes redirectAttributes){
+        if (result.hasErrors()){
+            model.addAttribute("volunteer", volunteer);
+            model.addAttribute("allMissionTypes", missionTypeService.findAllDto());
+            return "/volunteers/volunteer/edit-volunteer";
+        }
         volunteerService.saveOrUpdate(volunteer);
         redirectAttributes.addFlashAttribute("successMessage", "Bénévole modifié avec succès.");
         String redirectPath = "/volunteers";
@@ -89,9 +110,17 @@ public class VolunteerController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteVolunteer(@PathVariable (value = "id") UUID uuid){
+    public String deleteVolunteer(@PathVariable (value = "id") UUID uuid, Authentication authentication){
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String currentUserEmail = userDetails.getUsername();
+        Volunteer volunteer = volunteerService.findByEmail(currentUserEmail)
+                .orElseThrow(() -> new EntityNotFoundException("Le bénévole avec l'uuid  : " + uuid + " n'existe pas."));
+        UUID currentVolunteerUuid = volunteer.getUuid();
         if (missionAssignmentService.isVolunteerInUse(uuid)){
             throw new VolunteerInUseException("Impossible de supprimer un bénévole qui a déjà participé à une mission.");
+        }
+        if (currentVolunteerUuid == uuid){
+            throw new VolunteerInUseException("Impossible de se supprimer soi-même.");
         }
         volunteerService.deleteVolunteer(uuid);
         return "redirect:/volunteers";

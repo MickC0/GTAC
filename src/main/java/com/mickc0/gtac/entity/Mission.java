@@ -21,7 +21,6 @@ public class Mission {
     private UUID uuid = UUID.randomUUID();
 
     @Column(name = "title")
-    @Size(min = 3, max = 20)
     private String title;
 
     @Column(name = "description")

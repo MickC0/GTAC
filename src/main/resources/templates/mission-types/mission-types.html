@@ -61,7 +61,31 @@
     <div th:replace="~{fragments/modals/delete-mission-type-modal :: delete-mission-type-modal}"></div>
     <div th:replace="~{fragments/modals/deactivation-mission-type-modal :: deactivation-mission-type-modal}"></div>
     <div th:replace="~{fragments/modals/activation-mission-type-modal :: activation-mission-type-modal}"></div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.searchBox').forEach(function(input) {
+                input.addEventListener('keyup', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const tableSelector = this.getAttribute('data-table');
+                    const tableRows = document.querySelectorAll(`${tableSelector} tbody tr`);
 
+                    tableRows.forEach(function(row) {
+                        const cells = row.getElementsByTagName('td');
+                        let found = false;
+
+                        for (let cell of cells) {
+                            if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        row.style.display = found ? '' : 'none';
+                    });
+                });
+            });
+        });
+    </script>
 
     <div th:replace="~{fragments/scripts :: scripts}"></div>
 

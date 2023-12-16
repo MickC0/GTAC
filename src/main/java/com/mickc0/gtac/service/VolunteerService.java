@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface VolunteerService {
-    void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, boolean resetPassword, Authentication authentication);
+    void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, Authentication authentication);
     Volunteer saveAndReturn(Volunteer volunteer);
     void saveOrUpdate(VolunteerDTO volunteerDTO);
 
@@ -36,4 +36,6 @@ public interface VolunteerService {
     VolunteerRoleProfilDTO findVolunteerRoleProfilByEmail(String email);
 
     boolean changePassword(String email, String oldPassword, String newPassword);
+
+    void resetPassword(boolean resetPassword, String email);
 }

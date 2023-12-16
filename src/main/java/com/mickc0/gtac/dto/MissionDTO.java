@@ -1,6 +1,7 @@
 package com.mickc0.gtac.dto;
 
 import com.mickc0.gtac.entity.MissionStatus;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.UUID;
 public class MissionDTO {
 
     private UUID uuid;
+    @Size(min = 3, max = 20)
     private String title;
     private String description;
     private String comment;

@@ -1,12 +1,16 @@
 package com.mickc0.gtac.dto;
 
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
 import java.util.UUID;
 
 public class VolunteerGuestProfilDTO {
 
     private UUID uuid;
+    @Size(min = 3, max = 20)
     private String lastName;
+    @Size(min = 3, max = 20)
     private String firstName;
     private String email;
     private String phoneNumber;

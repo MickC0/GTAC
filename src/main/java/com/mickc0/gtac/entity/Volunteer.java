@@ -19,10 +19,8 @@ public class Volunteer {
     @Column(name = "uuid",updatable = false, nullable = false)
     private UUID uuid = UUID.randomUUID();
     @Column(name = "last_name")
-    @Size(min = 3, max = 20)
     private String lastName;
     @Column(name = "first_name")
-    @Size(min = 3, max = 20)
     private String firstName;
     @Column(name = "email")
     @Email(message = "Merci de renseigner une adresse mail valide")
@@ -164,6 +162,8 @@ public class Volunteer {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", roles=" + roles +
+                ", mustChangePassword=" + mustChangePassword +
                 '}';
     }
 }

@@ -27,8 +27,8 @@ public interface VolunteerRepository extends JpaRepository<Volunteer, Long> {
     Optional<Volunteer> findByUuid(UUID uuid);
 
     void deleteByUuid(UUID uuid);
-
-    List<Volunteer> findAllByUuidIn(List<UUID> volunteerUuids);
+    @Query("SELECT COUNT(v) FROM Volunteer v JOIN v.roles r WHERE r.name = :roleName")
+    long countByRoleName(@Param("roleName") String roleName);
 
     Volunteer findByEmail(String email);
 
