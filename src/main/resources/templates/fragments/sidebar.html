@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+
+<div th:fragment="sidebar" class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex sticky-top">
+    <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-white">
+        <a th:href="@{/}" class="d-flex align-items-center pb-sm-3 mb-md-0 me-md-auto text-white text-decoration-none">
+            <i class="bi bi-person-arms-up fs-1">
+                <span class="ms-1 d-none d-sm-inline">GTAC</span>
+            </i>
+
+        </a>
+        <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-center align-items-sm-start" id="menu">
+            <li class="nav-item">
+                <a th:href="@{/}" class="nav-link px-sm-0 px-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Accueil">
+                    <i class="fs-5 bi-house"></i><span class="ms-1 d-none d-sm-inline">Accueil</span>
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/mission-types}" class="nav-link px-sm-0 px-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Type de missions">
+                    <i class="fs-5 bi-bullseye"></i><span class="ms-1 d-none d-sm-inline">Type de missions</span></a>
+            </li>
+            <li>
+                <a th:href="@{/volunteers}" class="nav-link px-sm-0 px-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Bénévoles">
+                    <i class="fs-5 bi-people"></i><span class="ms-1 d-none d-sm-inline">Bénévoles</span> </a>
+            </li>
+            <li>
+                <a th:href="@{/missions}" class="nav-link px-sm-0 px-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Missions">
+                    <i class="fs-5 bi-bullseye"></i><span class="ms-1 d-none d-sm-inline">Missions</span></a>
+            </li>
+        </ul>
+
+        <div th:if="${not #authorization.expression('isAuthenticated()')}" class="dropdown py-sm-4 mt-sm-auto ms-auto ms-sm-0 flex-shrink-1">
+            <a th:if="${adminExists}" th:href="@{/login}" class="text-white text-decoration-none">Connexion</a>
+            <a th:unless="${adminExists}" th:href="@{/create-admin}" class="text-white text-decoration-none">Connexion</a>
+        </div>
+
+        <div th:if="${#authorization.expression('isAuthenticated()')}" class="dropdown py-sm-4 mt-sm-auto ms-auto ms-sm-0 flex-shrink-1">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="d-none d-sm-inline mx-1" th:text="${#authentication?.name}"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/administration}">Administration</a></li>
+                <li><a class="dropdown-item" th:href="@{/profil}">Profil</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li>
+                    <form th:action="@{/logout}" method="post" class="m-0">
+                        <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%;">
+                            Déconnexion
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

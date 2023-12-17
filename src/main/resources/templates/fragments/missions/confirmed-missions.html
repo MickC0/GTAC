@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+    <div th:fragment="confirmed-missions" id="confirmed" class="tab-pane fade">
+        <hr>
+        <h3 class="text-center">Missions confirmées</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a class="btn btn-primary" th:href="@{/missions/create}">Ajouter une mission</a>
+                    <form class="d-flex" role="search">
+                        <input type="text" placeholder="Rechercher" class="form-control-sm searchBox" data-table="#confirmedMissionTable">
+                    </form>
+                </div>
+            </div>
+            <div class="card-body">
+                <p th:if="${confirmedMissions.isEmpty()}">Il n'y a pas de mission</p>
+                <table class="table-responsive table table-striped table-hover" th:unless="${confirmedMissions.isEmpty()}" id="confirmedMissionTable">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Nombre de bénévoles requis</th>
+                        <th>Date de début</th>
+                        <th>Date de fin</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="confirmedMission:${confirmedMissions}">
+                        <td th:text="${confirmedMission.title}"></td>
+                        <td th:text="${confirmedMission.missionType.name}"></td>
+                        <td th:text="${@translationUtils.translateMissionStatus(confirmedMission.status)}"></td>
+                        <td th:text="${confirmedMission.requiredVolunteerNumber}"></td>
+                        <td th:text="${#temporals.format(confirmedMission.startDateTime, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${#temporals.format(confirmedMission.endDateTime, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td>
+                            <!-- Editer -->
+                            <a class="btn btn-primary btn-sm" th:href="@{/missions/edit/confirmed/{id}(id=${confirmedMission.uuid})}"><i class="bi bi-pencil-square"></i></a>
+                            <!-- Supprimer -->
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#cancelMissionModal"
+                                    th:attr="data-mission-id=${confirmedMission.uuid}">
+                                <i class="bi bi-x-square"></i>
+                            </button>
+                            <!-- Voir -->
+                            <a class="btn btn-info btn-sm" th:href="@{/missions/{id}(id=${confirmedMission.uuid})}"><i class="bi bi-eye"></i></a>
+                            <!-- Lancer -->
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#launchMissionModal"
+                                    th:attr="data-mission-id=${confirmedMission.uuid}">
+                                <i class="bi bi-play me-1"></i><span>Lancer</span>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

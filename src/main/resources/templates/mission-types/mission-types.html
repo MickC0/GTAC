@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+
+
+    <div class="container-fluid overflow-hidden">
+        <div class="row vh-100 overflow-auto">
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div class="col d-flex flex-column h-sm-100 col-sm-9">
+                <main class="row overflow-auto">
+                    <div class="col pt-4">
+                        <h1 class="py-2">Types de mission</h1>
+                        <hr />
+                        <a class="btn btn-primary" th:href="@{/mission-types/create}">Ajouter un type</a>
+                        <hr />
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <form class="d-flex" role="search">
+                                <input type="text" placeholder="Rechercher" class="form-control-sm searchBox" data-table="#missionTypeTable">
+                            </form>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-responsive table-striped table-hover" id="missionTypeTable">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Description</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="missionType:${missionTypes}">
+                                        <td th:text="${missionType.name}"></td>
+                                        <td th:text="${missionType.description}"></td>
+                                        <td th:text="${missionType.active} ? 'Actif' : 'Inactif'"></td>
+                                        <td>
+                                            <!-- Editer -->
+                                            <a class="btn btn-primary btn-sm" th:href="@{/mission-types/edit/{id}(id=${missionType.uuid})}"><i class="bi bi-pencil-square"></i></a>
+                                            <!-- Désactiver -->
+                                            <button th:if="${missionType.active}" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#deactivationMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-plug"></i></button>
+                                            <button th:unless="${missionType.active}" type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#activationMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-plug-fill"></i></button>
+                                            <!--Supprimer-->
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                    data-bs-target="#deleteMissionTypeModal" th:attr="data-missionType-id=${missionType.uuid}"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/modals/message-modal :: message-modal}"></div>
+    <div th:replace="~{fragments/modals/delete-mission-type-modal :: delete-mission-type-modal}"></div>
+    <div th:replace="~{fragments/modals/deactivation-mission-type-modal :: deactivation-mission-type-modal}"></div>
+    <div th:replace="~{fragments/modals/activation-mission-type-modal :: activation-mission-type-modal}"></div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.searchBox').forEach(function(input) {
+                input.addEventListener('keyup', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const tableSelector = this.getAttribute('data-table');
+                    const tableRows = document.querySelectorAll(`${tableSelector} tbody tr`);
+
+                    tableRows.forEach(function(row) {
+                        const cells = row.getElementsByTagName('td');
+                        let found = false;
+
+                        for (let cell of cells) {
+                            if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        row.style.display = found ? '' : 'none';
+                    });
+                });
+            });
+        });
+    </script>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

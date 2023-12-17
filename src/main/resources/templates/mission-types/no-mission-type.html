@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+
+
+
+    <div class="container-fluid overflow-hidden">
+        <div class="row vh-100 overflow-auto">
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div class="col d-flex flex-column h-sm-100 col-sm-9">
+                <main class="row overflow-auto">
+                    <div class="col pt-4">
+                        <h1>Création de Mission</h1>
+                        <hr />
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="bi bi-exclamation-triangle-fill fs-2">
+                                    <span>Alerte</span>
+                                </i>
+
+                            </div>
+                            <div class="card-body">
+                                <p th:text="${message}"></p>
+                            </div>
+                            <div class="card-footer">
+                                <a class="btn btn-primary" th:href="@{/mission-types/create}">Créer un Type de Mission</a>
+                                <a class="btn btn-secondary" th:href="@{/missions}">Retour</a>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

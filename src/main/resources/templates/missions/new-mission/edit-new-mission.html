@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="card col-lg-6 col-md-6 justify-content-center container py-4">
+            <div class="card-header">
+                <h1>Mise à jour</h1>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/missions/update/new/{id}(id=${mission.uuid})}" method="post" id="editNewMissionForm" th:object="${mission}">
+
+                    <input type="hidden" name="uuid" id="uuid" th:field="*{uuid}">
+                    <input type="hidden" name="status" id="status" th:field="*{status}">
+                    <div class="form-group">
+                        <label for="name" class="col-form-label">Nom de la Mission :</label>
+                        <input th:field="*{title}" type="text" id="name" class="form-control" required="required">
+                        <p th:if="${#fields.hasErrors('title')}" class="text-danger" th:errors="*{title}"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="col-form-label">Description :</label>
+                        <textarea th:field="*{description}" id="description" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comment" class="col-form-label">Commentaire :</label>
+                        <textarea th:field="*{comment}" id="comment" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="missionType" class="col-form-label">Type de mission :</label>
+                        <select class="form-select" th:field="*{missionType.uuid}" id="missionType" name="missionType" required="required">
+                            <option th:each="t : ${missionTypes}" th:value="${t.uuid}" th:text="${t.name}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requiredVolunteerNumber" class="col-form-label">Nombre de Bénévoles Requis:</label>
+                        <input th:field="*{requiredVolunteerNumber}" type="number" id="requiredVolunteerNumber" class="form-control" required="required" min="0">
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-outline-secondary pb-2" th:href="@{/missions}">Annuler</a>
+                <button type="submit" form="editNewMissionForm" class="btn btn-primary">Mettre à jour</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

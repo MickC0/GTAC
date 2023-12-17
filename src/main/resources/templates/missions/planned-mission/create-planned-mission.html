@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="card col-lg-6 col-md-6 justify-content-center container py-4">
+            <div class="card-header">
+                <h1>Planification</h1>
+            </div>
+            <div class="card-body">
+                <p>Titre : <span th:text="${mission.title}"></span></p>
+                <p>Statut : <span th:text="${@translationUtils.translateMissionStatus(mission.status)}"></span></p>
+                <p>Type de mission : <span th:text="${mission.missionType.name}"></span></p>
+                <p>Description : <span th:text="${mission.description}"></span></p>
+                <p>Commentaire : <span th:text="${mission.comment}"></span></p>
+                <p>Nombre de bénévoles requis : <span th:text="${mission.requiredVolunteerNumber}"></span></p>
+
+                <form th:action="@{/missions/plan/{id}(id=${mission.uuid})}" method="post" id="planMissionForm" th:object="${mission}">
+
+                    <input type="hidden" name="uuid" id="uuid" th:field="*{uuid}">
+                    <input type="hidden" name="missionTypeUuid" id="missionTypeUuid" th:field="*{missionType.uuid}">
+                    <input type="hidden" name="missionTypeActive" id="missionTypeActive" th:field="*{missionType.active}">
+                    <input type="hidden" name="missionTypeSelected" id="missionTypeSelected" th:field="*{missionType.selected}">
+                    <input type="hidden" name="status" id="status" th:field="*{status}">
+                    <input type="hidden" th:field="*{title}" id="name">
+                    <input type="hidden" th:value="*{missionType}" id="missionType">
+                    <input type="hidden" th:field="*{description}" id="description" >
+                    <input type="hidden" th:field="*{comment}" id="comment">
+                    <input type="hidden" th:field="*{requiredVolunteerNumber}" id="requiredVolunteerNumber">
+
+                    <div id="dateAlert" class="alert alert-danger d-none" role="alert">
+                        La date de début doit être antérieure à la date de fin.
+                    </div>
+                    <div class="form-group">
+                        <label for="startDateTime" class="col-form-label">Date de Début:</label>
+                        <input th:field="*{startDateTime}" id="startDateTime" name="startDateTime" type="datetime-local" class="form-control" required="required">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDateTime" class="col-form-label">Date de Fin:</label>
+                        <input th:field="*{endDateTime}" type="datetime-local" id="endDateTime" name="endDateTime" class="form-control" required="required">
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-outline-secondary pb-2" th:href="@{/missions}">Annuler</a>
+                <button type="submit" form="planMissionForm" class="btn btn-primary">Planifier</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('planMissionForm').addEventListener('submit', function(e) {
+        let startDateTime = document.getElementById('startDateTime').value;
+        let endDateTime = document.getElementById('endDateTime').value;
+        let dateAlert = document.getElementById('dateAlert');
+
+        if (startDateTime > endDateTime) {
+            dateAlert.classList.remove('d-none');
+            e.preventDefault();
+        } else {
+            dateAlert.classList.add('d-none');
+        }
+    });
+</script>
+
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

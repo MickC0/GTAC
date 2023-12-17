@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+    <div class="container-fluid overflow-hidden">
+        <div class="row vh-100 overflow-auto">
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div class="col d-flex flex-column h-sm-100 col-sm-9">
+                <main class="row overflow-auto">
+                    <div class="col pt-4">
+                        <h1 class="py-2">Bénévoles</h1>
+                        <hr />
+                        <a class="btn btn-primary" th:href="@{/volunteers/create}">Ajouter un bénévole</a>
+                        <hr />
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <form class="d-flex" role="search">
+                                <input type="text" placeholder="Rechercher" class="form-control-sm searchBox" data-table="#volunteerTable">
+                            </form>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-responsive table-striped table-hover" id="volunteerTable">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Prénom</th>
+                                        <th>Email</th>
+                                        <th>Téléphone</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="v:${volunteers}">
+                                        <td th:text="${v.lastName}"></td>
+                                        <td th:text="${v.firstName}"></td>
+                                        <td th:text="${v.email}"></td>
+                                        <td th:text="${v.phoneNumber}"></td>
+                                        <td>
+                                            <!-- Editer -->
+                                            <a class="btn btn-primary btn-sm" th:href="@{/volunteers/edit/{id}(id=${v.uuid})}">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <!-- Supprimer -->
+                                            <div th:if="${v.email != #authentication.name}" class="d-inline-block">
+                                                <button type="button" class="btn btn-sm btn-danger"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteVolunteerModal"
+                                                        th:attr="data-volunteer-id=${v.uuid}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                            <!-- Voir -->
+                                            <a class="btn btn-info btn-sm" th:href="@{/volunteers/view/{id}(id=${v.uuid})}">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/modals/message-modal :: message-modal}"></div>
+    <div th:replace="~{fragments/modals/delete-volunteer-modal :: delete-volunteer-modal}"></div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.searchBox').forEach(function(input) {
+                input.addEventListener('keyup', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const tableSelector = this.getAttribute('data-table');
+                    const tableRows = document.querySelectorAll(`${tableSelector} tbody tr`);
+
+                    tableRows.forEach(function(row) {
+                        const cells = row.getElementsByTagName('td');
+                        let found = false;
+
+                        for (let cell of cells) {
+                            if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        row.style.display = found ? '' : 'none';
+                    });
+                });
+            });
+        });
+    </script>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

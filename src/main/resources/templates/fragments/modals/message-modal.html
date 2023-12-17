@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+
+<div th:fragment="message-modal">
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+      let hasErrorMessage = [[${not #strings.isEmpty(errorMessage)}]];
+      let hasSuccessMessage = [[${not #strings.isEmpty(successMessage)}]];
+      let hasInformationMessage = [[${not #strings.isEmpty(informationMessage)}]];
+
+      if (hasErrorMessage || hasSuccessMessage || hasInformationMessage) {
+        let messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        messageModal.show();
+
+        setTimeout(function() {
+          messageModal.hide();
+        }, 2000);
+      }
+    });
+  </script>
+
+  <div th:if="${not #strings.isEmpty(successMessage) or not #strings.isEmpty(errorMessage) or not #strings.isEmpty(informationMessage)}"
+       class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div th:if="${not #strings.isEmpty(successMessage)}" class="modal-header bg-success text-white">
+          <h5 class="modal-title">Succès</h5>
+        </div>
+        <div th:if="${not #strings.isEmpty(errorMessage)}" class="modal-header bg-danger text-white">
+          <h5 class="modal-title">Erreur</h5>
+        </div>
+        <div th:if="${not #strings.isEmpty(informationMessage)}" class="modal-header bg-info text-white">
+          <h5 class="modal-title">Information</h5>
+        </div>
+        <div class="modal-body">
+          <p th:if="${not #strings.isEmpty(successMessage)}" th:text="${successMessage}"></p>
+          <p th:if="${not #strings.isEmpty(errorMessage)}" th:text="${errorMessage}"></p>
+          <p th:if="${not #strings.isEmpty(informationMessage)}" th:text="${informationMessage}"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+
+
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="card col-md-6 justify-content-center container py-4">
+                <div class="card-header">
+                    <h1>Connexion</h1>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger my-3" th:if="${param.error}">
+                        Email ou mot de passe invalide.
+                    </div>
+                    <form th:action="@{/login}" method="post" id="loginForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Email</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de Passe</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="mot de passe">
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-outline-secondary me-2" th:href="@{/home}">Annuler</a>
+                    <button type="submit" class="btn btn-primary" form="loginForm">Connexion</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

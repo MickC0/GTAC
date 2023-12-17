@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+    <div th:fragment="launch-mission-modal">
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function() {
+                let launchModal = document.getElementById('launchMissionModal');
+                launchModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const itemId = button.getAttribute('data-mission-id');
+                    const launchUrl = /*[[@{/missions/launch/}]]*/ 'launchPath';
+
+                    let confirmLaunchBtn = document.getElementById('confirmLaunch');
+                    confirmLaunchBtn.onclick = function() {
+                        window.location.href = launchUrl + itemId;
+                    };
+                });
+            });
+        </script>
+
+        <div class="modal fade" id="launchMissionModal" tabindex="-1" aria-labelledby="launchMissionModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="launchMissionModalLabel">Lancer la Mission</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <span>Êtes-vous sûr de vouloir lancer la mission manuellement ?</span>
+                        </div>
+                        <div>
+                            <span>Si ce n'est pas le cas, cliquez sur le bouton <strong>ANNULER</strong>.</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <a class="btn btn-danger" id="confirmLaunch">Confirmer</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+</body>
+</html>

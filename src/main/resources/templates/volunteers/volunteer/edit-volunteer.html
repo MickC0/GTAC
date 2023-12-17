@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="card col-lg-12 col-md-9 justify-content-center container py-4">
+                <div class="card-header">
+                    <h1>Mise à jour</h1>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/volunteers/update/{id}(id=${volunteer.uuid})}" method="post" id="editVolunteerForm" th:object="${volunteer}">
+                        <input type="hidden" name="uuid" id="uuid" th:field="*{uuid}">
+                        <input type="hidden" name="source" th:value="${sourcePage}">
+                        <div class="row">
+                            <div class="col-md-6 col-lg-5 mb-4">
+                                <div class="form-group">
+                                    <label for="lastName" class="col-form-label">Nom :</label>
+                                    <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required" autocomplete="family-name">
+                                    <p th:if="${#fields.hasErrors('lastName')}" class="text-danger" th:errors="*{lastName}"></p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="firstName" class="col-form-label">Prénom :</label>
+                                    <input th:field="*{firstName}" type="text" id="firstName" class="form-control" required="required" autocomplete="given-name">
+                                    <p th:if="${#fields.hasErrors('firstName')}" class="text-danger" th:errors="*{firstName}"></p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email" class="col-form-label">Email :</label>
+                                    <input th:field="*{email}" type="email" id="email" class="form-control" autocomplete="off">
+                                    <p th:if="${#fields.hasErrors('email')}" class="text-danger" th:errors="*{email}"></p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phoneNumber" class="col-form-label">Téléphone :</label>
+                                    <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control" autocomplete="tel">
+                                    <p th:if="${#fields.hasErrors('phoneNumber')}" class="text-danger" th:errors="*{phoneNumber}"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-7 mb-4">
+                                <div class="form-group">
+                                    <h5>Types de mission</h5>
+                                    <hr>
+                                </div>
+
+                                <div th:if="${allMissionTypes.isEmpty()}">
+                                    <div class="alert alert-warning my-2" role="alert">
+                                        <i class="bi bi-exclamation-triangle-fill">
+                                            <span>La liste des types de mission est actuellement vide. Vous pouvez ajouter des types de mission plus tard.</span>
+                                        </i>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap" role="group" th:unless="${allMissionTypes.isEmpty()}">
+                                    <div class="my-2 me-2" th:each="missionType:${allMissionTypes}">
+                                        <input th:id="${'btn-check-outlined' + missionType.uuid}"
+                                               th:value="${missionType.uuid}"
+                                               th:name="missionTypes" type="checkbox" class="btn-check" autocomplete="off"
+                                               th:checked="${missionType.selected}"
+                                               th:disabled="${!missionType.active}"
+                                        >
+                                        <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.uuid}" th:text="${missionType.name}"></label><br>
+                                        <input type="hidden"
+                                               th:name="missionTypeUuids"
+                                               th:id="${'missionTypeUuid-' + missionType.uuid}"
+                                               th:value="${missionType.uuid}"
+                                        >
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <hr>
+                                    <h5>Disponibilités</h5>
+                                    <hr>
+                                    <div id="availabilitySection">
+                                        <div th:each="availability, iterStat : *{availabilities}" class="availabilityRow row gy-2 gx-3 align-items-center mb-2">
+                                            <input type="hidden" th:field="*{availabilities[__${iterStat.index}__].uuid}" />
+                                            <div class="col-auto">
+                                                <label class="form-label-sm" th:for="${'availabilities' + iterStat.index + '.dayOfWeek'}">Jour :</label>
+                                                <select class="form-select-sm" th:field="*{availabilities[__${iterStat.index}__].dayOfWeek}" required="required">
+                                                    <option value="MONDAY" th:selected="${availability.dayOfWeek == 'MONDAY'}">Lundi</option>
+                                                    <option value="TUESDAY" th:selected="${availability.dayOfWeek == 'TUESDAY'}">Mardi</option>
+                                                    <option value="WEDNESDAY" th:selected="${availability.dayOfWeek == 'WEDNESDAY'}">Mercredi</option>
+                                                    <option value="THURSDAY" th:selected="${availability.dayOfWeek == 'THURSDAY'}">Jeudi</option>
+                                                    <option value="FRIDAY" th:selected="${availability.dayOfWeek == 'FRIDAY'}">Vendredi</option>
+                                                    <option value="SATURDAY" th:selected="${availability.dayOfWeek == 'SATURDAY'}">Samedi</option>
+                                                    <option value="SUNDAY" th:selected="${availability.dayOfWeek == 'SUNDAY'}">Dimanche</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-auto">
+                                                <label class="form-label-sm" th:for="${'availabilities' + iterStat.index + '.startTime'}">Heure de début :</label>
+                                                <input class="form-control-sm" type="time" th:field="*{availabilities[__${iterStat.index}__].startTime}" />
+                                            </div>
+                                            <div class="col-auto">
+                                                <label class="form-label-sm" th:for="${'availabilities' + iterStat.index + '.endTime'}">Heure de fin :</label>
+                                                <input class="form-control-sm" type="time" th:field="*{availabilities[__${iterStat.index}__].endTime}" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
+                                </div>
+                                <div class="form-group">
+                                    <hr>
+                                    <h5>Indisponibilités</h5>
+                                    <hr>
+                                    <div id="unavailabilitySection">
+                                        <th:block th:each="unavailability, iterStat : *{unavailabilities}">
+                                            <input type="hidden" th:value="*{unavailabilities[__${iterStat.index}__].uuid}" />
+                                            <div class="unavailabilityRow row gy-2 gx-3 align-items-center mb-2">
+                                                <div class="col-auto">
+                                                    <label class="form-label-sm" th:for="${'unavailabilities' + iterStat.index + '.startDate'}">Date de début :</label>
+                                                    <input type="date" th:field="*{unavailabilities[__${iterStat.index}__].startDate}" class="form-control-sm" />
+                                                </div>
+                                                <div class="col-auto">
+                                                    <label class="form-label-sm" th:for="${'unavailabilities' + iterStat.index + '.endDate'}">Date de fin :</label>
+                                                    <input type="date" th:field="*{unavailabilities[__${iterStat.index}__].endDate}" class="form-control-sm" />
+                                                </div>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                    <button type="button" id="addUnavailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Indisponibilité</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-outline-secondary me-2" th:href="@{/volunteers}">Annuler</a>
+                    <button type="submit" form="editVolunteerForm" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white" id="alertModalLabel">Alerte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Veuillez vérifier les disponibilités :</p>
+                    <ul>
+                        <li>tous les champs doivent être remplis,</li>
+                        <li>un jour de la semaine doit être sélectionné,</li>
+                        <li>l'heure de début doit être antérieure à l'heure de fin,</li>
+                        <li>les créneaux de doivent pas être identiques ou se chevaucher.</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function (){
+            updateAvailabilityIndexes();
+            updateUnavailabilityIndexes();
+
+            document.getElementById('addAvailability').addEventListener('click', function() {
+                addAvailabilityRow();
+            });
+
+            document.getElementById('availabilitySection').addEventListener('click', function(event) {
+                if (event.target.classList.contains('removeAvailability')) {
+                    event.target.closest('.availabilityRow').remove();
+                    updateAvailabilityIndexes();
+                }
+            });
+
+            function addAvailabilityRow() {
+                let availabilitySection = document.getElementById('availabilitySection');
+                let index = availabilitySection.querySelectorAll('.availabilityRow').length;
+
+                let availabilityDiv = document.createElement('div');
+                availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
+
+
+                let divColDay = document.createElement('div');
+                divColDay.className = 'col-auto';
+                let labelDay = document.createElement('label');
+                labelDay.className = 'form-label-sm';
+                labelDay.setAttribute('for', `availabilities[${index}].dayOfWeek`);
+                labelDay.textContent = 'Jour :';
+                let selectDay = document.createElement('select');
+                selectDay.className = 'form-select-sm';
+                selectDay.name = `availabilities[${index}].dayOfWeek`;
+                selectDay.id = `availabilities[${index}].dayOfWeek`;
+                selectDay.required = true;
+                ['Jour', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'].forEach((day, index) => {
+                    let option = document.createElement('option');
+                    option.value = day;
+                    switch (day) {
+                        case 'MONDAY':
+                            option.textContent = 'Lundi';
+                            break;
+                        case 'TUESDAY':
+                            option.textContent = 'Mardi';
+                            break;
+                        case 'WEDNESDAY':
+                            option.textContent = 'Mercredi';
+                            break;
+                        case 'THURSDAY':
+                            option.textContent = 'Jeudi';
+                            break;
+                        case 'FRIDAY':
+                            option.textContent = 'Vendredi';
+                            break;
+                        case 'SATURDAY':
+                            option.textContent = 'Samedi';
+                            break;
+                        case 'SUNDAY':
+                            option.textContent = 'Dimanche';
+                            break;
+                        default:
+                            option.textContent = 'Jour';
+                            option.value = '';
+                            option.selected = true;
+                    }
+                    selectDay.appendChild(option);
+                });
+                divColDay.appendChild(labelDay);
+                divColDay.appendChild(selectDay);
+                availabilityDiv.appendChild(divColDay);
+
+                ['startTime', 'endTime'].forEach(time => {
+                    let divColTime = document.createElement('div');
+                    divColTime.className = 'col-auto';
+                    let labelTime = document.createElement('label');
+                    labelTime.className = 'form-label-sm';
+                    labelTime.setAttribute('for', `availabilities[${index}].${time}`);
+                    labelTime.textContent = time === 'startTime' ? 'Heure de début :' : 'Heure de fin :';
+                    let inputTime = document.createElement('input');
+                    inputTime.className = 'form-control-sm';
+                    inputTime.type = 'time';
+                    inputTime.name = `availabilities[${index}].${time}`;
+                    divColTime.appendChild(labelTime);
+                    divColTime.appendChild(inputTime);
+                    availabilityDiv.appendChild(divColTime);
+                });
+
+                let removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btn btn-sm btn-danger removeAvailability';
+                let icon = document.createElement('i');
+                icon.className = 'bi bi-x-square';
+                removeButton.appendChild(icon);
+                removeButton.addEventListener('click', function() {
+                    availabilityDiv.remove();
+                    updateAvailabilityIndexes();
+                });
+                let buttonCol = document.createElement('div');
+                buttonCol.className = 'col-auto';
+                buttonCol.appendChild(removeButton);
+                availabilityDiv.appendChild(buttonCol);
+
+                availabilitySection.appendChild(availabilityDiv);
+                updateAvailabilityIndexes();
+            }
+
+            function updateAvailabilityIndexes() {
+                let availabilityRows = document.querySelectorAll('#availabilitySection > .availabilityRow');
+                availabilityRows.forEach((row, index) => {
+                    row.querySelectorAll('select, input').forEach(input => {
+                        input.name = input.name.replace(/\[\d+]/, `[${index}]`);
+                    });
+
+                    if (!row.querySelector('.removeAvailability')) {
+                        addRemoveButton(row);
+                    }
+                });
+            }
+
+            function addRemoveButton(row) {
+                let removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btn btn-sm btn-danger removeAvailability';
+                let icon = document.createElement('i');
+                icon.className = 'bi bi-x-square';
+                removeButton.appendChild(icon);
+                removeButton.addEventListener('click', function() {
+                    row.remove();
+                    updateAvailabilityIndexes();
+                });
+
+                let buttonCol = document.createElement('div');
+                buttonCol.className = 'col-auto';
+                buttonCol.appendChild(removeButton);
+
+                row.appendChild(buttonCol);
+            }
+
+
+
+            document.getElementById('addUnavailability').addEventListener('click', function() {
+                addUnavailabilityRow();
+            });
+
+            document.getElementById('unavailabilitySection').addEventListener('click', function(event) {
+                if (event.target.classList.contains('removeUnavailability')) {
+                    event.target.closest('.unavailabilityRow').remove();
+                    updateUnavailabilityIndexes();
+                }
+            });
+
+            function addUnavailabilityRow() {
+                let unavailabilitySection = document.getElementById('unavailabilitySection');
+                let index = unavailabilitySection.querySelectorAll('.unavailabilityRow').length;
+
+                let unavailabilityDiv = document.createElement('div');
+                unavailabilityDiv.className = 'unavailabilityRow row gy-2 gx-3 align-items-center mb-2';
+
+                let colStartDate = document.createElement('div');
+                colStartDate.className = 'col-auto';
+                let labelStartDate = document.createElement('label');
+                labelStartDate.className = 'form-label-sm';
+                labelStartDate.setAttribute('for', `unavailabilities[${index}].startDate`);
+                labelStartDate.textContent = 'Date de début :';
+                let inputStartDate = document.createElement('input');
+                inputStartDate.className = 'form-control-sm';
+                inputStartDate.type = 'date';
+                inputStartDate.name = `unavailabilities[${index}].startDate`;
+                inputStartDate.id = `unavailabilities[${index}].startDate`;
+                inputStartDate.required = true;
+                colStartDate.appendChild(labelStartDate);
+                colStartDate.appendChild(inputStartDate);
+
+                let colEndDate = document.createElement('div');
+                colEndDate.className = 'col-auto';
+                let labelEndDate = document.createElement('label');
+                labelEndDate.className = 'form-label-sm';
+                labelEndDate.setAttribute('for', `unavailabilities[${index}].endDate`);
+                labelEndDate.textContent = 'Date de fin :';
+                let inputEndDate = document.createElement('input');
+                inputEndDate.className = 'form-control-sm';
+                inputEndDate.type = 'date';
+                inputEndDate.name = `unavailabilities[${index}].endDate`;
+                inputEndDate.id = `unavailabilities[${index}].endDate`;
+                inputEndDate.required = true;
+                colEndDate.appendChild(labelEndDate);
+                colEndDate.appendChild(inputEndDate);
+
+                unavailabilityDiv.appendChild(colStartDate);
+                unavailabilityDiv.appendChild(colEndDate);
+
+                addRemoveUnavailabilityButton(unavailabilityDiv);
+                unavailabilitySection.appendChild(unavailabilityDiv);
+                updateUnavailabilityIndexes();
+            }
+            function addRemoveUnavailabilityButton(row) {
+                let removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.className = 'btn btn-sm btn-danger removeUnavailability';
+                let icon = document.createElement('i');
+                icon.className = 'bi bi-x-square';
+                removeButton.appendChild(icon);
+                removeButton.addEventListener('click', function() {
+                    row.remove();
+                    updateUnavailabilityIndexes();
+                });
+
+                let buttonCol = document.createElement('div');
+                buttonCol.className = 'col-auto';
+                buttonCol.appendChild(removeButton);
+
+                row.appendChild(buttonCol);
+            }
+
+            function updateUnavailabilityIndexes() {
+                let unavailabilityRows = document.querySelectorAll('#unavailabilitySection > .unavailabilityRow');
+                unavailabilityRows.forEach((row, index) => {
+                    row.querySelectorAll('input').forEach(input => {
+                        input.name = input.name.replace(/\[\d+]/, `[${index}]`);
+                    });
+
+                    if (!row.querySelector('.removeUnavailability')) {
+                        addRemoveUnavailabilityButton(row);
+                    }
+                });
+            }
+
+            document.getElementById('editVolunteerForm').addEventListener('submit', function(event) {
+                if (!validateAvailabilities() || !validateUnavailabilities()) {
+                    event.preventDefault();
+                    const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+                    alertModal.show();
+                }
+            });
+
+            function validateAvailabilities() {
+                const availabilityRows = document.querySelectorAll('#availabilitySection > div');
+                let isValid = true;
+                let availabilities = [];
+
+                availabilityRows.forEach(function(row) {
+                    const dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
+                    const startTime = row.querySelector('input[name$=".startTime"]').value;
+                    const endTime = row.querySelector('input[name$=".endTime"]').value;
+
+                    if (dayOfWeek === "Jour" || !dayOfWeek || !startTime || !endTime || startTime >= endTime) {
+                        isValid = false;
+                    } else {
+                        availabilities.push({ dayOfWeek, startTime, endTime });
+                    }
+                });
+
+                return isValid && !hasOverlap(availabilities, (a, b) => a.dayOfWeek === b.dayOfWeek);
+            }
+
+            function validateUnavailabilities() {
+                const unavailabilityRows = document.querySelectorAll('#unavailabilitySection > div');
+                let isValid = true;
+                let unavailabilities = [];
+
+                unavailabilityRows.forEach(function(row) {
+                    const startDate = row.querySelector('input[name$=".startDate"]').value;
+                    const endDate = row.querySelector('input[name$=".endDate"]').value;
+
+                    if (!startDate || !endDate || startDate > endDate) {
+                        isValid = false;
+                    } else {
+                        unavailabilities.push({ startDate, endDate });
+                    }
+                });
+
+                return isValid && !hasOverlap(unavailabilities);
+            }
+
+            function hasOverlap(items, comparator = (a, b) => true) {
+                for (let i = 0; i < items.length; i++) {
+                    for (let j = i + 1; j < items.length; j++) {
+                        let a = items[i];
+                        let b = items[j];
+                        if (comparator(a, b) && isOverlapping(a.startTime, a.endTime, b.startTime, b.endTime)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            function isOverlapping(start1, end1, start2, end2) {
+                return !(start1 >= end2 || start2 >= end1);
+            }
+
+        });
+
+    </script>
+
+    <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

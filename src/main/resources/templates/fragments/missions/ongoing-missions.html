@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+    <div th:fragment="ongoing-missions" id="ongoing" class="tab-pane fade">
+        <hr>
+        <h3 class="text-center">Missions en cours</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a class="btn btn-primary" th:href="@{/missions/create}">Ajouter une mission</a>
+                    <form class="d-flex" role="search">
+                        <input type="text" placeholder="Rechercher" class="form-control-sm searchBox" data-table="#ongoingMissionTable">
+                    </form>
+                </div>
+            </div>
+            <div class="card-body">
+                <p th:if="${ongoingMissions.isEmpty()}">Il n'y a pas de mission</p>
+                <table class="table-responsive table table-striped table-hover" th:unless="${ongoingMissions.isEmpty()}" id="ongoingMissionTable">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Nombre de bénévoles requis</th>
+                        <th>Date de début</th>
+                        <th>Date de fin</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ongoingMission:${ongoingMissions}">
+                        <td th:text="${ongoingMission.title}"></td>
+                        <td th:text="${ongoingMission.missionType.name}"></td>
+                        <td th:text="${@translationUtils.translateMissionStatus(ongoingMission.status)}"></td>
+                        <td th:text="${ongoingMission.requiredVolunteerNumber}"></td>
+                        <td th:text="${#temporals.format(ongoingMission.startDateTime, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${#temporals.format(ongoingMission.endDateTime, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td>
+                            <!-- Annuler -->
+                            <button type="button" class="btn btn-sm btn-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cancelMissionModal"
+                                    th:attr="data-mission-id=${ongoingMission.uuid}"><i class="bi bi-x-square"></i></button>
+                            <!-- Voir -->
+                            <a class="btn btn-info btn-sm" th:href="@{/missions/{id}(id=${ongoingMission.uuid})}"><i class="bi bi-eye"></i></a>
+                            <!-- Terminer -->
+                            <!-- Lancer -->
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#endMissionModal"
+                                    th:attr="data-mission-id=${ongoingMission.uuid}">
+                                <i class="bi bi-play me-1"></i><span>Terminer</span>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

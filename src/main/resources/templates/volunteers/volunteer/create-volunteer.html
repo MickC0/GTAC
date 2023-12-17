@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<div th:replace="~{fragments/head :: head}"></div>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="card col-lg-12 col-md-9 justify-content-center container py-4">
+            <div class="card-header">
+                <h1>Nouveau bénévole</h1>
+            </div>
+            <div class="card-body">
+
+                <form th:action="@{/volunteers}" method="post" id="newVolunteerForm" th:object="${volunteer}">
+                    <div class="row">
+                        <div class="col-md-5 col-sm-12 mb-4">
+                            <div class="form-group">
+                                <label for="lastName" class="col-form-label">Nom :</label>
+                                <input th:field="*{lastName}" type="text" id="lastName" class="form-control" required="required" autocomplete="family-name">
+                                <p th:if="${#fields.hasErrors('lastName')}" class="text-danger" th:errors="*{lastName}"></p>
+                            </div>
+                            <div class="form-group">
+                                <label for="firstName" class="col-form-label">Prénom :</label>
+                                <input th:field="*{firstName}" type="text" id="firstName" class="form-control" required="required" autocomplete="given-name">
+                                <p th:if="${#fields.hasErrors('firstName')}" class="text-danger" th:errors="*{firstName}"></p>
+                            </div>
+                            <div class="form-group">
+                                <label for="email" class="col-form-label">Email :</label>
+                                <input th:field="*{email}" type="email" id="email" class="form-control" autocomplete="off">
+                                <p th:if="${#fields.hasErrors('email')}" class="text-danger" th:errors="*{email}"></p>
+                            </div>
+                            <div class="form-group">
+                                <label for="phoneNumber" class="col-form-label">Téléphone :</label>
+                                <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control" autocomplete="tel">
+                                <p th:if="${#fields.hasErrors('phoneNumber')}" class="text-danger" th:errors="*{phoneNumber}"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-7 col-sm-12 mb-4">
+                            <div class="form-group">
+                                <h5>Types de mission</h5>
+                                <hr>
+                            </div>
+                            <div th:if="${allMissionTypes.isEmpty()}">
+                                <div class="alert alert-warning my-2" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill">
+                                        <span>La liste des types de mission est actuellement vide. Vous pouvez ajouter des types de mission plus tard.</span>
+                                    </i>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap" role="group" th:unless="${allMissionTypes.isEmpty()}">
+                                <div class="my-2 me-2" th:each="missionType:${allMissionTypes}">
+                                    <input th:id="${'btn-check-outlined' + missionType.uuid}" th:value="${missionType.uuid}" th:disabled="${!missionType.active}" th:name="missionTypeUuids" type="checkbox" class="btn-check" autocomplete="off">
+                                    <label class="btn btn-outline-secondary" th:for="${'btn-check-outlined' + missionType.uuid}" th:text="${missionType.name}"></label><br>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <hr>
+                                <h5>Disponibilités</h5>
+                                <hr>
+                                <div id="availabilitySection">
+                                </div>
+                                <button type="button" id="addAvailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Disponibilité</button>
+                            </div>
+                            <div class="form-group">
+                                <hr>
+                                <h5>Indisponibilités</h5>
+                                <hr>
+                                <div id="unavailabilitySection">
+                                </div>
+                                <button type="button" id="addUnavailability" class="btn btn-sm btn-outline-secondary my-2">Ajouter une Indisponibilité</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a class="btn btn-outline-secondary me-2" th:href="@{/volunteers}">Annuler</a>
+                <button type="submit" form="newVolunteerForm" class="btn btn-primary">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById('addAvailability').addEventListener('click', function() {
+        let availabilitySection = document.getElementById('availabilitySection');
+        let index = availabilitySection.children.length;
+
+        let availabilityDiv = document.createElement('div');
+        availabilityDiv.className = 'availabilityRow row gy-2 gx-3 align-items-center mb-2';
+
+        let colDay = document.createElement('div');
+        colDay.className = 'col-auto';
+        let labelDay = document.createElement('label');
+        labelDay.className = 'form-label-sm';
+        labelDay.setAttribute('for', `availabilities[${index}].dayOfWeek`);
+        labelDay.textContent = 'Jour :';
+        let selectDay = document.createElement('select');
+        selectDay.className = 'form-select-sm';
+        selectDay.name = `availabilities[${index}].dayOfWeek`;
+        selectDay.id = `availabilities[${index}].dayOfWeek`;
+        selectDay.required = true;
+        ['Jour', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'].forEach((day, index) => {
+            let option = document.createElement('option');
+            option.value = day;
+            switch (day) {
+                case 'MONDAY':
+                    option.textContent = 'Lundi';
+                    break;
+                case 'TUESDAY':
+                    option.textContent = 'Mardi';
+                    break;
+                case 'WEDNESDAY':
+                    option.textContent = 'Mercredi';
+                    break;
+                case 'THURSDAY':
+                    option.textContent = 'Jeudi';
+                    break;
+                case 'FRIDAY':
+                    option.textContent = 'Vendredi';
+                    break;
+                case 'SATURDAY':
+                    option.textContent = 'Samedi';
+                    break;
+                case 'SUNDAY':
+                    option.textContent = 'Dimanche';
+                    break;
+                default:
+                    option.textContent = 'Jour';
+                    option.value = '';
+                    option.selected = true;
+            }
+            selectDay.appendChild(option);
+        });
+
+        colDay.appendChild(labelDay);
+        colDay.appendChild(selectDay);
+
+        let colStart = document.createElement('div');
+        colStart.className = 'col-auto';
+        let labelStart = document.createElement('label');
+        labelStart.className = 'form-label-sm';
+        labelStart.setAttribute('for', `availabilities[${index}].startTime`);
+        labelStart.textContent = 'Heure de début :';
+        let inputStart = document.createElement('input');
+        inputStart.className = 'form-control-sm';
+        inputStart.type = 'time';
+        inputStart.name = `availabilities[${index}].startTime`;
+        inputStart.id = `availabilities[${index}].startTime`;
+        colStart.appendChild(labelStart);
+        colStart.appendChild(inputStart);
+
+        let colEnd = document.createElement('div');
+        colEnd.className = 'col-auto';
+        let labelEnd = document.createElement('label');
+        labelEnd.className = 'form-label-sm';
+        labelEnd.setAttribute('for', `availabilities[${index}].endTime`);
+        labelEnd.textContent = 'Heure de fin :';
+        let inputEnd = document.createElement('input');
+        inputEnd.className = 'form-control-sm';
+        inputEnd.type = 'time';
+        inputEnd.name = `availabilities[${index}].endTime`;
+        inputEnd.id = `availabilities[${index}].endTime`;
+        colEnd.appendChild(labelEnd);
+        colEnd.appendChild(inputEnd);
+
+        let removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'btn btn-sm btn-danger removeAvailability';
+        let icon = document.createElement('i');
+        icon.className = 'bi bi-x-square';
+        removeButton.appendChild(icon);
+        removeButton.addEventListener('click', function() {
+            availabilityDiv.remove();
+            updateAvailabilityIndexes();
+        });
+        availabilityDiv.appendChild(colDay);
+        availabilityDiv.appendChild(colStart);
+        availabilityDiv.appendChild(colEnd);
+
+        let buttonCol = document.createElement('div');
+        buttonCol.className = 'col-auto';
+        buttonCol.appendChild(removeButton);
+        availabilityDiv.appendChild(buttonCol);
+
+        availabilitySection.appendChild(availabilityDiv);
+    });
+
+    document.getElementById('availabilitySection').addEventListener('click', function(event) {
+        if (event.target.classList.contains('removeAvailability')) {
+            event.target.closest('.availabilityRow').remove();
+            updateAvailabilityIndexes();
+        }
+    });
+
+    function updateAvailabilityIndexes() {
+        let availabilityRows = document.querySelectorAll('#availabilitySection > .availabilityRow');
+        availabilityRows.forEach((row, index) => {
+            row.querySelectorAll('select, input').forEach(input => {
+                input.name = input.name.replace(/\[\d+]/, `[${index}]`);
+            });
+        });
+    }
+
+
+
+
+    document.getElementById('addUnavailability').addEventListener('click', function() {
+        let unavailabilitySection = document.getElementById('unavailabilitySection');
+        let index = unavailabilitySection.children.length;
+
+        let unavailabilityDiv = document.createElement('div');
+        unavailabilityDiv.className = 'unavailabilityRow row gy-2 gx-3 align-items-center mb-2';
+
+        let divCol1 = document.createElement('div');
+        divCol1.className = 'col-auto';
+        let label1 = document.createElement('label');
+        label1.className = 'form-label-sm';
+        label1.setAttribute('for', `unavailabilities[${index}].startDate`);
+        label1.textContent = 'Date de début :';
+        let input1 = document.createElement('input');
+        input1.className = 'form-control-sm';
+        input1.type = 'date';
+        input1.name = `unavailabilities[${index}].startDate`;
+        input1.id = `unavailabilities[${index}].startDate`;
+        input1.required = true;
+        divCol1.appendChild(label1);
+        divCol1.appendChild(input1);
+        unavailabilityDiv.appendChild(divCol1);
+
+        let divCol2 = document.createElement('div');
+        divCol2.className = 'col-auto';
+        let label2 = document.createElement('label');
+        label2.className = 'form-label-sm';
+        label2.setAttribute('for', `unavailabilities[${index}].endDate`);
+        label2.textContent = 'Date de fin :';
+        let input2 = document.createElement('input');
+        input2.className = 'form-control-sm';
+        input2.type = 'date';
+        input2.name = `unavailabilities[${index}].endDate`;
+        input2.id = `unavailabilities[${index}].endDate`;
+        input2.required = true;
+        divCol2.appendChild(label2);
+        divCol2.appendChild(input2);
+        unavailabilityDiv.appendChild(divCol2);
+
+        let removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.className = 'btn btn-sm btn-danger removeUnavailability';
+        let icon = document.createElement('i');
+        icon.className = 'bi bi-x-square';
+        removeButton.appendChild(icon);
+        removeButton.addEventListener('click', function() {
+            unavailabilityDiv.remove();
+            updateUnavailabilityIndexes();
+        });
+        let buttonCol = document.createElement('div');
+        buttonCol.className = 'col-auto';
+        buttonCol.appendChild(removeButton);
+        unavailabilityDiv.appendChild(buttonCol);
+
+        unavailabilitySection.appendChild(unavailabilityDiv);
+    });
+
+    document.getElementById('unavailabilitySection').addEventListener('click', function(event) {
+        if (event.target.classList.contains('removeUnavailability')) {
+            event.target.closest('.unavailabilityRow').remove();
+            updateUnavailabilityIndexes();
+        }
+    });
+
+    function updateUnavailabilityIndexes() {
+        let unavailabilityRows = document.querySelectorAll('#unavailabilitySection > .unavailabilityRow');
+        unavailabilityRows.forEach((row, index) => {
+            row.querySelectorAll('select, input').forEach(input => {
+                input.name = input.name.replace(/\[\d+]/, `[${index}]`);
+            });
+        });
+    }
+
+    document.getElementById('newVolunteerForm').addEventListener('submit', function(event) {
+        if (!validateAvailabilities() || !validateUnavailabilities()) {
+            event.preventDefault();
+            const alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+            alertModal.show();
+        }
+    });
+
+    function validateAvailabilities() {
+        const availabilityRows = document.querySelectorAll('#availabilitySection > div');
+        let isValid = true;
+        let availabilities = [];
+
+        availabilityRows.forEach(function(row) {
+            const dayOfWeek = row.querySelector('select[name^="availabilities["]').value;
+            const startTime = row.querySelector('input[name$=".startTime"]').value;
+            const endTime = row.querySelector('input[name$=".endTime"]').value;
+
+            if (dayOfWeek === "Jour" || !dayOfWeek || !startTime || !endTime || startTime >= endTime) {
+                isValid = false;
+            } else {
+                availabilities.push({ dayOfWeek, startTime, endTime });
+            }
+        });
+
+        return isValid && !hasOverlap(availabilities, (a, b) => a.dayOfWeek === b.dayOfWeek);
+    }
+
+    function validateUnavailabilities() {
+        const unavailabilityRows = document.querySelectorAll('#unavailabilitySection > div');
+        let isValid = true;
+        let unavailabilities = [];
+
+        unavailabilityRows.forEach(function(row) {
+            const startDate = row.querySelector('input[name$=".startDate"]').value;
+            const endDate = row.querySelector('input[name$=".endDate"]').value;
+
+            if (!startDate || !endDate || startDate > endDate) {
+                isValid = false;
+            } else {
+                unavailabilities.push({ startDate, endDate });
+            }
+        });
+
+        return isValid && !hasOverlap(unavailabilities);
+    }
+
+    function hasOverlap(items, comparator = (a, b) => true) {
+        for (let i = 0; i < items.length; i++) {
+            for (let j = i + 1; j < items.length; j++) {
+                let a = items[i];
+                let b = items[j];
+                if (comparator(a, b) && isOverlapping(a.startTime, a.endTime, b.startTime, b.endTime)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function isOverlapping(start1, end1, start2, end2) {
+        return !(start1 >= end2 || start2 >= end1);
+    }
+
+
+</script>
+
+
+<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white" id="alertModalLabel">Alerte</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Veuillez vérifier les disponibilités :</p>
+                <ul>
+                    <li>tous les champs doivent être remplis,</li>
+                    <li>un jour de la semaine doit être sélectionné,</li>
+                    <li>l'heure de début doit être antérieure à l'heure de fin,</li>
+                    <li>les créneaux de doivent pas être identiques ou se chevaucher.</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+
+</html>
