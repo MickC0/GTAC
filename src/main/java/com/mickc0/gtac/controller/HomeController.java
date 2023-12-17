@@ -1,5 +1,6 @@
 package com.mickc0.gtac.controller;
 
+import com.mickc0.gtac.dto.VolunteerAdminDTO;
 import com.mickc0.gtac.dto.VolunteerDetailsDTO;
 import com.mickc0.gtac.dto.VolunteerRoleProfilDTO;
 import com.mickc0.gtac.entity.MissionStatus;
@@ -40,11 +41,33 @@ public class HomeController {
         String errorMessage = (String) session.getAttribute("errorMessage");
         model.addAttribute("errorMessage", errorMessage);
         session.removeAttribute("errorMessage");
+        boolean adminExists = volunteerService.existsAdminAccount();
+        model.addAttribute("adminExists", adminExists);
         return "home";
     }
     @GetMapping("/login")
     public String loginPage(){
         return "login";
+    }
+    @GetMapping("/create-admin")
+    public String registerPage(Model model){
+        model.addAttribute("admin", new VolunteerAdminDTO());
+        return "create-admin";
+    }
+
+    @PostMapping("/register")
+    public String registerNewAdmin(@Valid @ModelAttribute("admin") VolunteerAdminDTO volunteerAdminDTO,
+                                   BindingResult result,
+                                   Model model){
+        if (!volunteerAdminDTO.getPassword().equals(volunteerAdminDTO.getMatchingPassword())) {
+            result.rejectValue("matchingPassword", "error.admin", "Les mots de passe ne correspondent pas");
+        }
+        if(result.hasErrors()){
+            model.addAttribute("admin", volunteerAdminDTO );
+            return "create-admin";
+        }
+        volunteerService.saveNewAdmin(volunteerAdminDTO);
+        return "redirect:/login";
     }
 
     @GetMapping("/administration")

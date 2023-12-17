@@ -31,8 +31,10 @@
                     <i class="fs-5 bi-bullseye"></i><span class="ms-1 d-none d-sm-inline">Missions</span></a>
             </li>
         </ul>
+
         <div th:if="${not #authorization.expression('isAuthenticated()')}" class="dropdown py-sm-4 mt-sm-auto ms-auto ms-sm-0 flex-shrink-1">
-            <a th:href="@{/login}" class="text-white text-decoration-none">Connexion</a>
+            <a th:if="${adminExists}" th:href="@{/login}" class="text-white text-decoration-none">Connexion</a>
+            <a th:unless="${adminExists}" th:href="@{/create-admin}" class="text-white text-decoration-none">Connexion</a>
         </div>
 
         <div th:if="${#authorization.expression('isAuthenticated()')}" class="dropdown py-sm-4 mt-sm-auto ms-auto ms-sm-0 flex-shrink-1">

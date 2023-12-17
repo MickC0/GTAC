@@ -38,4 +38,8 @@ public interface VolunteerService {
     boolean changePassword(String email, String oldPassword, String newPassword);
 
     void resetPassword(boolean resetPassword, String email);
+
+    boolean existsAdminAccount();
+
+    void saveNewAdmin(VolunteerAdminDTO volunteerAdminDTO);
 }

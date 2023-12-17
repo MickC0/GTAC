@@ -26,10 +26,12 @@
                             <div class="form-group">
                                 <label for="email" class="col-form-label">Email :</label>
                                 <input th:field="*{email}" type="email" id="email" class="form-control" autocomplete="off">
+                                <p th:if="${#fields.hasErrors('email')}" class="text-danger" th:errors="*{email}"></p>
                             </div>
                             <div class="form-group">
                                 <label for="phoneNumber" class="col-form-label">Téléphone :</label>
                                 <input th:field="*{phoneNumber}" type="text" id="phoneNumber" class="form-control" autocomplete="tel">
+                                <p th:if="${#fields.hasErrors('phoneNumber')}" class="text-danger" th:errors="*{phoneNumber}"></p>
                             </div>
                         </div>
                         <div class="col-md-7 col-sm-12 mb-4">

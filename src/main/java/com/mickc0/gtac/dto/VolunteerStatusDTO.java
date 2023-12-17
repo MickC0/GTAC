@@ -2,6 +2,8 @@ package com.mickc0.gtac.dto;
 
 import com.mickc0.gtac.entity.Volunteer;
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
@@ -13,7 +15,9 @@ public class VolunteerStatusDTO {
     private String lastName;
     @Size(min = 3, max = 20)
     private String firstName;
+    @Email(message = "Adresse email non valide.")
     private String email;
+    @Pattern(regexp = "(\\+33\\s?([0-9]{2}\\s?){4}|0[0-9]{9})", message = "Numéro de téléphone non valide.")
     private String phoneNumber;
     private String status;
 

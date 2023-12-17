@@ -2,29 +2,25 @@ package com.mickc0.gtac.dto;
 
 import jakarta.validation.constraints.*;
 
-import java.util.List;
-import java.util.UUID;
 
-public class VolunteerDetailsDTO {
-    private UUID uuid;
+public class VolunteerAdminDTO {
     @Size(min = 3, max = 20)
+    @NotEmpty(message = "Renseigner le Nom")
     private String lastName;
     @Size(min = 3, max = 20)
+    @NotEmpty(message = "Renseigner le Prénom")
     private String firstName;
     @Email(message = "Adresse email non valide.")
+    @NotEmpty(message = "Renseigner l'email")
     private String email;
     @Pattern(regexp = "(\\+33\\s?([0-9]{2}\\s?){4}|0[0-9]{9})", message = "Numéro de téléphone non valide.")
     private String phoneNumber;
+    @NotNull
+    @NotEmpty
+    @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+            message = "Le mot de passe doit contenir au moins 8 caractères, dont une majuscule, un chiffre et un caractère spécial.")
     private String password;
-    private List<String> roles;
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
+    private String matchingPassword;
 
     public String getLastName() {
         return lastName;
@@ -66,11 +62,11 @@ public class VolunteerDetailsDTO {
         this.password = password;
     }
 
-    public List<String> getRoles() {
-        return roles;
+    public String getMatchingPassword() {
+        return matchingPassword;
     }
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setMatchingPassword(String matchingPassword) {
+        this.matchingPassword = matchingPassword;
     }
 }

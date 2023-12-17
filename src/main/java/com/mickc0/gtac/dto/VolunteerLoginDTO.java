@@ -1,6 +1,10 @@
 package com.mickc0.gtac.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
+
 public class VolunteerLoginDTO {
+    @Email(message = "Adresse email non valide.")
     private String email;
     private String password;
 

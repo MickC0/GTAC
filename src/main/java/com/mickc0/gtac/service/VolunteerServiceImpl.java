@@ -455,6 +455,27 @@ public class VolunteerServiceImpl implements VolunteerService{
             }
             volunteer.setPassword(passwordEncoder.encode(defaultPassword));
         }
+        volunteer.setMustChangePassword(true);
+        volunteerRepository.save(volunteer);
+    }
+
+    @Override
+    public boolean existsAdminAccount() {
+        List<Volunteer> adminVolunteers = volunteerRepository.findByRole(RoleName.ROLE_ADMIN.name());
+        return !adminVolunteers.isEmpty();
+    }
+
+    @Override
+    public void saveNewAdmin(VolunteerAdminDTO volunteerAdminDTO) {
+        Role role = roleService.findByName(RoleName.ROLE_ADMIN.name());
+        Volunteer volunteer = new Volunteer();
+        volunteer.setLastName(volunteerAdminDTO.getLastName());
+        volunteer.setFirstName(volunteerAdminDTO.getFirstName());
+        volunteer.setEmail(volunteerAdminDTO.getEmail());
+        volunteer.setPhoneNumber(volunteerAdminDTO.getPhoneNumber());
+        volunteer.setPassword(passwordEncoder.encode(volunteerAdminDTO.getPassword()));
+        volunteer.setMustChangePassword(false);
+        volunteer.setRoles(List.of(role));
         volunteerRepository.save(volunteer);
     }
 }
