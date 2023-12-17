@@ -20,10 +20,6 @@ import java.util.List;
 @EnableScheduling
 public class GtacApplication implements CommandLineRunner {
 
-    @Autowired
-    private RoleRepository roleRepository;
-
-
 
     public static void main(String[] args) {
         SpringApplication.run(GtacApplication.class, args);
@@ -31,21 +27,6 @@ public class GtacApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
-        Role adminRole = new Role();
-        adminRole.setName(String.valueOf(RoleName.ROLE_ADMIN));
-        roleRepository.save(adminRole);
-        Role missionRole = new Role();
-        missionRole.setName(String.valueOf(RoleName.ROLE_MISSION));
-        roleRepository.save(missionRole);
-        Role volunteerRole = new Role();
-        volunteerRole.setName(String.valueOf(RoleName.ROLE_VOLUNTEER));
-        roleRepository.save(volunteerRole);
-        Role guestRole = new Role();
-        guestRole.setName(String.valueOf(RoleName.ROLE_GUEST));
-        roleRepository.save(guestRole);
-
-
 
     }
 }
