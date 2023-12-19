@@ -337,10 +337,9 @@ public class VolunteerServiceImplTest {
         when(volunteerRepository.save(any(Volunteer.class))).thenReturn(volunteer);
 
         volunteerService.saveOrUpdate(volunteerDTO);
-        verify(volunteerRepository).save(any(Volunteer.class));
 
         ArgumentCaptor<Volunteer> volunteerCaptor = ArgumentCaptor.forClass(Volunteer.class);
-        verify(volunteerRepository).save(volunteerCaptor.capture());
+        verify(volunteerRepository, times(1)).save(volunteerCaptor.capture());
         Volunteer savedVolunteer = volunteerCaptor.getValue();
 
         assertEquals("NewLastName", savedVolunteer.getLastName());
@@ -351,40 +350,32 @@ public class VolunteerServiceImplTest {
     }
 
 
-    @Test
-    void saveAndReturnNewVolunteer(){
-        Volunteer volunteer = new Volunteer();
-        volunteer.setLastName("DUPONT");
-        volunteer.setFirstName("JEAN");
-        volunteer.setEmail("jean.dupont@gmail.com");
-        volunteer.setPhoneNumber("0606060606");
 
-        Role mockRole = new Role();
-        mockRole.setName(RoleName.ROLE_MISSION.name());
-        mockRole.setId(1L);
-
-        volunteer.setRoles(Collections.singletonList(mockRole));
-        volunteerService.saveAndReturn(volunteer);
-
-        verify(volunteerRepository).save(any(Volunteer.class));
-    }
 
     @Test
-    void saveAndReturnNewVolunteerIsNull(){
-        assertThrows(IllegalArgumentException.class, () -> volunteerService.saveAndReturn(null));
-        verify(volunteerRepository, never()).save(any(Volunteer.class));
-    }
-
-    @Test
-    void handleUnavailabilities_WhenEmpty() {
+    void handleUnavailabilities_WhenEmptyAndNewVolunteer() {
         VolunteerDTO volunteerDTO = new VolunteerDTO();
         Volunteer volunteer = new Volunteer();
+
+        volunteerService.handleUnavailabilities(volunteerDTO, volunteer);
+
+
+        verify(unavailabilityService, never()).deleteAllByVolunteer(volunteer);
+        verify(unavailabilityService, never()).save(any(Unavailability.class));
+    }
+
+    @Test
+    void handleUnavailabilities_WhenEmptyAndExistingVolunteer() {
+        VolunteerDTO volunteerDTO = new VolunteerDTO();
+        Volunteer volunteer = new Volunteer();
+        volunteer.setId(1L);
 
         volunteerService.handleUnavailabilities(volunteerDTO, volunteer);
 
         verify(unavailabilityService).deleteAllByVolunteer(volunteer);
         verify(unavailabilityService, never()).save(any(Unavailability.class));
     }
+
 
     @Test
     void handleUnavailabilities_WithUnavailabilities() {
@@ -408,15 +399,28 @@ public class VolunteerServiceImplTest {
     }
 
     @Test
-    void handleAvailabilities_WhenEmpty() {
+    void handleAvailabilities_WhenEmptyAndNewVolunteer() {
         VolunteerDTO volunteerDTO = new VolunteerDTO();
         Volunteer volunteer = new Volunteer();
+
+        volunteerService.handleAvailabilities(volunteerDTO, volunteer);
+
+        verify(availabilityService, never()).deleteAllByVolunteer(volunteer);
+        verify(availabilityService, never()).save(any(Availability.class));
+    }
+
+    @Test
+    void handleAvailabilities_WhenEmptyAndExistingVolunteer() {
+        VolunteerDTO volunteerDTO = new VolunteerDTO();
+        Volunteer volunteer = new Volunteer();
+        volunteer.setId(1L);
 
         volunteerService.handleAvailabilities(volunteerDTO, volunteer);
 
         verify(availabilityService).deleteAllByVolunteer(volunteer);
         verify(availabilityService, never()).save(any(Availability.class));
     }
+
 
     @Test
     void handleAvailabilities_WithAvailabilities() {

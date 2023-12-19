@@ -6,7 +6,10 @@ import com.mickc0.gtac.exception.DeleteAdminException;
 import com.mickc0.gtac.mapper.VolunteerMapper;
 import com.mickc0.gtac.repository.VolunteerRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -33,6 +36,7 @@ public class VolunteerServiceImpl implements VolunteerService{
     private final UnavailabilityService unavailabilityService;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(VolunteerServiceImpl.class);
 
     @Autowired
     public VolunteerServiceImpl(VolunteerRepository volunteerRepository, VolunteerMapper volunteerMapper,
@@ -151,14 +155,6 @@ public class VolunteerServiceImpl implements VolunteerService{
     }
 
 
-    @Override
-    @Transactional
-    public Volunteer saveAndReturn(Volunteer volunteer) {
-        if (volunteer == null) {
-            throw new IllegalArgumentException("Le bénévole ne peut pas être null");
-        }
-        return volunteerRepository.save(volunteer);
-    }
 
     @Override
     @Transactional
@@ -192,90 +188,112 @@ public class VolunteerServiceImpl implements VolunteerService{
         }
 
         volunteer.setRoles(roles);
-
+        handleAvailabilities(volunteerDTO, volunteer);
+        handleUnavailabilities(volunteerDTO, volunteer);
+        handleMissionTypes(volunteerDTO, volunteer);
         volunteerRepository.save(volunteer);
+
     }
 
     @Transactional
     public void handleUnavailabilities(VolunteerDTO volunteerDTO, Volunteer volunteer) {
         Set<Unavailability> unavailabilities = new HashSet<>();
 
-        if (volunteerDTO.getUnavailabilities() == null || volunteerDTO.getUnavailabilities().isEmpty()) {
-            unavailabilityService.deleteAllByVolunteer(volunteer);
-            volunteer.setUnavailabilities(Collections.emptySet());
-            return;
-        }
-        for (UnavailabilityDTO unavailabilityDTO : volunteerDTO.getUnavailabilities() ) {
-            Unavailability unavailability;
-            if (unavailabilityDTO.getUuid() == null) {
-                unavailability = new Unavailability();
-            } else {
-                try {
-                    unavailability = unavailabilityService.findByUuid(unavailabilityDTO.getUuid());
-                } catch (EntityNotFoundException e) {
-                    unavailability = new Unavailability();
+        try {
+            if (volunteerDTO.getUnavailabilities() != null) {
+                for (UnavailabilityDTO unavailabilityDTO : volunteerDTO.getUnavailabilities()) {
+                    Unavailability unavailability;
+                    if (unavailabilityDTO.getUuid() != null) {
+                        try {
+                            unavailability = unavailabilityService.findByUuid(unavailabilityDTO.getUuid());
+                        } catch (EntityNotFoundException e) {
+                            unavailability = new Unavailability();
+                        }
+                    } else {
+                        unavailability = new Unavailability();
+                    }
+                    unavailability.setStartDate(unavailabilityDTO.getStartDate());
+                    unavailability.setEndDate(unavailabilityDTO.getEndDate());
+                    unavailability.setVolunteer(volunteer);
+                    unavailabilityService.save(unavailability);
+                    unavailabilities.add(unavailability);
                 }
+            } else {
+                if (volunteer.getId() != null && (volunteerDTO.getAvailabilities() == null || volunteerDTO.getAvailabilities().isEmpty())) {
+                    unavailabilityService.deleteAllByVolunteer(volunteer);
+                }
+                volunteer.setUnavailabilities(Collections.emptySet());
             }
-            unavailability.setStartDate(unavailabilityDTO.getStartDate());
-            unavailability.setEndDate(unavailabilityDTO.getEndDate());
-            unavailability.setVolunteer(volunteer);
-            unavailabilityService.save(unavailability);
-            unavailabilities.add(unavailability);
-        }
 
-        if (volunteer.getUnavailabilities() != null) {
-            Set<UUID> updatedUnavailabilitiesUuids = unavailabilities.stream()
-                    .map(Unavailability::getUuid)
-                    .collect(Collectors.toSet());
-            volunteer.getUnavailabilities().stream()
-                    .filter(unavailability -> !updatedUnavailabilitiesUuids.contains(unavailability.getUuid()))
-                    .forEach(unavailabilityService::delete);
-
+            if (volunteer.getUnavailabilities() != null) {
+                Set<UUID> updatedUnavailabilitiesUuids = unavailabilities.stream()
+                        .map(Unavailability::getUuid)
+                        .collect(Collectors.toSet());
+                volunteer.getUnavailabilities().stream()
+                        .filter(unavailability -> !updatedUnavailabilitiesUuids.contains(unavailability.getUuid()))
+                        .forEach(unavailabilityService::delete);
+            }
+            volunteer.setUnavailabilities(unavailabilities);
+        } catch (DataAccessException e) {
+            logger.error("Erreur d'accès aux données lors de la gestion des indisponibilités : ", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("Argument invalide fourni lors de la gestion des indisponibilités : ", e);
+        } catch (Exception e) {
+            logger.error("Exception inattendue lors de la gestion des indisponibilités : ", e);
         }
-        volunteer.setUnavailabilities(unavailabilities);
-        volunteerRepository.save(volunteer);
     }
+
 
     @Transactional
     public void handleAvailabilities(VolunteerDTO volunteerDTO, Volunteer volunteer) {
-        Set<Availability> availabilities = new HashSet<>();
+        try {
+            Set<Availability> availabilities = new HashSet<>();
 
-        if (volunteerDTO.getAvailabilities() == null || volunteerDTO.getAvailabilities().isEmpty()) {
-            availabilityService.deleteAllByVolunteer(volunteer);
-            volunteer.setAvailabilities(Collections.emptySet());
-            return;
-        }
-        for (AvailabilityDTO availabilityDTO : volunteerDTO.getAvailabilities() ) {
-            Availability availability;
-            if (availabilityDTO.getUuid() == null) {
-                availability = new Availability();
-            } else {
-                try {
-                    availability = availabilityService.findByUuid(availabilityDTO.getUuid());
-                } catch (EntityNotFoundException e) {
-                    availability = new Availability();
+            if (volunteerDTO.getAvailabilities() != null) {
+                for (AvailabilityDTO availabilityDTO : volunteerDTO.getAvailabilities()) {
+                    Availability availability;
+                    try {
+                        if (availabilityDTO.getUuid() != null) {
+                            availability = availabilityService.findByUuid(availabilityDTO.getUuid());
+                        } else {
+                            availability = new Availability();
+                        }
+                    } catch (EntityNotFoundException e) {
+                        logger.error("Entité non trouvée avec UUID: " + availabilityDTO.getUuid(), e);
+                        availability = new Availability();
+                    }
+                    availability.setDayOfWeek(availabilityDTO.getDayOfWeek());
+                    availability.setStartTime(availabilityDTO.getStartTime());
+                    availability.setEndTime(availabilityDTO.getEndTime());
+                    availability.setVolunteer(volunteer);
+                    availabilityService.save(availability);
+                    availabilities.add(availability);
                 }
+            } else {
+                if (volunteer.getId() != null && (volunteerDTO.getAvailabilities() == null || volunteerDTO.getAvailabilities().isEmpty())) {
+                    availabilityService.deleteAllByVolunteer(volunteer);
+                }
+                volunteer.setAvailabilities(Collections.emptySet());
             }
-            availability.setDayOfWeek(availabilityDTO.getDayOfWeek());
-            availability.setStartTime(availabilityDTO.getStartTime());
-            availability.setEndTime(availabilityDTO.getEndTime());
-            availability.setVolunteer(volunteer);
-            availabilityService.save(availability);
-            availabilities.add(availability);
-        }
 
-        if (volunteer.getAvailabilities() != null) {
-            Set<UUID> updatedAvailabilitiesUuids = availabilities.stream()
-                    .map(Availability::getUuid)
-                    .collect(Collectors.toSet());
-            volunteer.getAvailabilities().stream()
-                    .filter(availability -> !updatedAvailabilitiesUuids.contains(availability.getUuid()))
-                    .forEach(availabilityService::delete);
-
+            if (volunteer.getAvailabilities() != null) {
+                Set<UUID> updatedAvailabilitiesUuids = availabilities.stream()
+                        .map(Availability::getUuid)
+                        .collect(Collectors.toSet());
+                volunteer.getAvailabilities().stream()
+                        .filter(availability -> !updatedAvailabilitiesUuids.contains(availability.getUuid()))
+                        .forEach(availabilityService::delete);
+            }
+            volunteer.setAvailabilities(availabilities);
+        } catch (DataAccessException e) {
+            logger.error("Erreur d'accès aux données lors de la gestion des disponibilités : ", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("Argument invalide fourni lors de la gestion des disponibilités : ", e);
+        } catch (Exception e) {
+            logger.error("Exception inattendue lors de la gestion des disponibilités : ", e);
         }
-        volunteer.setAvailabilities(availabilities);
-        volunteerRepository.save(volunteer);
     }
+
 
     @Transactional
     public void handleMissionTypes(VolunteerDTO volunteerDTO, Volunteer volunteer) {
@@ -288,8 +306,8 @@ public class VolunteerServiceImpl implements VolunteerService{
                 .map(Optional::get)
                 .collect(Collectors.toSet());
         volunteer.setMissionTypes(missionTypes);
-        volunteerRepository.save(volunteer);
     }
+
 
 
     @Override
