@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public interface VolunteerService {
     void saveOrUpdateVolunteerDetails(VolunteerDetailsDTO volunteerDetailsDTO, Authentication authentication);
-    Volunteer saveAndReturn(Volunteer volunteer);
+
     void saveOrUpdate(VolunteerDTO volunteerDTO);
 
     Optional<Volunteer> findByEmail(String email);

@@ -20,7 +20,6 @@ import java.util.List;
 @EnableScheduling
 public class GtacApplication implements CommandLineRunner {
 
-
     public static void main(String[] args) {
         SpringApplication.run(GtacApplication.class, args);
     }

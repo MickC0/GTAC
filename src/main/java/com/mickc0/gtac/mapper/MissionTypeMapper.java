@@ -15,6 +15,7 @@ public class MissionTypeMapper {
         MissionTypeDTO missionTypeDTO = new MissionTypeDTO();
         missionTypeDTO.setUuid(missionType.getUuid());
         missionTypeDTO.setName(missionType.getName());
+        missionTypeDTO.setDescription(missionType.getDescription());
         missionTypeDTO.setSelected(false);
         missionTypeDTO.setActive(missionType.isActive());
         return missionTypeDTO;
